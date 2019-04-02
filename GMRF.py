@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from scipy import interpolate
 import math
 import time
+import methods
 
 # Parameters
 nIter = 1000
@@ -31,10 +32,7 @@ fig = plt.figure()
 ax1 = fig.add_subplot(121)
 ax1.contourf(x,y,f(x,y))
 
-# Show ground thruth interpolation points
-XGT,YGT = np.meshgrid(xGT,yGT)
-ax1.plot(XGT,YGT,marker='.',color='k',linestyle='none')
-
+# Plotting initial belief
 g = lambda x,y: abs(np.sin(0.9*x)*np.sin(0.9*y))
 ax2 = fig.add_subplot(122)
 ax2.contourf(X,Y,g(X,Y))
