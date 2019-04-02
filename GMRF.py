@@ -9,6 +9,7 @@ import methods
 
 # Parameters
 nIter = 1000
+oz = 0.01           # measurement variance
 
 # Set up axes
 x = y = np.arange(-4,4,0.01)
@@ -33,15 +34,15 @@ ax1.contourf(x,y,f(x,y))
 
 # Initial GMRF
 nY,nX = zGT.shape                   #CAN BE CHANGED
-mue = np.zeros((nY,nX))
-Q = np.eye(nY+nX)                   #TO DO: Edit Q Matrix
+mu = np.zeros((nY,nX)).flatten()
+Q = np.random.rand(nY*nX,nY*nX)                   #TO DO: Edit Q Matrix
 
 # Discrete/Continuous-Mapping A
-#A = np.eye(nY+nX)                  #NOT FINISHED
+A = np.eye(nY*nX)
 
 # Plotting initial belief
 ax2 = fig.add_subplot(122)
-ax2.contourf(xGT,yGT,mue.reshape(nY,nX))
+ax2.contourf(xGT,yGT,mu.reshape(nY,nX))
 
 plt.show()
 
@@ -50,12 +51,17 @@ for i in range(nIter):
 
     # Get measurement at random position
     xMeas = np.random.choice(xGT)
-    yMeas = np.random.choise(yGT)
-    zMeas = methods.getMeasurement(xMeas,yMeas,f,0.01)
+    yMeas = np.random.choice(yGT)
+    zMeas = methods.getMeasurement(xMeas,yMeas,f,oz)
 
-    # Update on mue
+    # Update on mu
+    temp1 = zMeas - np.dot(A,mu)
+    temp2 = np.dot(A.T,temp1)
+    mu = mu + 1/oz**2*np.dot(np.linalg.inv(Q),temp2)
+
     # Update on sigma
+    Q = np.linalg.inv((Q+1/oz**2*np.dot(A.T,A)))
 
-    ax2.contourf(xGT,yGT,mue.reshape(nY,nX))
+    ax2.contourf(xGT,yGT,mu.reshape(nY,nX))
     fig.canvas.draw()
     fig.canvas.flush_events()
