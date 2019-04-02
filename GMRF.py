@@ -28,20 +28,34 @@ f = interpolate.interp2d(xGT,yGT,zGT)
 # Plotting ground truth
 plt.ion()
 fig = plt.figure()
-
 ax1 = fig.add_subplot(121)
 ax1.contourf(x,y,f(x,y))
 
+# Initial GMRF
+nY,nX = zGT.shape                   #CAN BE CHANGED
+mue = np.zeros((nY,nX))
+Q = np.eye(nY+nX)                   #TO DO: Edit Q Matrix
+
+# Discrete/Continuous-Mapping A
+#A = np.eye(nY+nX)                  #NOT FINISHED
+
 # Plotting initial belief
-g = lambda x,y: abs(np.sin(0.9*x)*np.sin(0.9*y))
 ax2 = fig.add_subplot(122)
-ax2.contourf(X,Y,g(X,Y))
+ax2.contourf(xGT,yGT,mue.reshape(nY,nX))
 
 plt.show()
 
 #Update and plot field belief
 for i in range(nIter):
-    g = lambda x,y: abs(np.sin(0.9*x)*np.sin(0.9*y-i/10))
-    ax2.contourf(X,Y,g(X,Y))
+
+    # Get measurement at random position
+    xMeas = np.random.choice(xGT)
+    yMeas = np.random.choise(yGT)
+    zMeas = methods.getMeasurement(xMeas,yMeas,f,0.01)
+
+    # Update on mue
+    # Update on sigma
+
+    ax2.contourf(xGT,yGT,mue.reshape(nY,nX))
     fig.canvas.draw()
     fig.canvas.flush_events()
