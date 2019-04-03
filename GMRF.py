@@ -8,8 +8,8 @@ import time
 import methods
 
 # Parameters
-nIter = 1000
-oz = 0.01           # measurement variance
+nIter = 10000
+oz2 = 0.01           # measurement variance
 
 # Set up axes
 x = y = np.arange(-4,4,0.01)
@@ -34,11 +34,8 @@ ax1.contourf(x,y,f(x,y))
 
 # Initial GMRF
 nY,nX = zGT.shape                   #CAN BE CHANGED
-mu = np.zeros((nY,nX)).flatten()
-Q = np.random.rand(nY*nX,nY*nX)                   #TO DO: Edit Q Matrix
-
-# Discrete/Continuous-Mapping A
-A = np.eye(nY*nX)
+mu = np.array([np.zeros((nY,nX)).flatten()]).T
+Q = 2*np.random.rand(nY*nX,nY*nX)                   #TO DO: Edit Q Matrix
 
 # Plotting initial belief
 ax2 = fig.add_subplot(122)
@@ -46,21 +43,37 @@ ax2.contourf(xGT,yGT,mu.reshape(nY,nX))
 
 plt.show()
 
+# Get first measurement:
+xMeas = np.random.choice(xGT)
+yMeas = np.random.choice(yGT)
+zMeas = np.array([methods.getMeasurement(xMeas,yMeas,f,oz2)])
+iPos = int((yMeas/2+2)*5+xMeas/2+3)
+A = np.array([np.eye(nY*nX)[iPos,:]])
+
 #Update and plot field belief
 for i in range(nIter):
 
-    # Get measurement at random position
-    xMeas = np.random.choice(xGT)
-    yMeas = np.random.choice(yGT)
-    zMeas = methods.getMeasurement(xMeas,yMeas,f,oz)
+    # Update on sigma
+    QCond = (Q+1/oz2*np.dot(A.T,A))
 
     # Update on mu
     temp1 = zMeas - np.dot(A,mu)
     temp2 = np.dot(A.T,temp1)
-    mu = mu + 1/oz**2*np.dot(np.linalg.inv(Q),temp2)
+    test = mu + 1/oz2*np.dot(np.linalg.inv(QCond),temp2)
 
-    # Update on sigma
-    Q = np.linalg.inv((Q+1/oz**2*np.dot(A.T,A)))
+    # Get next measurement at random position, stack under measurement vector
+    xMeas = np.random.choice(xGT)
+    yMeas = np.random.choice(yGT)
+    zMeas = np.vstack((zMeas,methods.getMeasurement(xMeas,yMeas,f,oz2)))
+    
+    # Map measurement to lattice and stack under A matrix
+    iPos = int((yMeas/2+2)*5+xMeas/2+3)
+    A = np.vstack((A,np.eye(nY*nX)[iPos-1,:]))
+
+    #print("new Q:",Q)
+    #print("Measured at (",xMeas,",",yMeas,")")
+    #print("Value: ",zMeas)
+    #print("new mean:",mu)
 
     ax2.contourf(xGT,yGT,mu.reshape(nY,nX))
     fig.canvas.draw()
