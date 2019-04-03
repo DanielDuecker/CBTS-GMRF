@@ -9,7 +9,7 @@ import methods
 
 # Parameters
 nIter = 10000
-oz2 = 0.01           # measurement variance
+oz2 = 0.1           # measurement variance
 
 # Set up axes
 x = y = np.arange(-4,4,0.01)
@@ -52,6 +52,7 @@ A = np.array([np.eye(nY*nX)[iPos,:]])
 
 #Update and plot field belief
 for i in range(nIter):
+    print("Iteration ",i," of ",nIter,".")
 
     # Update on sigma
     QCond = (Q+1/oz2*np.dot(A.T,A))
@@ -59,7 +60,7 @@ for i in range(nIter):
     # Update on mu
     temp1 = zMeas - np.dot(A,mu)
     temp2 = np.dot(A.T,temp1)
-    test = mu + 1/oz2*np.dot(np.linalg.inv(QCond),temp2)
+    mu = mu + 1/oz2*np.dot(np.linalg.inv(QCond),temp2)
 
     # Get next measurement at random position, stack under measurement vector
     xMeas = np.random.choice(xGT)
@@ -70,11 +71,8 @@ for i in range(nIter):
     iPos = int((yMeas/2+2)*5+xMeas/2+3)
     A = np.vstack((A,np.eye(nY*nX)[iPos-1,:]))
 
-    #print("new Q:",Q)
-    #print("Measured at (",xMeas,",",yMeas,")")
-    #print("Value: ",zMeas)
-    #print("new mean:",mu)
-
+    # Plotting:
     ax2.contourf(xGT,yGT,mu.reshape(nY,nX))
     fig.canvas.draw()
     fig.canvas.flush_events()
+    print("New mean: \n",mu)
