@@ -14,8 +14,8 @@ class gmrf:
         self.nY = nY                                        # Total number of vertices in y 
         self.y = np.linspace(self.yMin,self.yMax,self.nY)   # Vector of y grid values
 
-        self.mu = np.array([np.zeros((nY,nX)).flatten()]).T
-        self.prec = np.eye(nY*nX,nY*nX)
+        self.muCond = np.array([np.zeros((nY,nX)).flatten()]).T
+        self.precCond = np.eye(nY*nX,nY*nX)
         self.nP = nX*nY                                     # Total number of vertices
 
         # Distance between two vertices in x and y

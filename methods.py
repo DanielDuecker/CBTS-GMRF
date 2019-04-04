@@ -25,25 +25,13 @@ def mapConDis(gmrf,xMeas,yMeas,zMeas):
     phi[0,yPos*gmrf.nX+xPos+1] = 1/(gmrf.dx*gmrf.dy) * (xRel+gmrf.dx/2) * (-yRel+gmrf.dy/2)      # upper right
     phi[0,yPos*gmrf.nX+xPos] = -1/(gmrf.dx*gmrf.dy) * (xRel-gmrf.dx/2) * (-yRel+gmrf.dy/2)       # upper left
 
-    # DEBUGGING
-    #print("dx:",gmrf.dx)
-    #print("dy:",gmrf.dy)
-    #print("x:",gmrf.x)
-    #print("_____")
-    #print("Meas: (",xMeas,",",yMeas,")")
-    #print("zMeas:",zMeas[-1])
-    #print("Rel: (",xRel,",",yRel,")")
-    #print("Pos: (",xPos,",",yPos,")")
-    #print("lower left:",(yPos+1)*gmrf.nX+xPos)
-    #print("lower right:",(yPos+1)*gmrf.nX+xPos+1)
-    #print("upper left:",yPos*gmrf.nX+xPos)
-    #print("upper right:",yPos*gmrf.nX+xPos+1)
-    #print(phi)
-
     return phi  
 
 def getPrecisionMatrix(gmrf):
-    Q = np.eye(gmrf.nP)+0.1*np.eye(gmrf.nP,k=1)+0.1*np.eye(gmrf.nP,k=-1)
+    diagQ = 2*np.eye(gmrf.nP)
+    diagQ[0,0] = 1
+    diagQ[-1,-1] = 1
+    Q = diagQ-np.eye(gmrf.nP,k=1)-np.eye(gmrf.nP,k=-1)
     return Q
 
 

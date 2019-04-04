@@ -9,7 +9,7 @@ import methods
 from parameters import gmrf 
 
 # Parameters
-nIter = 100000
+nIter = 10000
 oz2 = 0.01              # measurement variance
 dX = dY = 0.01          #discretizaton in x and y
 
@@ -45,13 +45,13 @@ Q = methods.getPrecisionMatrix(gmrf1)
 
 # Plotting initial belief (mean,variance and calculation time)
 ax2 = fig.add_subplot(222)
-ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.mu.reshape(gmrf1.nX,gmrf1.nY))
+ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.muCond.reshape(gmrf1.nX,gmrf1.nY))
 plt.xlabel("x in m")
 plt.ylabel("y in m")
 plt.title("Mean of belief")
 
 ax3 = fig.add_subplot(223)
-ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.prec).reshape(gmrf1.nX,gmrf1.nY))
+ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.precCond).reshape(gmrf1.nX,gmrf1.nY))
 plt.xlabel("x in m")
 plt.ylabel("y in m")
 plt.title("Precision of belief")
@@ -78,12 +78,20 @@ for i in range(nIter):
     timeBefore = time.time()
 
     # Update mean
-    temp1 = zMeas - np.dot(A,gmrf1.mu)
+    # TO DO: replace muCond with mean of measurements
+
+    # Constant mu
+    mu = np.array([np.ones((gmrf1.nY,gmrf1.nX)).flatten()]).T
+
+    # Use conditional mean from last iteration
+    #mu = gmrf1.muCond
+
+    temp1 = zMeas - np.dot(A,mu)
     temp2 = np.dot(A.T,temp1)
-    gmrf1.mu = gmrf1.mu + 1/oz2*np.dot(np.linalg.inv(gmrf1.prec),temp2)
+    gmrf1.muCond = mu + 1/oz2*np.dot(np.linalg.inv(gmrf1.precCond),temp2)
 
     # Update precision matrix
-    gmrf1.prec = (Q+1/oz2*np.dot(A.T,A))
+    gmrf1.precCond = (Q+1/oz2*np.dot(A.T,A))
 
     # Get next measurement at random position, stack under measurement vector
     xMeas = np.random.uniform(gmrf1.xMin,gmrf1.xMax)
@@ -99,17 +107,16 @@ for i in range(nIter):
     print("timeAfter-timeBefore:",timeAfter-timeBefore)
 
     # Plotting:
-    #ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.mu.reshape(gmrf1.nX,gmrf1.nY))
-    #ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.prec).reshape(gmrf1.nX,gmrf1.nY))
+    #ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.muCond.reshape(gmrf1.nX,gmrf1.nY))
+    #ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.precCond).reshape(gmrf1.nX,gmrf1.nY))
     #ax4.plot(iterVec,timeVec,'black')
     #fig.canvas.draw()
     #fig.canvas.flush_events()
 
-ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.mu.reshape(gmrf1.nX,gmrf1.nY))
-ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.prec).reshape(gmrf1.nX,gmrf1.nY))
+ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.muCond.reshape(gmrf1.nX,gmrf1.nY))
+ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.precCond).reshape(gmrf1.nX,gmrf1.nY))
 ax4.plot(iterVec,timeVec,'black')
 fig.canvas.draw()
 fig.canvas.flush_events()
 
-while True:
-    wait = True
+plt.show(block=True)
