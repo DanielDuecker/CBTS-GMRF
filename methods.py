@@ -17,8 +17,7 @@ def mapConDis(gmrf,xMeas,yMeas,zMeas):
     xPos = int((xMeas-xRel)/gmrf.dx)
     yPos = int((yMeas-yRel)/gmrf.dy)
 
-    #DIFFERENT FROM GEIST!
-    # Local coordinate system is different from Geist! (e_y=-e_y_Geist)
+    # Local coordinate system is different from Geist! (e_y=-e_y_Geist), because now mean vector is [vertice0,vertice1,vertice3,...])
     # Calculate weights at neighbouring positions
     phi[0,(yPos+1)*gmrf.nX+xPos] = 1/(gmrf.dx*gmrf.dy) * (xRel-gmrf.dx/2) * (-yRel-gmrf.dy/2)    # lower left
     phi[0,(yPos+1)*gmrf.nX+xPos+1] = -1/(gmrf.dx*gmrf.dy) * (xRel+gmrf.dx/2) * (-yRel-gmrf.dy/2) # lower right

@@ -20,8 +20,8 @@ xHist= [x0]                     # x-state history vector
 yHist = [y0]                    # y-state history vector
 stepsize = 0.1                  # change in every state per iteration
 
-# Initialize GMRF
-gmrf1=gmrf(0,9,10,0,9,10)       # gmrf1=gmrf(xMin,xMax,nX,yMin,yMax,nY)
+# Initialize GMRF   
+gmrf1=gmrf(0,9,10,0,9,10)       # gmrf1=gmrf(xMin,xMax,nX,yMin,yMax,nY), xMin and xMax need to be positive!
 
 # Time measurement vectors
 timeVec = []
