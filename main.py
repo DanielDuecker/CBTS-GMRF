@@ -10,7 +10,7 @@ from parameters import gmrf
 
 ## Configuration ##
 # Parameters
-nIter = 10000                   # number of iterations
+nIter = 10000                    # number of iterations
 oz2 = 0.01                      # measurement variance
 dX = dY = 0.01                  # discretizaton in x and y
 
@@ -18,10 +18,10 @@ dX = dY = 0.01                  # discretizaton in x and y
 (x0,y0) = (0,0)                 # initial state
 xHist= [x0]                     # x-state history vector
 yHist = [y0]                    # y-state history vector
-stepsize = 0.1                  # change in every state per iteration
+stepsize = 0.5                  # change in every state per iteration
 
 # Initialize GMRF   
-gmrf1=gmrf(0,9,10,0,9,10)       # gmrf1=gmrf(xMin,xMax,nX,yMin,yMax,nY), xMin and xMax need to be positive!
+gmrf1=gmrf(0,10,10,0,10,10)       # gmrf1=gmrf(xMin,xMax,nX,yMin,yMax,nY), xMin and xMax need to be positive!
 
 # Time measurement vectors
 timeVec = []
@@ -129,5 +129,7 @@ ax3.plot(xHist,yHist,'black')
 ax4.plot(iterVec,timeVec,'black')
 fig.canvas.draw()
 fig.canvas.flush_events()
+
+print("Last updates needed approx. ",np.mean(timeVec[-100:-1])," seconds per iteration.")
 
 plt.show(block=True)
