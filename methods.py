@@ -34,4 +34,15 @@ def getPrecisionMatrix(gmrf):
     Q = diagQ-np.eye(gmrf.nP,k=1)-np.eye(gmrf.nP,k=-1)
     return Q
 
+def getNextState(x,y,stepsize):
+    xNext = np.random.choice([x-stepsize,x+stepsize])
+    yNext = np.random.choice([y-stepsize,y+stepsize])
+
+    if xNext < 0:
+        xNext = 0
+    if yNext < 0:
+        yNext = 0
+    
+    return (xNext,yNext)
+
 
