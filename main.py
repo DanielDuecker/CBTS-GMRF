@@ -18,7 +18,7 @@ dX = dY = 0.01                  # discretizaton in x and y
 (x0,y0) = (0,0)                 # initial state
 xHist= [x0]                     # x-state history vector
 yHist = [y0]                    # y-state history vector
-stepsize = 0.5                  # change in every state per iteration
+stepsize = 0.2                  # change in every state per iteration
 
 # Initialize GMRF   
 gmrf1=gmrf(0,10,10,0,10,10)       # gmrf1=gmrf(xMin,xMax,nX,yMin,yMax,nY), xMin and xMax need to be positive!
