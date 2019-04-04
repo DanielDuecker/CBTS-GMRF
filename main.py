@@ -10,12 +10,14 @@ from parameters import gmrf
 
 ## Configuration ##
 # Parameters
-nIter = 5000                    # number of iterations
+nIter = 10000                   # number of iterations
 oz2 = 0.01                      # measurement variance
 dX = dY = 0.01                  # discretizaton in x and y
 
 # State dynamics
 (x0,y0) = (0,0)                 # initial state
+xHist= [x0]                     # x-state history vector
+yHist = [y0]                    # y-state history vector
 stepsize = 0.1                  # change in every state per iteration
 
 # Initialize GMRF
@@ -33,7 +35,7 @@ y = np.arange(gmrf1.yMin,gmrf1.yMax,dY)
 X, Y = np.meshgrid(x,y)
 
 # True field values
-xGT = np.array([0,2,4,6,9])    # column coordinates
+xGT = np.array([0,2,4,6,9])     # column coordinates
 yGT =  np.array([0,1,3,5,9])    # row coordinates
 zGT = np.array([[1,2,2,1,1],
                 [2,4,2,1,1],
@@ -75,7 +77,7 @@ plt.title("Update calculation time over iteration index")
 plt.show()
 
 # Get first measurement:
-(xMeas,yMeas) = methods.getNextState(x0,y0,stepsize)
+(xMeas,yMeas) = methods.getNextState(x0,y0,stepsize,gmrf1)
 zMeas = np.array([methods.getMeasurement(xMeas,yMeas,f,oz2)])
 
 A = methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])
@@ -101,7 +103,9 @@ for i in range(nIter):
     gmrf1.precCond = (Q+1/oz2*np.dot(A.T,A))
 
     # Get next measurement according to dynamics, stack under measurement vector
-    (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,stepsize)
+    (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,stepsize,gmrf1)
+    xHist.append(xMeas)
+    yHist.append(yMeas)
     zMeas = np.vstack((zMeas,methods.getMeasurement(xMeas,yMeas,f,oz2)))
 
     # Map measurement to surrounding grid vertices and stack under A matrix
@@ -121,6 +125,7 @@ for i in range(nIter):
 
 ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.muCond.reshape(gmrf1.nX,gmrf1.nY))
 ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.precCond).reshape(gmrf1.nX,gmrf1.nY))
+ax3.plot(xHist,yHist,'black')
 ax4.plot(iterVec,timeVec,'black')
 fig.canvas.draw()
 fig.canvas.flush_events()
