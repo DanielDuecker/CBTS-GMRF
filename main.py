@@ -14,7 +14,7 @@ oz2 = 0.01              # measurement variance
 dX = dY = 0.01          #discretizaton in x and y
 
 # Initialize GMRF
-gmrf1=gmrf(0,10,20,0,10,20)
+gmrf1=gmrf(0,9,10,0,9,10)
 
 # Set up axes
 x = np.arange(gmrf1.xMin,gmrf1.xMax,dX)
@@ -22,8 +22,8 @@ y = np.arange(gmrf1.yMin,gmrf1.yMax,dY)
 X, Y = np.meshgrid(x,y)
 
 # Ground truth
-xGT = np.array([-4,-2,0,2,4])    # column coordinates
-yGT =  np.array([-4,-2,0,2,4])    # row coordinates
+xGT = np.array([0,2,4,6,9])    # column coordinates
+yGT =  np.array([0,1,3,5,9])    # row coordinates
 zGT = np.array([[1,2,2,1,1],
                 [2,4,2,1,1],
                 [1,2,3,3,2],
@@ -40,8 +40,8 @@ plt.title("True field")
 
 ##_____GMRF______##
 # Precision matrix Q
-Q = np.eye(gmrf1.nP,gmrf1.nP)+np.random.rand(gmrf1.nP,gmrf1.nP)                   #TO DO: Edit Q Matrix
-#Q = np.eye(nY*nX)
+#Q = np.eye(gmrf1.nP,gmrf1.nP)+np.random.rand(gmrf1.nP,gmrf1.nP)                   #TO DO: Edit Q Matrix
+Q = methods.getPrecisionMatrix(gmrf1)
 
 # Plotting initial belief (mean and variance)
 ax2 = fig.add_subplot(222)
@@ -77,7 +77,7 @@ for i in range(nIter):
     xMeas = np.random.uniform(gmrf1.xMin,gmrf1.xMax)
     yMeas = np.random.uniform(gmrf1.yMin,gmrf1.yMax)
     zMeas = np.vstack((zMeas,methods.getMeasurement(xMeas,yMeas,f,oz2)))
-    
+
     # Map measurement to lattice and stack under A matrix
     A = np.vstack((A,methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])))
 
@@ -86,4 +86,3 @@ for i in range(nIter):
     ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.prec).reshape(gmrf1.nX,gmrf1.nY))
     fig.canvas.draw()
     fig.canvas.flush_events()
-    print("New mean: \n",gmrf1.mu)
