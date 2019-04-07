@@ -10,7 +10,7 @@ from parameters import gmrf
 
 ## Configuration ##
 # Parameters
-nIter = 10000                    # number of iterations
+nIter = 1000                    # number of iterations
 oz2 = 0.01                      # measurement variance
 dX = dY = 0.01                  # discretizaton in x and y
 
@@ -74,7 +74,6 @@ ax4.plot(iterVec,timeVec)
 plt.xlabel("Iteration index")
 plt.ylabel("calculation time in s")
 plt.title("Update calculation time over iteration index")
-plt.show()
 
 # Get first measurement:
 (xMeas,yMeas) = methods.getNextState(x0,y0,stepsize,gmrf1)
@@ -117,18 +116,20 @@ for i in range(nIter):
     timeVec.append(timeAfter-timeBefore)
 
     # Update plot:
-    #ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.muCond.reshape(gmrf1.nX,gmrf1.nY))
-    #ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.precCond).reshape(gmrf1.nX,gmrf1.nY))
-    #ax4.plot(iterVec,timeVec,'black')
-    #fig.canvas.draw()
-    #fig.canvas.flush_events()
+    time1 = time.time()
+    ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.muCond.reshape(gmrf1.nX,gmrf1.nY))
+    ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.precCond).reshape(gmrf1.nX,gmrf1.nY))
+    ax4.plot(iterVec,timeVec,'black')
+    fig.canvas.draw()
+    time2 = time.time()
+    print(time2-time1)
 
-ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.muCond.reshape(gmrf1.nX,gmrf1.nY))
-ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.precCond).reshape(gmrf1.nX,gmrf1.nY))
-ax3.plot(xHist,yHist,'black')
-ax4.plot(iterVec,timeVec,'black')
-fig.canvas.draw()
-fig.canvas.flush_events()
+#ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.muCond.reshape(gmrf1.nX,gmrf1.nY))
+#ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.precCond).reshape(gmrf1.nX,gmrf1.nY))
+#ax3.plot(xHist,yHist,'black')
+#ax4.plot(iterVec,timeVec,'black')
+#fig.canvas.draw()
+#fig.canvas.flush_events()
 
 print("Last updates needed approx. ",np.mean(timeVec[-100:-1])," seconds per iteration.")
 
