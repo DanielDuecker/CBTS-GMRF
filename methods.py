@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import math
 
 def getMeasurement(xMeas,yMeas,fGroundTruth,noiseVariance):
@@ -33,9 +34,14 @@ def getPrecisionMatrix(gmrf):
     Q = diagQ-np.eye(gmrf.nP,k=1)-np.eye(gmrf.nP,k=-1)
     return Q
 
-def getNextState(x,y,stepsize,gmrf):
-    xNext = np.random.choice([x-stepsize,x+stepsize])
-    yNext = np.random.choice([y-stepsize,y+stepsize])
+def getNextState(x,y,xBefore,yBefore,stepsize,gmrf):
+
+    xNext = xBefore
+    yNext = yBefore
+
+    while(xNext == xBefore and yNext == yBefore):
+        xNext = np.random.choice([x-stepsize,x+stepsize])
+        yNext = np.random.choice([y-stepsize,y+stepsize])
 
     if xNext < gmrf.xMin:
         xNext = x+stepsize
@@ -46,8 +52,38 @@ def getNextState(x,y,stepsize,gmrf):
         yNext = y+stepsize
     elif yNext > gmrf.yMax:
         yNext = y-stepsize
-
     
     return (xNext,yNext)
 
+def plotFields(fig,x,y,f,gmrf,iterVec,timeVec,xHist,yHist):
+    plt.clf()
 
+    # Plotting ground truth
+    plt.ion()
+    ax1 = fig.add_subplot(221)
+    ax1.contourf(x,y,f(x,y))
+    plt.title("True field") 
+
+    # Plotting conditioned mean
+    ax2 = fig.add_subplot(222)
+    ax2.contourf(gmrf.x,gmrf.y,gmrf.muCond.reshape(gmrf.nX,gmrf.nY))
+    plt.xlabel("x in m")
+    plt.ylabel("y in m")
+    plt.title("Mean of belief")
+
+    # Plotting precision matrix
+    ax3 = fig.add_subplot(223)
+    ax3.contourf(gmrf.x,gmrf.y,np.diag(gmrf.precCond).reshape(gmrf.nX,gmrf.nY))
+    ax3.plot(xHist,yHist,'black')
+    plt.xlabel("x in m")
+    plt.ylabel("y in m")
+    plt.title("Precision of belief")
+
+    # Plotting time consumption
+    ax4 = fig.add_subplot(224)
+    ax4.plot(iterVec,timeVec,'black')
+    plt.xlabel("Iteration index")
+    plt.ylabel("calculation time in s")
+    plt.title("Update calculation time over iteration index")
+
+    fig.canvas.draw()

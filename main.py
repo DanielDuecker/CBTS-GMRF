@@ -13,12 +13,13 @@ from parameters import gmrf
 nIter = 1000                    # number of iterations
 oz2 = 0.01                      # measurement variance
 dX = dY = 0.01                  # discretizaton in x and y
+fastCalc = True
 
 # State dynamics
 (x0,y0) = (0,0)                 # initial state
 xHist= [x0]                     # x-state history vector
 yHist = [y0]                    # y-state history vector
-stepsize = 0.2                  # change in every state per iteration
+stepsize = 0.4                  # change in every state per iteration
 
 # Initialize GMRF   
 gmrf1=gmrf(0,10,10,0,10,10)       # gmrf1=gmrf(xMin,xMax,nX,yMin,yMax,nY), xMin and xMax need to be positive!
@@ -44,39 +45,19 @@ zGT = np.array([[1,2,2,1,1],
                 [1,1,2,3,3]])
 f = interpolate.interp2d(xGT,yGT,zGT)
 
-# Plotting ground truth
-plt.ion()
-fig = plt.figure()
-ax1 = fig.add_subplot(221)
-ax1.contourf(x,y,f(x,y))
-plt.title("True field")
-
-
 ## GMRF ##
 # Precision matrix Q
 Q = methods.getPrecisionMatrix(gmrf1)
 
-# Plotting initial belief (mean,variance and calculation time)
-ax2 = fig.add_subplot(222)
-ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.muCond.reshape(gmrf1.nX,gmrf1.nY))
-plt.xlabel("x in m")
-plt.ylabel("y in m")
-plt.title("Mean of belief")
-
-ax3 = fig.add_subplot(223)
-ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.precCond).reshape(gmrf1.nX,gmrf1.nY))
-plt.xlabel("x in m")
-plt.ylabel("y in m")
-plt.title("Precision of belief")
-
-ax4 = fig.add_subplot(224)
-ax4.plot(iterVec,timeVec)
-plt.xlabel("Iteration index")
-plt.ylabel("calculation time in s")
-plt.title("Update calculation time over iteration index")
+# Initialize Plot
+fig = plt.figure()
+methods.plotFields(fig,x,y,f,gmrf1,iterVec,timeVec,xHist,yHist)
+plt.show()
 
 # Get first measurement:
-(xMeas,yMeas) = methods.getNextState(x0,y0,stepsize,gmrf1)
+(xMeas,yMeas) = methods.getNextState(x0,y0,x0,y0,stepsize,gmrf1)
+xHist.append(xMeas)
+yHist.append(yMeas)
 zMeas = np.array([methods.getMeasurement(xMeas,yMeas,f,oz2)])
 
 A = methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])
@@ -102,7 +83,7 @@ for i in range(nIter):
     gmrf1.precCond = (Q+1/oz2*np.dot(A.T,A))
 
     # Get next measurement according to dynamics, stack under measurement vector
-    (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,stepsize,gmrf1)
+    (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,xHist[-2],yHist[-2],stepsize,gmrf1)
     xHist.append(xMeas)
     yHist.append(yMeas)
     zMeas = np.vstack((zMeas,methods.getMeasurement(xMeas,yMeas,f,oz2)))
@@ -115,22 +96,11 @@ for i in range(nIter):
     iterVec.append(i)
     timeVec.append(timeAfter-timeBefore)
 
-    # Update plot:
-    time1 = time.time()
-    ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.muCond.reshape(gmrf1.nX,gmrf1.nY))
-    ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.precCond).reshape(gmrf1.nX,gmrf1.nY))
-    ax4.plot(iterVec,timeVec,'black')
-    fig.canvas.draw()
-    time2 = time.time()
-    print(time2-time1)
+    # Plotting:
+    if fastCalc == False:
+        methods.plotFields(fig,x,y,f,gmrf1,iterVec,timeVec,xHist,yHist)
 
-#ax2.contourf(gmrf1.x,gmrf1.y,gmrf1.muCond.reshape(gmrf1.nX,gmrf1.nY))
-#ax3.contourf(gmrf1.x,gmrf1.y,np.diag(gmrf1.precCond).reshape(gmrf1.nX,gmrf1.nY))
-#ax3.plot(xHist,yHist,'black')
-#ax4.plot(iterVec,timeVec,'black')
-#fig.canvas.draw()
-#fig.canvas.flush_events()
+methods.plotFields(fig,x,y,f,gmrf1,iterVec,timeVec,xHist,yHist)
+plt.show(block=True)
 
 print("Last updates needed approx. ",np.mean(timeVec[-100:-1])," seconds per iteration.")
-
-plt.show(block=True)
