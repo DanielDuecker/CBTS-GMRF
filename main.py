@@ -10,7 +10,7 @@ from parameters import gmrf
 
 ## Configuration ##
 # Parameters
-nIter = 10000                   # number of iterations
+nIter = 5000                    # number of iterations
 oz2 = 0.01                      # measurement variance
 dX = dY = 0.01                  # discretizaton in x and y
 fastCalc = True                 # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
@@ -19,10 +19,10 @@ fastCalc = True                 # True: Fast Calculation, only one plot in the e
 (x0,y0) = (0,0)                 # initial state
 xHist= [x0]                     # x-state history vector
 yHist = [y0]                    # y-state history vector
-maxStepsize = 0.5                 # maximum change in every state per iteration
+maxStepsize = 0.5               # maximum change in every state per iteration
 
 # Initialize GMRF   
-gmrf1=gmrf(0,10,10,0,10,10)       # gmrf1=gmrf(xMin,xMax,nX,yMin,yMax,nY), xMin and xMax need to be positive!
+gmrf1=gmrf(0,10,10,0,10,10)     # gmrf1=gmrf(xMin,xMax,nX,yMin,yMax,nY), xMin and xMax need to be positive!
 
 # Time measurement vectors
 timeVec = []

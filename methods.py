@@ -14,9 +14,9 @@ def mapConDis(gmrf,xMeas,yMeas,zMeas):
     xRel = (xMeas-gmrf.xMin) % gmrf.dx - gmrf.dx/2
     yRel = (yMeas-gmrf.yMin) % gmrf.dy - gmrf.dy/2
 
-    # Get index of Neighbor 
-    xPos = int((xMeas-xRel)/gmrf.dx)
-    yPos = int((yMeas-yRel)/gmrf.dy)
+    # Get index of upper left neighbor 
+    xPos = int((xMeas-gmrf.xMin)/gmrf.dx)
+    yPos = int((yMeas-gmrf.yMin)/gmrf.dy)
 
     # Local coordinate system is different from Geist! (e_y=-e_y_Geist), because now mean vector is [vertice0,vertice1,vertice3,...])
     # Calculate weights at neighbouring positions
@@ -69,14 +69,14 @@ def plotFields(fig,x,y,f,gmrf,iterVec,timeVec,xHist,yHist):
 
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
-    ax2.contourf(gmrf.x,gmrf.y,gmrf.muCond.reshape(gmrf.nX,gmrf.nY))
+    ax2.contourf(gmrf.x,gmrf.y,gmrf.muCond.reshape(gmrf.nY,gmrf.nX))
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Mean of belief")
 
     # Plotting precision matrix
     ax3 = fig.add_subplot(223)
-    ax3.contourf(gmrf.x,gmrf.y,np.diag(gmrf.precCond).reshape(gmrf.nX,gmrf.nY))
+    ax3.contourf(gmrf.x,gmrf.y,np.diag(gmrf.precCond).reshape(gmrf.nY,gmrf.nX))
     ax3.plot(xHist,yHist,'black')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
