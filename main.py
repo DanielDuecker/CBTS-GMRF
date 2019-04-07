@@ -10,16 +10,16 @@ from parameters import gmrf
 
 ## Configuration ##
 # Parameters
-nIter = 1000                    # number of iterations
+nIter = 10000                   # number of iterations
 oz2 = 0.01                      # measurement variance
 dX = dY = 0.01                  # discretizaton in x and y
-fastCalc = True
+fastCalc = True                 # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 
 # State dynamics
 (x0,y0) = (0,0)                 # initial state
 xHist= [x0]                     # x-state history vector
 yHist = [y0]                    # y-state history vector
-stepsize = 0.4                  # change in every state per iteration
+maxStepsize = 0.5                 # maximum change in every state per iteration
 
 # Initialize GMRF   
 gmrf1=gmrf(0,10,10,0,10,10)       # gmrf1=gmrf(xMin,xMax,nX,yMin,yMax,nY), xMin and xMax need to be positive!
@@ -55,7 +55,7 @@ methods.plotFields(fig,x,y,f,gmrf1,iterVec,timeVec,xHist,yHist)
 plt.show()
 
 # Get first measurement:
-(xMeas,yMeas) = methods.getNextState(x0,y0,x0,y0,stepsize,gmrf1)
+(xMeas,yMeas) = methods.getNextState(x0,y0,x0,y0,maxStepsize,gmrf1)
 xHist.append(xMeas)
 yHist.append(yMeas)
 zMeas = np.array([methods.getMeasurement(xMeas,yMeas,f,oz2)])
@@ -83,7 +83,7 @@ for i in range(nIter):
     gmrf1.precCond = (Q+1/oz2*np.dot(A.T,A))
 
     # Get next measurement according to dynamics, stack under measurement vector
-    (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,xHist[-2],yHist[-2],stepsize,gmrf1)
+    (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,xHist[-2],yHist[-2],maxStepsize,gmrf1)
     xHist.append(xMeas)
     yHist.append(yMeas)
     zMeas = np.vstack((zMeas,methods.getMeasurement(xMeas,yMeas,f,oz2)))
