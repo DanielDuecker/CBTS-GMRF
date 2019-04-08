@@ -10,7 +10,7 @@ from parameters import gmrf
 
 ## Configuration ##
 # Parameters
-nIter = 5000                    # number of iterations
+nIter = 1000                    # number of iterations
 oz2 = 0.01                      # measurement variance
 dX = dY = 0.01                  # discretizaton in x and y
 fastCalc = True                 # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
@@ -27,7 +27,6 @@ gmrf1=gmrf(0,10,10,0,10,10)     # gmrf1=gmrf(xMin,xMax,nX,yMin,yMax,nY), xMin an
 # Time measurement vectors
 timeVec = []
 iterVec = []
-
 
 ## Ground truth ##
 # Set up axes
@@ -60,7 +59,7 @@ xHist.append(xMeas)
 yHist.append(yMeas)
 zMeas = np.array([methods.getMeasurement(xMeas,yMeas,f,oz2)])
 
-A = methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])
+phi = methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])
 
 # Update and plot field belief
 for i in range(nIter):
@@ -69,18 +68,21 @@ for i in range(nIter):
 
     # Update mean           # TO DO: replace muCond with mean of measurements
 
-    # Constant mu
-    mu = np.array([np.ones((gmrf1.nY,gmrf1.nX)).flatten()]).T
-
-    # Use conditional mean from last iteration
+    # Initialize mu
+    #mu = np.array([np.ones((gmrf1.nY,gmrf1.nX)).flatten()]).T
+        # OR
+    # Take conditional mean from last iteration
     #mu = gmrf1.muCond
+        # OR
+    # Take mean of measurements
+    mu = np.mean(zMeas)*np.ones((gmrf1.nP,1))
 
-    temp1 = zMeas - np.dot(A,mu)
-    temp2 = np.dot(A.T,temp1)
+    temp1 = zMeas - np.dot(phi,mu)
+    temp2 = np.dot(phi.T,temp1)
     gmrf1.muCond = mu + 1/oz2*np.dot(np.linalg.inv(gmrf1.precCond),temp2)
 
     # Update precision matrix
-    gmrf1.precCond = (Q+1/oz2*np.dot(A.T,A))
+    gmrf1.precCond = (Q+1/oz2*np.dot(phi.T,phi))
 
     # Get next measurement according to dynamics, stack under measurement vector
     (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,xHist[-2],yHist[-2],maxStepsize,gmrf1)
@@ -88,8 +90,8 @@ for i in range(nIter):
     yHist.append(yMeas)
     zMeas = np.vstack((zMeas,methods.getMeasurement(xMeas,yMeas,f,oz2)))
 
-    # Map measurement to surrounding grid vertices and stack under A matrix
-    A = np.vstack((A,methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])))
+    # Map measurement to surrounding grid vertices and stack under phi matrix
+    phi = np.vstack((phi,methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])))
 
     # Time measurement
     timeAfter = time.time()
