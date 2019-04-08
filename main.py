@@ -6,12 +6,12 @@ from scipy import interpolate
 import math
 import time
 import methods
-from parameters import gmrf 
+from gmrfClass import gmrf 
 
 "Configuration"
 # Parameters
-nIter = 5000                    # number of iterations
-oz2 = 0.01                      # measurement variance
+nIter = 1000                    # number of iterations
+ov2 = 0.01                      # measurement variance
 dX = dY = 0.01                  # discretizaton in x and y
 fastCalc = True                 # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 
@@ -22,7 +22,7 @@ yHist = [y0]                    # y-state history vector
 maxStepsize = 0.5               # maximum change in every state per iteration
 
 # Initialize GMRF   
-gmrf1=gmrf(0,10,10,0,10,10,5,1e-6)     # gmrf1=gmrf(self,xMin,xMax,nX,yMin,yMax,nY,nBeta,valT,F), xMin and xMax need to be positive!
+gmrf1=gmrf(0,10,10,0,10,10,1)     # gmrf1=gmrf(self,xMin,xMax,nX,yMin,yMax,nY,nBeta), xMin and xMax need to be positive!
 
 # Time measurement vectors
 timeVec = []
@@ -54,9 +54,9 @@ plt.show()
 (xMeas,yMeas) = methods.getNextState(x0,y0,x0,y0,maxStepsize,gmrf1)
 xHist.append(xMeas)
 yHist.append(yMeas)
-zMeas = np.array([methods.getMeasurement(xMeas,yMeas,f,oz2)])
+zMeas = np.array([methods.getMeasurement(xMeas,yMeas,f,ov2)])
 
-phi = methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])
+Phi = methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])
 
 # Update and plot field belief
 for i in range(nIter):
@@ -64,16 +64,16 @@ for i in range(nIter):
     timeBefore = time.time()
 
     # Bayesian update
-    gmrf1.bayesianUpdate(zMeas,oz2,phi)
+    gmrf1.bayesianUpdate(zMeas,ov2,Phi)
 
     # Get next measurement according to dynamics, stack under measurement vector
     (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,xHist[-2],yHist[-2],maxStepsize,gmrf1)
     xHist.append(xMeas)
     yHist.append(yMeas)
-    zMeas = np.vstack((zMeas,methods.getMeasurement(xMeas,yMeas,f,oz2)))
+    zMeas = np.vstack((zMeas,methods.getMeasurement(xMeas,yMeas,f,ov2)))
 
-    # Map measurement to surrounding grid vertices and stack under phi matrix
-    phi = np.vstack((phi,methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])))
+    # Map measurement to surrounding grid vertices and stack under Phi matrix
+    Phi = np.vstack((Phi,methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])))
 
     # Time measurement
     timeAfter = time.time()

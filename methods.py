@@ -7,8 +7,9 @@ def getMeasurement(xMeas,yMeas,fGroundTruth,noiseVariance):
     return fGroundTruth(xMeas,yMeas)+noise
 
 def mapConDis(gmrf,xMeas,yMeas,zMeas):
-    # Initialize j-th row of mapping matrix phi
-    phi = np.array([np.zeros(gmrf.nP),np.zeros(gmrf.nBeta)])
+    # Initialize j-th row of mapping matrix Phi
+    Phi = np.zeros((1,gmrf.nP))
+    Phi = np.hstack((Phi,np.zeros((1,gmrf.nBeta))))
 
     # Get grid position relative to surrounding vertices
     xRel = (xMeas-gmrf.xMin) % gmrf.dx - gmrf.dx/2
@@ -20,19 +21,19 @@ def mapConDis(gmrf,xMeas,yMeas,zMeas):
 
     # Local coordinate system is different from Geist! (e_y=-e_y_Geist), because now mean vector is [vertice0,vertice1,vertice3,...])
     # Calculate weights at neighbouring positions
-    phi[0,(yPos+1)*gmrf.nX+xPos] = 1/(gmrf.dx*gmrf.dy) * (xRel-gmrf.dx/2) * (-yRel-gmrf.dy/2)    # lower left
-    phi[0,(yPos+1)*gmrf.nX+xPos+1] = -1/(gmrf.dx*gmrf.dy) * (xRel+gmrf.dx/2) * (-yRel-gmrf.dy/2) # lower right
-    phi[0,yPos*gmrf.nX+xPos+1] = 1/(gmrf.dx*gmrf.dy) * (xRel+gmrf.dx/2) * (-yRel+gmrf.dy/2)      # upper right
-    phi[0,yPos*gmrf.nX+xPos] = -1/(gmrf.dx*gmrf.dy) * (xRel-gmrf.dx/2) * (-yRel+gmrf.dy/2)       # upper left
+    Phi[0,(yPos+1)*gmrf.nX+xPos] = 1/(gmrf.dx*gmrf.dy) * (xRel-gmrf.dx/2) * (-yRel-gmrf.dy/2)    # lower left
+    Phi[0,(yPos+1)*gmrf.nX+xPos+1] = -1/(gmrf.dx*gmrf.dy) * (xRel+gmrf.dx/2) * (-yRel-gmrf.dy/2) # lower right
+    Phi[0,yPos*gmrf.nX+xPos+1] = 1/(gmrf.dx*gmrf.dy) * (xRel+gmrf.dx/2) * (-yRel+gmrf.dy/2)      # upper right
+    Phi[0,yPos*gmrf.nX+xPos] = -1/(gmrf.dx*gmrf.dy) * (xRel-gmrf.dx/2) * (-yRel+gmrf.dy/2)       # upper left
 
-    return phi  
+    return Phi  
 
 def getPrecisionMatrix(gmrf):
     diagQ = 2*np.eye(gmrf.nP)
     diagQ[0,0] = 1
     diagQ[-1,-1] = 1
-    Q = diagQ-np.eye(gmrf.nP,k=1)-np.eye(gmrf.nP,k=-1)
-    return Q
+    Lambda = diagQ-np.eye(gmrf.nP,k=1)-np.eye(gmrf.nP,k=-1)
+    return Lambda
 
 def getNextState(x,y,xBefore,yBefore,maxStepsize,gmrf):
 
@@ -69,14 +70,14 @@ def plotFields(fig,x,y,f,gmrf,iterVec,timeVec,xHist,yHist):
 
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
-    ax2.contourf(gmrf.x,gmrf.y,gmrf.meanCond[0:nP].reshape(gmrf.nY,gmrf.nX))
+    ax2.contourf(gmrf.x,gmrf.y,gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY,gmrf.nX))
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Mean of belief")
 
     # Plotting precision matrix
     ax3 = fig.add_subplot(223)
-    ax3.contourf(gmrf.x,gmrf.y,np.diag(gmrf.covCond[0:nY,0:nX]))
+    ax3.contourf(gmrf.x,gmrf.y,np.diag(gmrf.covCond[0:gmrf.nP,0:gmrf.nP]).reshape(gmrf.nY,gmrf.nX))
     ax3.plot(xHist,yHist,'black')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
@@ -88,5 +89,7 @@ def plotFields(fig,x,y,f,gmrf,iterVec,timeVec,xHist,yHist):
     plt.xlabel("Iteration index")
     plt.ylabel("calculation time in s")
     plt.title("Update calculation time over iteration index")
+
+    print(gmrf.meanCond[-1])
 
     fig.canvas.draw()
