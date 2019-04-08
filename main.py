@@ -22,7 +22,7 @@ yHist = [y0]                    # y-state history vector
 maxStepsize = 0.5               # maximum change in every state per iteration
 
 # Initialize GMRF   
-gmrf1=gmrf(0,10,10,0,10,10)     # gmrf1=gmrf(xMin,xMax,nX,yMin,yMax,nY), xMin and xMax need to be positive!
+gmrf1=gmrf(0,10,10,0,10,10,5,1e-6)     # gmrf1=gmrf(self,xMin,xMax,nX,yMin,yMax,nY,nBeta,valT,F), xMin and xMax need to be positive!
 
 # Time measurement vectors
 timeVec = []
@@ -63,14 +63,8 @@ for i in range(nIter):
     print("Iteration ",i," of ",nIter,".")
     timeBefore = time.time()
 
-    # Update mean
-    gmrf1.mu = np.mean(zMeas)*np.ones((gmrf1.nP,1))
-    temp1 = zMeas - np.dot(phi, gmrf1.mu)
-    temp2 = np.dot(phi.T,temp1)
-    gmrf1.muCond =  gmrf1.mu + 1/oz2*np.dot(np.linalg.inv(gmrf1.precCond),temp2)
-
-    # Update conditioned precision matrix
-    gmrf1.precCond = (gmrf1.Q+1/oz2*np.dot(phi.T,phi))
+    # Bayesian update
+    gmrf1.bayesianUpdate(zMeas,oz2,phi)
 
     # Get next measurement according to dynamics, stack under measurement vector
     (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,xHist[-2],yHist[-2],maxStepsize,gmrf1)

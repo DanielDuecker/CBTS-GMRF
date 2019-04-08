@@ -8,7 +8,7 @@ def getMeasurement(xMeas,yMeas,fGroundTruth,noiseVariance):
 
 def mapConDis(gmrf,xMeas,yMeas,zMeas):
     # Initialize j-th row of mapping matrix phi
-    phi = np.array([np.zeros(gmrf.nP)])
+    phi = np.array([np.zeros(gmrf.nP),np.zeros(gmrf.nBeta)])
 
     # Get grid position relative to surrounding vertices
     xRel = (xMeas-gmrf.xMin) % gmrf.dx - gmrf.dx/2
@@ -69,14 +69,14 @@ def plotFields(fig,x,y,f,gmrf,iterVec,timeVec,xHist,yHist):
 
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
-    ax2.contourf(gmrf.x,gmrf.y,gmrf.muCond.reshape(gmrf.nY,gmrf.nX))
+    ax2.contourf(gmrf.x,gmrf.y,gmrf.meanCond[0:nP].reshape(gmrf.nY,gmrf.nX))
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Mean of belief")
 
     # Plotting precision matrix
     ax3 = fig.add_subplot(223)
-    ax3.contourf(gmrf.x,gmrf.y,np.diag(gmrf.precCond).reshape(gmrf.nY,gmrf.nX))
+    ax3.contourf(gmrf.x,gmrf.y,np.diag(gmrf.covCond[0:nY,0:nX]))
     ax3.plot(xHist,yHist,'black')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
