@@ -8,9 +8,9 @@ import time
 import methods
 from parameters import gmrf 
 
-## Configuration ##
+"Configuration"
 # Parameters
-nIter = 1000                    # number of iterations
+nIter = 5000                    # number of iterations
 oz2 = 0.01                      # measurement variance
 dX = dY = 0.01                  # discretizaton in x and y
 fastCalc = True                 # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
@@ -28,7 +28,7 @@ gmrf1=gmrf(0,10,10,0,10,10)     # gmrf1=gmrf(xMin,xMax,nX,yMin,yMax,nY), xMin an
 timeVec = []
 iterVec = []
 
-## Ground truth ##
+"Ground truth"
 # Set up axes
 x = np.arange(gmrf1.xMin,gmrf1.xMax,dX)
 y = np.arange(gmrf1.yMin,gmrf1.yMax,dY)
@@ -44,10 +44,7 @@ zGT = np.array([[1,2,2,1,1],
                 [1,1,2,3,3]])
 f = interpolate.interp2d(xGT,yGT,zGT)
 
-## GMRF ##
-# Precision matrix Q
-Q = methods.getPrecisionMatrix(gmrf1)
-
+"GMRF"
 # Initialize Plot
 fig = plt.figure()
 methods.plotFields(fig,x,y,f,gmrf1,iterVec,timeVec,xHist,yHist)
@@ -66,23 +63,14 @@ for i in range(nIter):
     print("Iteration ",i," of ",nIter,".")
     timeBefore = time.time()
 
-    # Update mean           # TO DO: replace muCond with mean of measurements
-
-    # Initialize mu
-    #mu = np.array([np.ones((gmrf1.nY,gmrf1.nX)).flatten()]).T
-        # OR
-    # Take conditional mean from last iteration
-    #mu = gmrf1.muCond
-        # OR
-    # Take mean of measurements
-    mu = np.mean(zMeas)*np.ones((gmrf1.nP,1))
-
-    temp1 = zMeas - np.dot(phi,mu)
+    # Update mean
+    gmrf1.mu = np.mean(zMeas)*np.ones((gmrf1.nP,1))
+    temp1 = zMeas - np.dot(phi, gmrf1.mu)
     temp2 = np.dot(phi.T,temp1)
-    gmrf1.muCond = mu + 1/oz2*np.dot(np.linalg.inv(gmrf1.precCond),temp2)
+    gmrf1.muCond =  gmrf1.mu + 1/oz2*np.dot(np.linalg.inv(gmrf1.precCond),temp2)
 
-    # Update precision matrix
-    gmrf1.precCond = (Q+1/oz2*np.dot(phi.T,phi))
+    # Update conditioned precision matrix
+    gmrf1.precCond = (gmrf1.Q+1/oz2*np.dot(phi.T,phi))
 
     # Get next measurement according to dynamics, stack under measurement vector
     (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,xHist[-2],yHist[-2],maxStepsize,gmrf1)
