@@ -88,6 +88,4 @@ def plotFields(fig,x,y,f,gmrf,iterVec,timeVec,xHist,yHist):
     plt.ylabel("calculation time in s")
     plt.title("Update calculation time over iteration index")
 
-    print(gmrf.meanCond[-1])
-
     fig.canvas.draw()

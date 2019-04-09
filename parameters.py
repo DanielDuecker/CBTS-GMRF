@@ -20,4 +20,4 @@ nBeta = 1                       # regression coeffiecients
 # methods.py
 
 # gmrfClass.py
-valueT = 1e-6                   # Prior precision value for regression vector beta
+valueT = 1e-3                   # Prior precision value for regression vector beta

@@ -36,14 +36,13 @@ class gmrf:
         # Precision matrix for z values
         self.Lambda = methods.getPrecisionMatrix(self)
 
-        print(self.Lambda)
-
         # Augmented prior covariance matrix
         covPriorUpperLeft = np.linalg.inv(self.Lambda)+np.dot(F,np.dot(self.Tinv,F.T))
         covPriorUpperRight = np.dot(F,self.Tinv)
         covPriorLowerLeft = np.dot(F,self.Tinv).T
         covPriorLowerRight = self.Tinv
         self.covPrior = np.vstack( (np.hstack((covPriorUpperLeft,covPriorUpperRight))  ,  np.hstack((covPriorLowerLeft , covPriorLowerRight)) ))
+        print(self.covPrior)
 
         # Initialize augmented conditioned mean and covariance
         self.meanCond = np.zeros((self.nP+self.nBeta,1))
@@ -51,7 +50,7 @@ class gmrf:
     
     def bayesianUpdate(self,zMeas,ov2,Phi):
         # Update conditioned precision matrix
-        R = np.dot(Phi,np.dot(self.covPrior,Phi.T)) + ov2*np.eye(len(zMeas))
+        R = np.dot(Phi,np.dot(self.covPrior,Phi.T)) + ov2*np.eye(len(zMeas))    # covariance of measurements
         temp1 = np.dot(Phi,self.covPrior)
         temp2 = np.dot(np.linalg.inv(R),temp1)
         temp3 = np.dot(Phi.T,temp2)
