@@ -2,6 +2,7 @@
 
 import numpy as np
 import methods
+import parameters as par
 
 class gmrf:
     def __init__(self,xMin,xMax,nX,yMin,yMax,nY,nBeta):
@@ -30,15 +31,17 @@ class gmrf:
         # Regression matrix
         F = np.ones((self.nP,nBeta))
         self.nBeta = nBeta
+        self.Tinv = np.linalg.inv(par.valueT*np.eye(self.nBeta))
 
         # Precision matrix for z values
         self.Lambda = methods.getPrecisionMatrix(self)
-        self.Tinv = 1e6*np.eye(self.nBeta)
+
+        print(self.Lambda)
 
         # Augmented prior covariance matrix
-        covPriorUpperLeft = self.Lambda+np.dot(F,np.dot(self.Tinv,F.T))
-        covPriorUpperRight = -np.dot(F,self.Tinv)
-        covPriorLowerLeft = -np.dot(F,self.Tinv).T
+        covPriorUpperLeft = np.linalg.inv(self.Lambda)+np.dot(F,np.dot(self.Tinv,F.T))
+        covPriorUpperRight = np.dot(F,self.Tinv)
+        covPriorLowerLeft = np.dot(F,self.Tinv).T
         covPriorLowerRight = self.Tinv
         self.covPrior = np.vstack( (np.hstack((covPriorUpperLeft,covPriorUpperRight))  ,  np.hstack((covPriorLowerLeft , covPriorLowerRight)) ))
 

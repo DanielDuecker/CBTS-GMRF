@@ -6,23 +6,14 @@ from scipy import interpolate
 import math
 import time
 import methods
+import parameters as par
 from gmrfClass import gmrf 
 
-"Configuration"
-# Parameters
-nIter = 1000                    # number of iterations
-ov2 = 0.01                      # measurement variance
-dX = dY = 0.01                  # discretizaton in x and y
-fastCalc = True                 # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
-
-# State dynamics
-(x0,y0) = (0,0)                 # initial state
-xHist= [x0]                     # x-state history vector
-yHist = [y0]                    # y-state history vector
-maxStepsize = 0.5               # maximum change in every state per iteration
+xHist= [par.x0]                     # x-state history vector
+yHist = [par.y0]                    # y-state history vector
 
 # Initialize GMRF   
-gmrf1=gmrf(0,10,10,0,10,10,1)     # gmrf1=gmrf(self,xMin,xMax,nX,yMin,yMax,nY,nBeta), xMin and xMax need to be positive!
+gmrf1=gmrf(par.xMin,par.xMax,par.nX,par.yMin,par.yMax,par.nY,par.nBeta)
 
 # Time measurement vectors
 timeVec = []
@@ -30,8 +21,8 @@ iterVec = []
 
 "Ground truth"
 # Set up axes
-x = np.arange(gmrf1.xMin,gmrf1.xMax,dX)
-y = np.arange(gmrf1.yMin,gmrf1.yMax,dY)
+x = np.arange(gmrf1.xMin,gmrf1.xMax,par.dX)
+y = np.arange(gmrf1.yMin,gmrf1.yMax,par.dY)
 X, Y = np.meshgrid(x,y)
 
 # True field values
@@ -51,26 +42,26 @@ methods.plotFields(fig,x,y,f,gmrf1,iterVec,timeVec,xHist,yHist)
 plt.show()
 
 # Get first measurement:
-(xMeas,yMeas) = methods.getNextState(x0,y0,x0,y0,maxStepsize,gmrf1)
+(xMeas,yMeas) = methods.getNextState(par.x0,par.y0,par.x0,par.y0,par.maxStepsize,gmrf1)
 xHist.append(xMeas)
 yHist.append(yMeas)
-zMeas = np.array([methods.getMeasurement(xMeas,yMeas,f,ov2)])
+zMeas = np.array([methods.getMeasurement(xMeas,yMeas,f,par.ov2)])
 
 Phi = methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])
 
 # Update and plot field belief
-for i in range(nIter):
-    print("Iteration ",i," of ",nIter,".")
+for i in range(par.nIter):
+    print("Iteration ",i," of ",par.nIter,".")
     timeBefore = time.time()
 
     # Bayesian update
-    gmrf1.bayesianUpdate(zMeas,ov2,Phi)
+    gmrf1.bayesianUpdate(zMeas,par.ov2,Phi)
 
     # Get next measurement according to dynamics, stack under measurement vector
-    (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,xHist[-2],yHist[-2],maxStepsize,gmrf1)
+    (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,xHist[-2],yHist[-2],par.maxStepsize,gmrf1)
     xHist.append(xMeas)
     yHist.append(yMeas)
-    zMeas = np.vstack((zMeas,methods.getMeasurement(xMeas,yMeas,f,ov2)))
+    zMeas = np.vstack((zMeas,methods.getMeasurement(xMeas,yMeas,f,par.ov2)))
 
     # Map measurement to surrounding grid vertices and stack under Phi matrix
     Phi = np.vstack((Phi,methods.mapConDis(gmrf1,xMeas,yMeas,zMeas[-1])))
@@ -81,7 +72,7 @@ for i in range(nIter):
     timeVec.append(timeAfter-timeBefore)
 
     # Plotting:
-    if fastCalc == False:
+    if par.fastCalc == False:
         methods.plotFields(fig,x,y,f,gmrf1,iterVec,timeVec,xHist,yHist)
 
 methods.plotFields(fig,x,y,f,gmrf1,iterVec,timeVec,xHist,yHist)

@@ -30,8 +30,6 @@ def mapConDis(gmrf,xMeas,yMeas,zMeas):
 
 def getPrecisionMatrix(gmrf):
     diagQ = 2*np.eye(gmrf.nP)
-    diagQ[0,0] = 1
-    diagQ[-1,-1] = 1
     Lambda = diagQ-np.eye(gmrf.nP,k=1)-np.eye(gmrf.nP,k=-1)
     return Lambda
 
