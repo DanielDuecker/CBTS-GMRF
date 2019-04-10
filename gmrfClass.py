@@ -42,11 +42,11 @@ class gmrf:
         # Initialize augmented conditioned mean and covariance
         self.meanCond = np.zeros((self.nP+self.nBeta,1))
         self.covCond = self.covPrior
-        self.diagPrecCond = np.linalg.inv(self.covCond).diagonal()
+        self.diagCovCond = self.covCond.diagonal()
+        self.precCond = np.linalg.inv(self.covCond)
 
         "Sequential bayesian regression"
         self.bSeq = np.zeros(self.nP)
-        self.PrecCond = np.linalg.inv(self.covCond)
     
     def bayesianUpdate(self,zMeas,Phi):
         "Update conditioned precision matrix"
@@ -56,17 +56,17 @@ class gmrf:
         temp3 = np.dot(Phi.T,temp2)
         self.covCond = self.covPrior-np.dot(self.covPrior,temp3)
         #self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/ov2*np.dot(Phi.T,Phi)))   # alternative way
-        self.diagPrecCond = np.linalg.inv(self.covCond).diagonal()
+        self.diagCovCond = self.covCond.diagonal()
 
         "Update mean"
         self.meanCond = np.dot(self.covPrior,np.dot(Phi.T,np.dot(np.linalg.inv(R),zMeas)))
         #self.meanCond =  1/ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas))                        # alternative way
     
     def seqBayesianUpdate(self,zMeas,Phi):
-        self.b += 1/par.ov2*Phi[-1,:].T*zMeas[-1]
-        self.LambdaSeq += 1/par.ov2*np.dot(Phi[-1,:].T,Phi[-1,:])
-        hSeq = np.dot(np.linalg.inv(self.LambdaSeq),Phi[-1,:].T)
+        self.bSeq += 1/par.ov2*Phi[-1,:].T*zMeas[-1]
+        self.precCond += 1/par.ov2*np.dot(Phi[-1,:].T,Phi[-1,:])
+        hSeq = np.dot(np.linalg.inv(self.precCond),Phi[-1,:].T)
 
         self.diagCovCond -= np.dot(hSeq,hSeq)/(ov2+np.dot(Phi[-1,:],hSeq))
-        self.meanCond = np.dot(self.LambdaSeq,self.b)
+        self.meanCond = np.dot(np.linalg.inv(self.precCond),self.bSeq)
         
