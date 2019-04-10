@@ -75,7 +75,7 @@ def plotFields(fig,x,y,f,gmrf,iterVec,timeVec,xHist,yHist):
     # Plotting precision matrix
     ax3 = fig.add_subplot(223)
     precCond = np.linalg.inv(gmrf.covCond)
-    ax3.contourf(gmrf.x,gmrf.y,np.diag(precCond[0:gmrf.nP,0:gmrf.nP]).reshape(gmrf.nY,gmrf.nX))
+    ax3.contourf(gmrf.x,gmrf.y,gmrf.diagPrecCond[0:gmrf.nP].reshape(gmrf.nY,gmrf.nX))
     ax3.plot(xHist,yHist,'black')
     plt.xlabel("x in m")
     plt.ylabel("y in m")

@@ -6,6 +6,7 @@ import parameters as par
 
 class gmrf:
     def __init__(self,xMin,xMax,nX,yMin,yMax,nY,nBeta):
+        "GMRF properties"
         self.xMin = xMin
         self.xMax = xMax
         self.nX = nX                                        # Total number of vertices in x
@@ -22,12 +23,7 @@ class gmrf:
         self.dx = (self.xMax-self.xMin)/(self.nX-1)
         self.dy = (self.yMax-self.yMin)/(self.nY-1)
 
-        # Extended field model:
-        # Field  values z = mu(x,y,beta)+eta
-        # with  mu(x,y,beta) = f(x,y).T*beta
-        #       eta ~ N(0,inv(precCondEta))
-        #       beta ~ N(0,inv(T))  
-        
+        "Mean augmented bayesian regression"
         # Regression matrix
         F = np.ones((self.nP,nBeta))
         self.nBeta = nBeta
@@ -45,21 +41,32 @@ class gmrf:
 
         # Initialize augmented conditioned mean and covariance
         self.meanCond = np.zeros((self.nP+self.nBeta,1))
-        self.covCond = np.eye(self.nP+self.nBeta)
+        self.covCond = self.covPrior
+        self.diagPrecCond = np.linalg.inv(self.covCond).diagonal()
+
+        "Sequential bayesian regression"
+        self.bSeq = np.zeros(self.nP)
+        self.PrecCond = np.linalg.inv(self.covCond)
     
-    def bayesianUpdate(self,zMeas,ov2,Phi):
+    def bayesianUpdate(self,zMeas,Phi):
         "Update conditioned precision matrix"
-        R = np.dot(Phi,np.dot(self.covPrior,Phi.T)) + ov2*np.eye(len(zMeas))    # covariance of measurements
+        R = np.dot(Phi,np.dot(self.covPrior,Phi.T)) + par.ov2*np.eye(len(zMeas))    # covariance of measurements
         temp1 = np.dot(Phi,self.covPrior)
         temp2 = np.dot(np.linalg.inv(R),temp1)
         temp3 = np.dot(Phi.T,temp2)
         self.covCond = self.covPrior-np.dot(self.covPrior,temp3)
-
-        # Alternative way:
-        #self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/ov2*np.dot(Phi.T,Phi)))
+        #self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/ov2*np.dot(Phi.T,Phi)))   # alternative way
+        self.diagPrecCond = np.linalg.inv(self.covCond).diagonal()
 
         "Update mean"
         self.meanCond = np.dot(self.covPrior,np.dot(Phi.T,np.dot(np.linalg.inv(R),zMeas)))
+        #self.meanCond =  1/ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas))                        # alternative way
+    
+    def seqBayesianUpdate(self,zMeas,Phi):
+        self.b += 1/par.ov2*Phi[-1,:].T*zMeas[-1]
+        self.LambdaSeq += 1/par.ov2*np.dot(Phi[-1,:].T,Phi[-1,:])
+        hSeq = np.dot(np.linalg.inv(self.LambdaSeq),Phi[-1,:].T)
 
-        # Alternative way:
-        #self.meanCond =  1/ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas))
+        self.diagCovCond -= np.dot(hSeq,hSeq)/(ov2+np.dot(Phi[-1,:],hSeq))
+        self.meanCond = np.dot(self.LambdaSeq,self.b)
+        
