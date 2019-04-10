@@ -1,7 +1,8 @@
 # Parameter
 
 # main.py
-nIter = 10000                     # number of iterations
+
+nIter = 5000                     # number of iterations
 ov2 = 0.01                      # measurement variance
 dX = dY = 0.01                  # discretizaton in x and y
 fastCalc = True                 # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
@@ -15,7 +16,7 @@ nX = 10
 yMin = 0
 yMax = 10
 nY = 10
-nBeta = 0                       # regression coeffiecients
+nBeta = 1                       # regression coeffiecients
 
 # methods.py
 

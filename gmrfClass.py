@@ -46,11 +46,11 @@ class gmrf:
         self.precCond = np.linalg.inv(self.covCond)
 
         "Sequential bayesian regression"
-        self.bSeq = np.zeros(self.nP)
+        self.bSeq = np.zeros(self.nP+self.nBeta)
     
     def bayesianUpdate(self,zMeas,Phi):
         "Update conditioned precision matrix"
-        R = np.dot(Phi,np.dot(self.covPrior,Phi.T)) + par.ov2*np.eye(len(zMeas))    # covariance of measurements
+        R = np.dot(Phi,np.dot(self.covPrior,Phi.T)) + par.ov2*np.eye(len(zMeas))                # covariance of measurements
         temp1 = np.dot(Phi,self.covPrior)
         temp2 = np.dot(np.linalg.inv(R),temp1)
         temp3 = np.dot(Phi.T,temp2)
@@ -63,10 +63,9 @@ class gmrf:
         #self.meanCond =  1/ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas))                        # alternative way
     
     def seqBayesianUpdate(self,zMeas,Phi):
-        self.bSeq = self.bSeq + 1/par.ov2*Phi[-1,:].T*zMeas[-1]
+        self.bSeq = self.bSeq + 1/par.ov2*Phi[-1,:].T*zMeas[-1]                                 # update canonical mean
         self.precCond = self.precCond + 1/par.ov2*np.dot(Phi[-1,:].T,Phi[-1,:])
-        hSeq = np.dot(np.linalg.inv(self.precCond),Phi[-1,:].T)
 
+        hSeq = np.dot(np.linalg.inv(self.precCond),Phi[-1,:].T)
         self.diagCovCond = self.diagCovCond-np.dot(hSeq,hSeq)/(par.ov2+np.dot(Phi[-1,:],hSeq))
         self.meanCond = np.dot(np.linalg.inv(self.precCond),self.bSeq)
-        
