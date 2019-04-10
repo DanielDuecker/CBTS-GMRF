@@ -11,13 +11,13 @@ maxStepsize = 0.5               # maximum change in every state per iteration
 
 xMin = 0                        # GMRF dimensions
 xMax = 10
-nX = 30 
+nX = 10 
 yMin = 0
 yMax = 10
-nY = 30
-nBeta = 0                       # regression coeffiecients
+nY = 10
+nBeta = 1                       # regression coeffiecients
 
 # methods.py
 
 # gmrfClass.py
-valueT = 1e-3                   # Prior precision value for regression vector beta
+valueT = 1e-3                   # Prior precision value for regression vector bet

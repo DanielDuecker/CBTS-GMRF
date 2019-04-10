@@ -45,15 +45,21 @@ class gmrf:
 
         # Initialize augmented conditioned mean and covariance
         self.meanCond = np.zeros((self.nP+self.nBeta,1))
-        self.covCond = np.zeros((self.nP+self.nBeta,self.nP+self.nBeta))
+        self.covCond = np.eye(self.nP+self.nBeta)
     
     def bayesianUpdate(self,zMeas,ov2,Phi):
-        # Update conditioned precision matrix
+        "Update conditioned precision matrix"
         R = np.dot(Phi,np.dot(self.covPrior,Phi.T)) + ov2*np.eye(len(zMeas))    # covariance of measurements
         temp1 = np.dot(Phi,self.covPrior)
         temp2 = np.dot(np.linalg.inv(R),temp1)
         temp3 = np.dot(Phi.T,temp2)
         self.covCond = self.covPrior-np.dot(self.covPrior,temp3)
 
-        # Update mean
-        self.meanCond = np.dot(self.covCond,np.dot(Phi.T,np.dot(np.linalg.inv(R),zMeas)))
+        # Alternative way:
+        #self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/ov2*np.dot(Phi.T,Phi)))
+
+        "Update mean"
+        self.meanCond = np.dot(self.covPrior,np.dot(Phi.T,np.dot(np.linalg.inv(R),zMeas)))
+
+        # Alternative way:
+        #self.meanCond =  1/ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas))
