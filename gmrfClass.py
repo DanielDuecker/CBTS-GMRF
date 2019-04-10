@@ -24,12 +24,12 @@ class gmrf:
         self.dy = (self.yMax-self.yMin)/(self.nY-1)
 
         "Mean augmented bayesian regression"
-        # Regression matrix
+        # Mean regression matrix
         F = np.ones((self.nP,nBeta))
         self.nBeta = nBeta
         self.Tinv = np.linalg.inv(par.valueT*np.eye(self.nBeta))
 
-        # Precision matrix for z values
+        # Precision matrix for z values (without regression variable beta)
         self.Lambda = methods.getPrecisionMatrix(self)
 
         # Augmented prior covariance matrix
@@ -63,10 +63,10 @@ class gmrf:
         #self.meanCond =  1/ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas))                        # alternative way
     
     def seqBayesianUpdate(self,zMeas,Phi):
-        self.bSeq += 1/par.ov2*Phi[-1,:].T*zMeas[-1]
-        self.precCond += 1/par.ov2*np.dot(Phi[-1,:].T,Phi[-1,:])
+        self.bSeq = self.bSeq + 1/par.ov2*Phi[-1,:].T*zMeas[-1]
+        self.precCond = self.precCond + 1/par.ov2*np.dot(Phi[-1,:].T,Phi[-1,:])
         hSeq = np.dot(np.linalg.inv(self.precCond),Phi[-1,:].T)
 
-        self.diagCovCond -= np.dot(hSeq,hSeq)/(ov2+np.dot(Phi[-1,:],hSeq))
+        self.diagCovCond = self.diagCovCond-np.dot(hSeq,hSeq)/(par.ov2+np.dot(Phi[-1,:],hSeq))
         self.meanCond = np.dot(np.linalg.inv(self.precCond),self.bSeq)
         

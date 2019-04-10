@@ -1,7 +1,7 @@
 # Parameter
 
 # main.py
-nIter = 1000                     # number of iterations
+nIter = 10000                     # number of iterations
 ov2 = 0.01                      # measurement variance
 dX = dY = 0.01                  # discretizaton in x and y
 fastCalc = True                 # True: Fast Calculation, only one plot in the end; False: Live updating and plotting

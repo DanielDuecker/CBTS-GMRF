@@ -55,8 +55,8 @@ for i in range(par.nIter):
     timeBefore = time.time()
 
     # Bayesian update
-    gmrf1.bayesianUpdate(zMeas,Phi)
-    #gmrf1.seqBayesianUpdate(zMeas,Phi)
+    #gmrf1.bayesianUpdate(zMeas,Phi)
+    gmrf1.seqBayesianUpdate(zMeas,Phi)
 
     # Get next measurement according to dynamics, stack under measurement vector
     (xMeas,yMeas) = methods.getNextState(xMeas,yMeas,xHist[-2],yHist[-2],par.maxStepsize,gmrf1)
