@@ -1,7 +1,7 @@
 # Parameter
 
 # main.py
-nIter = 1000                    # number of iterations
+nIter = 100                    # number of iterations
 ov2 = 0.01                      # measurement variance
 dX = dY = 0.01                  # discretizaton in x and y
 fastCalc = True                 # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
@@ -11,11 +11,11 @@ maxStepsize = 0.5               # maximum change in every state per iteration
 
 xMin = 0                        # GMRF dimensions
 xMax = 10
-nX = 10 
+nX = 30 
 yMin = 0
 yMax = 10
-nY = 10
-nBeta = 1                       # regression coeffiecients
+nY = 30
+nBeta = 0                       # regression coeffiecients
 
 # methods.py
 
