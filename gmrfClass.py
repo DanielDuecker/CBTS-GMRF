@@ -59,22 +59,21 @@ class gmrf:
         temp2 = np.dot(np.linalg.inv(R), temp1)
         temp3 = np.dot(Phi.T, temp2)
         self.covCond = self.covPrior - np.dot(self.covPrior, temp3)
-        # self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/ov2*np.dot(Phi.T,Phi)))       # alternative way
+        # self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/ov2*np.dot(Phi.T,Phi))) # alternative way
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
 
         "Update mean"
         self.meanCond = np.dot(self.covPrior, np.dot(Phi.T, np.dot(np.linalg.inv(R), zMeas)))
-        # self.meanCond =  1/ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas))                            # alternative way
+        # self.meanCond =  1/ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas)) # alternative way
 
     def seqBayesianUpdate(self, zMeas, Phi):
         Phi_k = Phi[-1, :].reshape(1, self.nP + self.nBeta)  # only last measurement mapping is needed
         self.bSeq = self.bSeq + 1 / par.ov2 * Phi_k.T * zMeas[-1]  # sequential update canonical mean
         self.precCond = self.precCond + 1 / par.ov2 * np.dot(Phi_k.T, Phi_k)  # sequential update of precision matrix
 
+        # TODO: Fix calculation of covariance diagonal
         hSeq = np.linalg.solve(self.precCond, Phi_k.T)
-        print(par.ov2 + np.dot(Phi_k, hSeq))
-        self.diagCovCond = self.diagCovCond - 1 / (par.ov2 + np.dot(Phi_k, hSeq)) * np.dot(hSeq,
-                                                                                           hSeq.T).diagonal().reshape(
-            self.nP + self.nBeta, 1)
+        self.diagCovCond = self.diagCovCond - 1 / (par.ov2 + np.dot(Phi_k, hSeq))[0, 0] * np.dot(hSeq,
+                                                                    hSeq.T).diagonal().reshape(self.nP + self.nBeta, 1)
         # self.diagCovCond = np.linalg.inv(self.precCond).diagonal().reshape(self.nP+self.nBeta,1)  # works too
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
