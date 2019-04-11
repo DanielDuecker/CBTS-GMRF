@@ -27,6 +27,11 @@ def mapConDis(gmrf,xMeas,yMeas,zMeas):
     Phi[0,yPos*gmrf.nX+xPos] = -1/(gmrf.dx*gmrf.dy) * (xRel-gmrf.dx/2) * (-yRel+gmrf.dy/2)       # upper left
     return Phi  
 
+#def getPrecisionMatrix(gmrf):
+#    diagQ = 2*np.eye(gmrf.nP)
+#    Lambda = diagQ-np.eye(gmrf.nP,k=1)-np.eye(gmrf.nP,k=-1)
+#    return Lambda
+
 def getPrecisionMatrix(gmrf):
     diagQ = 2*np.eye(gmrf.nP)
     Lambda = diagQ-np.eye(gmrf.nP,k=1)-np.eye(gmrf.nP,k=-1)
