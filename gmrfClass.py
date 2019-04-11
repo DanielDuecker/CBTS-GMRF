@@ -42,7 +42,7 @@ class gmrf:
         # Initialize augmented conditioned mean, covariance and precision matrices
         self.meanCond = np.zeros((self.nP+self.nBeta,1))
         self.covCond = self.covPrior
-        self.diagCovCond = self.covCond.diagonal()
+        self.diagCovCond = self.covCond.diagonal().reshape(self.nP+self.nBeta,1)
         self.precCond = np.linalg.inv(self.covCond)
 
         "Sequential bayesian regression"
@@ -50,23 +50,24 @@ class gmrf:
     
     def bayesianUpdate(self,zMeas,Phi):
         "Update conditioned precision matrix"
-        R = np.dot(Phi,np.dot(self.covPrior,Phi.T)) + par.ov2*np.eye(len(zMeas))                # covariance matrix of measurements
+        R = np.dot(Phi,np.dot(self.covPrior,Phi.T)) + par.ov2*np.eye(len(zMeas))                    # covariance matrix of measurements
         temp1 = np.dot(Phi,self.covPrior)
         temp2 = np.dot(np.linalg.inv(R),temp1)
         temp3 = np.dot(Phi.T,temp2)
         self.covCond = self.covPrior-np.dot(self.covPrior,temp3)
-        #self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/ov2*np.dot(Phi.T,Phi)))   # alternative way
-        self.diagCovCond = self.covCond.diagonal()
+        #self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/ov2*np.dot(Phi.T,Phi)))       # alternative way
+        self.diagCovCond = self.covCond.diagonal().reshape(self.nP+self.nBeta,1)
 
         "Update mean"
         self.meanCond = np.dot(self.covPrior,np.dot(Phi.T,np.dot(np.linalg.inv(R),zMeas)))
-        #self.meanCond =  1/ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas))                        # alternative way
+        #self.meanCond =  1/ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas))                            # alternative way
     
     def seqBayesianUpdate(self,zMeas,Phi):
-        Phi_k = Phi[-1,:].reshape(1,self.nP+self.nBeta)
-        self.bSeq = self.bSeq + 1/par.ov2 * Phi_k.T*zMeas[-1]                                   # update canonical mean
-        self.precCond = self.precCond + 1/par.ov2*np.dot(Phi_k.T,Phi_k)
-        #hSeq = np.dot(np.linalg.inv(self.precCond),Phi[-1,:].T)
-        #self.diagCovCond = self.diagCovCond-np.dot(hSeq,hSeq)/(par.ov2+np.dot(Phi[-1,:],hSeq))
-        self.diagCovCond = np.linalg.inv(self.precCond).diagonal()
+        Phi_k = Phi[-1,:].reshape(1,self.nP+self.nBeta)                                             # only last measurement mapping is needed
+        self.bSeq = self.bSeq + 1/par.ov2 * Phi_k.T*zMeas[-1]                                       # sequential update canonical mean
+        self.precCond = self.precCond + 1/par.ov2*np.dot(Phi_k.T,Phi_k)                             # sequential update of precision matrix
+        
+        hSeq = np.linalg.solve(self.precCond,Phi_k.T)
+        self.diagCovCond = self.diagCovCond-np.dot(hSeq,hSeq.T).diagonal().reshape(self.nP+self.nBeta,1)/(par.ov2+np.dot(Phi_k,hSeq))
+        # self.diagCovCond = np.linalg.inv(self.precCond).diagonal().reshape(self.nP+self.nBeta,1)  # works, but needs too much time
         self.meanCond = np.dot(np.linalg.inv(self.precCond),self.bSeq)
