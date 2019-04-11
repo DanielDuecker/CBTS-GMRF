@@ -20,7 +20,7 @@ gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta)
 timeVec = []
 iterVec = []
 
-"Ground truth"
+"""Ground truth"""
 # Set up axes
 x = np.arange(gmrf1.xMin, gmrf1.xMax, par.dX)
 y = np.arange(gmrf1.yMin, gmrf1.yMax, par.dY)
@@ -36,7 +36,7 @@ zGT = np.array([[1, 2, 2, 1, 1],
                 [1, 1, 2, 3, 3]])
 f = interpolate.interp2d(xGT, yGT, zGT)
 
-"GMRF"
+"""GMRF"""
 # Initialize Plot
 fig = plt.figure()
 methods.plotFields(fig, x, y, f, gmrf1, iterVec, timeVec, xHist, yHist)
