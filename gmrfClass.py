@@ -39,7 +39,7 @@ class gmrf:
         covPriorLowerRight = self.Tinv
         self.covPrior = np.vstack( (np.hstack((covPriorUpperLeft,covPriorUpperRight))  ,  np.hstack((covPriorLowerLeft , covPriorLowerRight)) ))
 
-        # Initialize augmented conditioned mean and covariance
+        # Initialize augmented conditioned mean, covariance and precision matrices
         self.meanCond = np.zeros((self.nP+self.nBeta,1))
         self.covCond = self.covPrior
         self.diagCovCond = self.covCond.diagonal()

@@ -74,12 +74,11 @@ def plotFields(fig,x,y,f,gmrf,iterVec,timeVec,xHist,yHist):
 
     # Plotting precision matrix
     ax3 = fig.add_subplot(223)
-    precCond = np.linalg.inv(gmrf.covCond)
     ax3.contourf(gmrf.x,gmrf.y,gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY,gmrf.nX))
     ax3.plot(xHist,yHist,'black')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
-    plt.title("Precision of belief")
+    plt.title("Uncertainty belief")
 
     # Plotting time consumption
     ax4 = fig.add_subplot(224)
