@@ -5,6 +5,7 @@ import numpy as np
 import methods
 import parameters as par
 
+import time
 
 class gmrf:
     def __init__(self, xMin, xMax, nX, yMin, yMax, nY, nBeta):
@@ -73,7 +74,8 @@ class gmrf:
 
         # TODO: Fix calculation of covariance diagonal
         hSeq = np.linalg.solve(self.precCond, Phi_k.T)
-        self.diagCovCond = self.diagCovCond - 1 / (par.ov2 + np.dot(Phi_k, hSeq))[0, 0] * np.dot(hSeq,
+
+        self.diagCovCond = self.diagCovCond - 1 / (par.ov2 + np.dot(Phi_k, hSeq)[0, 0]) * np.dot(hSeq,
                                                                     hSeq.T).diagonal().reshape(self.nP + self.nBeta, 1)
-        # self.diagCovCond = np.linalg.inv(self.precCond).diagonal().reshape(self.nP+self.nBeta,1)  # works too
+        #self.diagCovCond = np.linalg.inv(self.precCond).diagonal().reshape(self.nP+self.nBeta,1)  # works too
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
