@@ -5,7 +5,7 @@
 nIter = 1000  # number of iterations
 ov2 = 0.01  # measurement variance
 dX = dY = 0.01  # discretizaton in x and y
-fastCalc = True  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
+fastCalc = True # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 
 (x0, y0) = (0, 0)  # initial state
 maxStepsize = 0.5  # maximum change in every state per iteration
