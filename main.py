@@ -81,3 +81,8 @@ methods.plotFields(fig, x, y, f, gmrf1, iterVec, timeVec, xHist, yHist)
 plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
+
+#TODO augment to time dependent fields
+#TODO add outer grid
+#TODO boundary conditions
+#TODO use of sparse commands
