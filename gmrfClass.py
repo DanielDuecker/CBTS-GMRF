@@ -66,7 +66,7 @@ class gmrf:
 
         "Update mean"
         #self.meanCond = np.dot(self.covPrior, np.dot(Phi.T, np.dot(np.linalg.inv(R), zMeas)))
-        self.meanCond =  self.meanPrior + 1/par.ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas-np.dot(Phi,self.meanPrior))) # alternative way
+        self.meanCond = self.meanPrior + 1/par.ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas-np.dot(Phi,self.meanPrior))) # alternative way
 
     def seqBayesianUpdate(self, zMeas, Phi):
         Phi_k = Phi[-1, :].reshape(1, self.nP + self.nBeta)  # only last measurement mapping is needed
