@@ -71,15 +71,15 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
     return xNext, yNext
 
 
-def plotFields(fig, x, y, f, xStep, yStep, t, gmrf, iterVec, timeVec, xHist, yHist):
+def plotFields(fig, x, y, trueField, t, gmrf, iterVec, timeVec, xHist, yHist):
     plt.clf()
 
     # Plotting ground truth
-    xShift = x-(t*xStep)%x[-1]
-    yShift = y+(t*yStep)%y[-1]
+    xShift = x-(t*trueField.dxdt)%x[-1]
+    yShift = y+(t*trueField.dxdt)%y[-1]
     plt.ion()
     ax1 = fig.add_subplot(221)
-    ax1.contourf(x, y, f(xShift, yShift))
+    ax1.contourf(x, y, trueField.f(xShift, yShift))
     plt.title("True field")
 
     # Plotting conditioned mean

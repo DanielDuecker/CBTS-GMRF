@@ -5,7 +5,7 @@ import numpy as np
 import methods
 import parameters as par
 
-import time
+from scipy import interpolate
 
 class gmrf:
     def __init__(self, xMin, xMax, nX, yMin, yMax, nY, nBeta):
@@ -79,3 +79,19 @@ class gmrf:
         #                                                            hSeq.T).diagonal().reshape(self.nP + self.nBeta, 1)
         self.diagCovCond = np.linalg.inv(self.precCond).diagonal().reshape(self.nP+self.nBeta,1)  # works too
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
+
+class trueField:
+    def __init__(self):
+        # True field values
+        self.xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
+        self.yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
+        self.zGT = np.array([[1, 2, 2, 1, 1],
+                        [2, 4, 2, 1, 1],
+                        [1, 2, 3, 3, 2],
+                        [1, 1, 2, 3, 3],
+                        [1, 1, 2, 3, 3]])
+        self.f = interpolate.interp2d(self.xGT, self.yGT, self.zGT)
+
+        self.dxdt = par.dxdt
+        self.dydt = par.dydt
+
