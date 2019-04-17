@@ -31,8 +31,8 @@ xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
 yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
 zGT = np.array([[1, 2, 2, 1, 1],
                 [2, 4, 2, 1, 1],
-                [1, 2, 3, 3, 2],
-                [1, 1, 2, 3, 3],
+                [1, 2, 3, 3, 3],
+                [1, 3, 2, 1, 4],
                 [1, 1, 2, 3, 3]])
 f = interpolate.interp2d(xGT, yGT, zGT)
 
@@ -46,7 +46,7 @@ plt.show()
 (xMeas, yMeas) = methods.getNextState(par.x0, par.y0, par.x0, par.y0, par.maxStepsize, gmrf1)
 xHist.append(xMeas)
 yHist.append(yMeas)
-nMeas = 100
+nMeas = 50
 zMeas = np.zeros((nMeas,1))
 Phi = np.zeros((nMeas,gmrf1.nP+gmrf1.nBeta))
 zMeas[0] = methods.getMeasurement(xMeas, yMeas, f, par.ov2)
@@ -74,6 +74,8 @@ for i in range(par.nIter):
     if i%nMeas == 0:
         gmrf1.covPrior = gmrf1.covCond
         gmrf1.meanPrior = gmrf1.meanCond
+
+    print(gmrf1.meanCond)
 
     # Time measurement
     timeAfter = time.time()
