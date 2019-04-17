@@ -9,7 +9,7 @@ fastCalc = False # True: Fast Calculation, only one plot in the end; False: Live
 (x0, y0) = (0, 0)  # initial state
 maxStepsize = 0.5  # maximum change in every state per iteration
 
-sinusoidal = False # True: Use sinusoidal ground truth
+sinusoidal = True # True: Use sinusoidal ground truth
 temporal = True # True: time varying field
 dxdt = 0.1  # Shift of true field in x direction
 dydt = 0.1  # Shift of true field in y direction

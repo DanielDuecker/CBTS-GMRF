@@ -2,6 +2,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
+import parameters as par
 
 def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
     noise = np.random.normal(0, math.sqrt(noiseVariance))
@@ -76,9 +77,14 @@ def plotFields(fig, x, y, trueField, gmrf, iterVec, timeVec, xHist, yHist):
     plt.ion()
 
     # Plotting ground truth
-    X, Y = np.meshgrid(x, y)
+    if par.sinusoidal:
+        X, Y = np.meshgrid(x, y)
+        fieldValues = trueField.field(X,Y)
+    else:
+        fieldValues = trueField.field(x,y)
+
     ax1 = fig.add_subplot(221)
-    ax1.contourf(x, y, trueField.field(X, Y))
+    ax1.contourf(x, y, fieldValues)
     plt.title("True field")
 
     # Plotting conditioned mean
