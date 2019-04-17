@@ -36,10 +36,13 @@ zGT = np.array([[1, 2, 2, 1, 1],
                 [1, 1, 2, 3, 3]])
 f = interpolate.interp2d(xGT, yGT, zGT)
 
+xStep = 0.1
+yStep = 0.1
+
 """GMRF"""
 # Initialize Plot
 fig = plt.figure()
-methods.plotFields(fig, x, y, f, gmrf1, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, f, xStep, yStep, 0, gmrf1, iterVec, timeVec, xHist, yHist)
 plt.show()
 
 # Get first measurement:
@@ -75,9 +78,9 @@ for i in range(par.nIter):
 
     # Plotting:
     if not par.fastCalc:
-        methods.plotFields(fig, x, y, f, gmrf1, iterVec, timeVec, xHist, yHist)
+        methods.plotFields(fig, x, y, f, xStep, yStep, i, gmrf1, iterVec, timeVec, xHist, yHist)
 
-methods.plotFields(fig, x, y, f, gmrf1, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, f, xStep, yStep, i, gmrf1, iterVec, timeVec, xHist, yHist)
 plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
