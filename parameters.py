@@ -4,23 +4,23 @@
 nIter = 10000  # number of iterations
 ov2 = 0.01  # measurement variance
 dX = dY = 0.01  # discretizaton in x and y for Plotting
-fastCalc = False # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
+fastCalc = True # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 
 (x0, y0) = (0, 0)  # initial state
 maxStepsize = 0.5  # maximum change in every state per iteration
 
 sinusoidal = True # True: Use sinusoidal ground truth
-temporal = True # True: time varying field
+temporal = False # True: time varying field
 dxdt = 0.1  # Shift of true field in x direction
 dydt = 0.1  # Shift of true field in y direction
 
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 10
+nX = 15
 yMin = 0
 yMax = 10
-nY = 10
-nBeta = 0  # regression coefficients
+nY = 15
+nBeta = 1  # regression coefficients
 
 # methods.py
 

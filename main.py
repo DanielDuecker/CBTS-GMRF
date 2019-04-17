@@ -20,14 +20,15 @@ gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta)
 timeVec = []
 iterVec = []
 
+# Plotting grid
 x = np.arange(gmrf1.xMin, gmrf1.xMax, par.dX)
 y = np.arange(gmrf1.yMin, gmrf1.yMax, par.dY)
 X, Y = np.meshgrid(x, y)
 
 """Ground Truth"""
-trueField = trueField(x, y, par.sinusoidal, par.temporal)
+trueField = trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
 
-"""GMRF"""
+"""Initialize Plots"""
 fig = plt.figure()
 methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
 plt.show()

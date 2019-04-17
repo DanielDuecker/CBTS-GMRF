@@ -81,15 +81,15 @@ class gmrf:
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
 
 class trueField:
-    def __init__(self,x,y,sinusoidal,temporal):
+    def __init__(self,xEnd,yEnd,sinusoidal,temporal):
         self.sinusoidal = sinusoidal
         self.temporal = temporal
 
         self.xShift = 0
         self.yShift = 0
 
-        self.x = x
-        self.y = y
+        self.xEnd = xEnd
+        self.yEnd = yEnd
 
         if self.sinusoidal:
             self.fInit = lambda x, y: 0.5*(np.sin(x)+np.sin(y))
