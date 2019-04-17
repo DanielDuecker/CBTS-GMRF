@@ -81,12 +81,13 @@ class gmrf:
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
 
 class trueField:
-    def __init__(self,xEnd,yEnd,sinusoidal,temporal):
+    def __init__(self, xEnd, yEnd, sinusoidal, temporal):
         self.sinusoidal = sinusoidal
         self.temporal = temporal
 
         self.xShift = 0
         self.yShift = 0
+        self.cScale = 1
 
         self.xEnd = xEnd
         self.yEnd = yEnd
@@ -104,10 +105,13 @@ class trueField:
             self.fInit = interpolate.interp2d(xGT, yGT, zGT)
 
     def field(self, x, y):
-        return self.fInit(x-self.xShift, y+self.yShift)
+        if not par.sinusoidal:
+            return self.fInit(x-self.xShift, y+self.yShift)
+        else:
+            return self.cScale*self.fInit(x, y)
 
     def updateField(self, t):
-        self.xShift = par.dxdt*t % self.x[-1]
-        self.yShift = par.dydt*t % self.y[-1]
-
+        self.xShift = par.dxdt*t % self.xEnd
+        self.yShift = par.dydt*t % self.yEnd
+        self.cScale = np.cos(t/par.pulseTime)
 
