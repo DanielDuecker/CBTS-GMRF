@@ -25,11 +25,11 @@ y = np.arange(gmrf1.yMin, gmrf1.yMax, par.dY)
 X, Y = np.meshgrid(x, y)
 
 """Ground Truth"""
-trueField = trueField(True,True)
+trueField = trueField(x, y, par.sinusoidal, par.temporal)
 
 """GMRF"""
 fig = plt.figure()
-methods.plotFields(fig, x, y, trueField, 0, gmrf1, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
 plt.show()
 
 # Get first measurement:
@@ -65,9 +65,13 @@ for i in range(par.nIter):
 
     # Plotting:
     if not par.fastCalc:
-        methods.plotFields(fig, x, y, trueField, i, gmrf1, iterVec, timeVec, xHist, yHist)
+        methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
 
-methods.plotFields(fig, x, y, trueField, i, gmrf1, iterVec, timeVec, xHist, yHist)
+    # Update ground truth:
+    if par.temporal:
+        trueField.updateField(i)
+
+methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
 plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")

@@ -81,28 +81,33 @@ class gmrf:
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
 
 class trueField:
-    def __init__(self,sinusoidal,temporal):
-        self.xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
-        self.yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
-
-        self.dxdt = par.dxdt
-        self.dydt = par.dydt
-
+    def __init__(self,x,y,sinusoidal,temporal):
         self.sinusoidal = sinusoidal
         self.temporal = temporal
 
-    def f(self,x, y):
-        if not self.sinusoidal:
+        self.xShift = 0
+        self.yShift = 0
+
+        self.x = x
+        self.y = y
+
+        if self.sinusoidal:
+            self.fInit = lambda x, y: 0.5*(np.sin(x)+np.sin(y))
+        else:
+            xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
+            yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
             zGT = np.array([[1, 2, 2, 1, 1],
                             [2, 4, 2, 1, 1],
                             [1, 2, 3, 3, 2],
                             [1, 1, 2, 3, 3],
                             [1, 1, 2, 3, 3]])
-            f = interpolate.interp2d(self.xGT, self.yGT, zGT)
-            return f(x,y)
-        else:
-            return 0.5*(np.sin(x)+np.sin(y))
+            self.fInit = interpolate.interp2d(xGT, yGT, zGT)
 
-    def updateField(self,time):
-        test=True
+    def field(self, x, y):
+        return self.fInit(x-self.xShift, y+self.yShift)
+
+    def updateField(self, t):
+        self.xShift = par.dxdt*t % self.x[-1]
+        self.yShift = par.dydt*t % self.y[-1]
+
 
