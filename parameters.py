@@ -13,7 +13,7 @@ sinusoidal = False # True: Use sinusoidal ground truth
 temporal = True # True: time varying field
 dxdt = 0.1  # Shift of true field in x direction
 dydt = 0.1  # Shift of true field in y direction
-pulseTime = 100 # Duration of sinusodial pulsation
+pulseTime = 50 # Duration of sinusodial pulsation
 
 xMin = 0  # GMRF dimensions
 xMax = 10

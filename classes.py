@@ -106,7 +106,10 @@ class trueField:
 
     def field(self, x, y):
         if not par.sinusoidal:
-            return self.fInit(x-self.xShift, y+self.yShift)
+            values = np.array((x.shape[0],x.shape[1]))
+            for column in range(x.shape[1]):
+                values[:,column] = self.fInit(x[:,column]-self.xShift, y[:,column]+self.yShift)
+            return values
         else:
             return self.cScale*self.fInit(x, y)
 
@@ -114,4 +117,3 @@ class trueField:
         self.xShift = par.dxdt*t % self.xEnd
         self.yShift = par.dydt*t % self.yEnd
         self.cScale = np.cos(t/par.pulseTime)
-
