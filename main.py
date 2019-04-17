@@ -25,19 +25,18 @@ y = np.arange(gmrf1.yMin, gmrf1.yMax, par.dY)
 X, Y = np.meshgrid(x, y)
 
 """Ground Truth"""
-groundTruth = trueField()
+trueField = trueField(True,True)
 
 """GMRF"""
-# Initialize Plot
 fig = plt.figure()
-methods.plotFields(fig, x, y, groundTruth, 0, gmrf1, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, trueField, 0, gmrf1, iterVec, timeVec, xHist, yHist)
 plt.show()
 
 # Get first measurement:
 (xMeas, yMeas) = methods.getNextState(par.x0, par.y0, par.x0, par.y0, par.maxStepsize, gmrf1)
 xHist.append(xMeas)
 yHist.append(yMeas)
-zMeas = np.array([methods.getMeasurement(xMeas, yMeas, groundTruth.f, par.ov2)])
+zMeas = np.array([methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)])
 
 Phi = methods.mapConDis(gmrf1, xMeas, yMeas)
 
@@ -54,7 +53,7 @@ for i in range(par.nIter):
     (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
     xHist.append(xMeas)
     yHist.append(yMeas)
-    zMeas = np.vstack((zMeas, methods.getMeasurement(xMeas, yMeas, groundTruth.f, par.ov2)))
+    zMeas = np.vstack((zMeas, methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)))
 
     # Map measurement to surrounding grid vertices and stack under Phi matrix
     Phi = np.vstack((Phi, methods.mapConDis(gmrf1, xMeas, yMeas)))
@@ -66,9 +65,9 @@ for i in range(par.nIter):
 
     # Plotting:
     if not par.fastCalc:
-        methods.plotFields(fig, x, y, groundTruth, i, gmrf1, iterVec, timeVec, xHist, yHist)
+        methods.plotFields(fig, x, y, trueField, i, gmrf1, iterVec, timeVec, xHist, yHist)
 
-methods.plotFields(fig, x, y, groundTruth, i, gmrf1, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, trueField, i, gmrf1, iterVec, timeVec, xHist, yHist)
 plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")

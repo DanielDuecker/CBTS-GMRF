@@ -81,17 +81,28 @@ class gmrf:
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
 
 class trueField:
-    def __init__(self):
-        # True field values
+    def __init__(self,sinusoidal,temporal):
         self.xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
         self.yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
-        self.zGT = np.array([[1, 2, 2, 1, 1],
-                        [2, 4, 2, 1, 1],
-                        [1, 2, 3, 3, 2],
-                        [1, 1, 2, 3, 3],
-                        [1, 1, 2, 3, 3]])
-        self.f = interpolate.interp2d(self.xGT, self.yGT, self.zGT)
 
         self.dxdt = par.dxdt
         self.dydt = par.dydt
+
+        self.sinusoidal = sinusoidal
+        self.temporal = temporal
+
+    def f(self,x, y):
+        if not self.sinusoidal:
+            zGT = np.array([[1, 2, 2, 1, 1],
+                            [2, 4, 2, 1, 1],
+                            [1, 2, 3, 3, 2],
+                            [1, 1, 2, 3, 3],
+                            [1, 1, 2, 3, 3]])
+            f = interpolate.interp2d(self.xGT, self.yGT, zGT)
+            return f(x,y)
+        else:
+            return 0.5*(np.sin(x)+np.sin(y))
+
+    def updateField(self,time):
+        test=True
 

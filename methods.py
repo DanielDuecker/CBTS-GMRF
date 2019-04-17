@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def getMeasurement(xMeas, yMeas, fGroundTruth, noiseVariance):
+def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
     noise = np.random.normal(0, math.sqrt(noiseVariance))
-    return fGroundTruth(xMeas, yMeas) + noise
+    return trueField.f(xMeas, yMeas) + noise
 
 
 def mapConDis(gmrf, xMeas, yMeas):
@@ -73,13 +73,14 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
 
 def plotFields(fig, x, y, trueField, t, gmrf, iterVec, timeVec, xHist, yHist):
     plt.clf()
+    plt.ion()
 
     # Plotting ground truth
     xShift = x-(t*trueField.dxdt)%x[-1]
     yShift = y+(t*trueField.dxdt)%y[-1]
-    plt.ion()
+    XShift, YShift = np.meshgrid(xShift, yShift)
     ax1 = fig.add_subplot(221)
-    ax1.contourf(x, y, trueField.f(xShift, yShift))
+    ax1.contourf(x, y, trueField.f(XShift, YShift))
     plt.title("True field")
 
     # Plotting conditioned mean
