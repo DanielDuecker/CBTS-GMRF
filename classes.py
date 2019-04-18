@@ -3,6 +3,7 @@
 import numpy as np
 
 import methods
+import math
 import parameters as par
 
 from scipy import interpolate
@@ -119,5 +120,6 @@ class trueField:
     def updateField(self, t):
         self.xShift = par.dxdt*t % self.xEnd
         self.yShift = par.dydt*t % self.yEnd
-        self.cScale = np.cos(t/par.pulseTime)
+        if t < par.pulseTime:
+            self.cScale = np.cos(2*math.pi*t/par.pulseTime)
 
