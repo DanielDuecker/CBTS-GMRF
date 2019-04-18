@@ -43,10 +43,10 @@ yHist.append(yMeas)
 zMeas = np.zeros((par.nMeas,1))
 Phi = np.zeros((par.nMeas,gmrf1.nP+gmrf1.nBeta))
 zMeas[0] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
-Phi[0,:] = methods.mapConDis(gmrf1, xMeas, yMeas)
+Phi[0, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
 
 # Update and plot field belief
-for i in range(par.nIter):
+for i in range(par.nIter-1):
     print("Iteration ", i, " of ", par.nIter, ".")
     timeBefore = time.time()
 
@@ -60,14 +60,14 @@ for i in range(par.nIter):
     (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
     xHist.append(xMeas)
     yHist.append(yMeas)
-    zMeas[i % par.nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
+    zMeas[(i+1) % par.nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
 
     # Map measurement to surrounding grid vertices and stack under Phi matrix
-    Phi[i % par.nMeas, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
+    Phi[(i+1) % par.nMeas, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
 
     # If truncated measurements are used, set conditioned mean and covariance as prior
     if par.truncation:
-        if i % par.nMeas == 0:
+        if (i+1) % par.nMeas == 0:
             gmrf1.covPrior = gmrf1.covCond
             gmrf1.meanPrior = gmrf1.meanCond
 

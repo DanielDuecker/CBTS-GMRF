@@ -6,7 +6,7 @@ import parameters as par
 
 def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
     noise = np.random.normal(0, math.sqrt(noiseVariance))
-    return trueField.field(xMeas, yMeas) + noise
+    return (trueField.field(xMeas, yMeas) + noise)[0]
 
 
 def mapConDis(gmrf, xMeas, yMeas):
