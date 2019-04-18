@@ -28,7 +28,8 @@ X, Y = np.meshgrid(x, y)
 """Ground Truth"""
 trueField = trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
 
-"""Initialize Plots"""
+"""GMRF"""
+# Initialize Plot
 fig = plt.figure()
 methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
 plt.show()
@@ -37,9 +38,12 @@ plt.show()
 (xMeas, yMeas) = methods.getNextState(par.x0, par.y0, par.x0, par.y0, par.maxStepsize, gmrf1)
 xHist.append(xMeas)
 yHist.append(yMeas)
-zMeas = np.array([methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)])
+nMeas = 10
+zMeas = np.zeros((nMeas,1))
+Phi = np.zeros((nMeas,gmrf1.nP+gmrf1.nBeta))
+zMeas[0] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
 
-Phi = methods.mapConDis(gmrf1, xMeas, yMeas)
+Phi[0,:] = methods.mapConDis(gmrf1, xMeas, yMeas)
 
 # Update and plot field belief
 for i in range(par.nIter):
@@ -47,17 +51,21 @@ for i in range(par.nIter):
     timeBefore = time.time()
 
     # Bayesian update
-    # gmrf1.bayesianUpdate(zMeas,Phi)
-    gmrf1.seqBayesianUpdate(zMeas, Phi)
+    gmrf1.bayesianUpdate(zMeas,Phi)
+    #gmrf1.seqBayesianUpdate(zMeas, Phi)
 
     # Get next measurement according to dynamics, stack under measurement vector
     (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
     xHist.append(xMeas)
     yHist.append(yMeas)
-    zMeas = np.vstack((zMeas, methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)))
+    zMeas[i%nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
 
     # Map measurement to surrounding grid vertices and stack under Phi matrix
-    Phi = np.vstack((Phi, methods.mapConDis(gmrf1, xMeas, yMeas)))
+    Phi[i%nMeas,:] = methods.mapConDis(gmrf1, xMeas, yMeas)
+
+    if i%nMeas == 0:
+        gmrf1.covPrior = gmrf1.covCond
+        gmrf1.meanPrior = gmrf1.meanCond
 
     # Time measurement
     timeAfter = time.time()

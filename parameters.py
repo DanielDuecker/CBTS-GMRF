@@ -11,16 +11,16 @@ maxStepsize = 0.5  # maximum change in every state per iteration
 
 sinusoidal = True # True: Use sinusoidal ground truth
 temporal = True # True: time varying field
-dxdt = 0.1  # Shift of true field in x direction
-dydt = 0.1  # Shift of true field in y direction
-pulseTime = 50 # Duration of sinusodial pulsation
+dxdt = 0.01  # Shift of true field in x direction
+dydt = 0.01  # Shift of true field in y direction
+pulseTime = 1000 # Duration of sinusodial pulsation
 
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 15
+nX = 10
 yMin = 0
 yMax = 10
-nY = 15
+nY = 10
 nBeta = 1  # regression coefficients
 
 # methods.py
