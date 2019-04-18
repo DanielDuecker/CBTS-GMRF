@@ -43,7 +43,7 @@ class gmrf:
         covPriorLowerRight = self.Tinv
         self.covPrior = np.vstack(
             (np.hstack((covPriorUpperLeft, covPriorUpperRight)), np.hstack((covPriorLowerLeft, covPriorLowerRight))))
-        self.meanPrior = np.zeros((self.nP+self.nBeta,1))
+        self.meanPrior = np.zeros((self.nP+self.nBeta, 1))
 
         # Initialize augmented conditioned mean, covariance and precision matrices
         self.meanCond = np.zeros((self.nP + self.nBeta, 1))
@@ -66,12 +66,17 @@ class gmrf:
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
 
         "Update mean"
-        #self.meanCond = np.dot(self.covPrior, np.dot(Phi.T, np.dot(np.linalg.inv(R), zMeas)))
-        self.meanCond = self.meanPrior + 1/par.ov2*np.dot(self.covCond,np.dot(Phi.T,zMeas-np.dot(Phi,self.meanPrior))) # alternative way
+        if par.truncation:
+            self.meanCond = self.meanPrior + 1 / par.ov2 * np.dot(self.covCond,
+                                                                  np.dot(Phi.T, zMeas - np.dot(Phi, self.meanPrior)))
+        else:
+            self.meanCond = np.dot(self.covPrior, np.dot(Phi.T, np.dot(np.linalg.inv(R), zMeas)))
 
-    def seqBayesianUpdate(self, zMeas, Phi):
-        Phi_k = Phi[-1, :].reshape(1, self.nP + self.nBeta)  # only last measurement mapping is needed
-        self.bSeq = self.bSeq + 1 / par.ov2 * Phi_k.T * zMeas[-1]  # sequential update canonical mean
+    def seqBayesianUpdate(self, zMeas_k, Phi_k):
+        Phi_k = Phi_k.reshape(1, self.nP + self.nBeta)
+        zMeas_k = zMeas_k.reshape(1,1)
+
+        self.bSeq = self.bSeq + 1 / par.ov2 * Phi_k.T * zMeas_k  # sequential update canonical mean
         self.precCond = self.precCond + 1 / par.ov2 * np.dot(Phi_k.T, Phi_k)  # sequential update of precision matrix
 
         # TODO: Fix calculation of covariance diagonal
@@ -121,5 +126,5 @@ class trueField:
         self.xShift = par.dxdt*t % self.xEnd
         self.yShift = par.dydt*t % self.yEnd
         if t < par.pulseTime:
-            self.cScale = np.cos(2*math.pi*t/par.pulseTime)
+            self.cScale = np.cos(math.pi*t/par.pulseTime)
 

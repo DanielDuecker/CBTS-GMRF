@@ -38,11 +38,11 @@ plt.show()
 (xMeas, yMeas) = methods.getNextState(par.x0, par.y0, par.x0, par.y0, par.maxStepsize, gmrf1)
 xHist.append(xMeas)
 yHist.append(yMeas)
-nMeas = 10
-zMeas = np.zeros((nMeas,1))
-Phi = np.zeros((nMeas,gmrf1.nP+gmrf1.nBeta))
-zMeas[0] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
 
+# Initialize measurement vector and mapping matrix
+zMeas = np.zeros((par.nMeas,1))
+Phi = np.zeros((par.nMeas,gmrf1.nP+gmrf1.nBeta))
+zMeas[0] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
 Phi[0,:] = methods.mapConDis(gmrf1, xMeas, yMeas)
 
 # Update and plot field belief
@@ -51,21 +51,25 @@ for i in range(par.nIter):
     timeBefore = time.time()
 
     # Bayesian update
-    gmrf1.bayesianUpdate(zMeas,Phi)
-    #gmrf1.seqBayesianUpdate(zMeas, Phi)
+    if par.sequentialUpdate:
+        gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])
+    else:
+        gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
 
     # Get next measurement according to dynamics, stack under measurement vector
     (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
     xHist.append(xMeas)
     yHist.append(yMeas)
-    zMeas[i%nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
+    zMeas[i % par.nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
 
     # Map measurement to surrounding grid vertices and stack under Phi matrix
-    Phi[i%nMeas,:] = methods.mapConDis(gmrf1, xMeas, yMeas)
+    Phi[i % par.nMeas, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
 
-    if i%nMeas == 0:
-        gmrf1.covPrior = gmrf1.covCond
-        gmrf1.meanPrior = gmrf1.meanCond
+    # If truncated measurements are used, set conditioned mean and covariance as prior
+    if par.truncation:
+        if i % par.nMeas == 0:
+            gmrf1.covPrior = gmrf1.covCond
+            gmrf1.meanPrior = gmrf1.meanCond
 
     # Time measurement
     timeAfter = time.time()
