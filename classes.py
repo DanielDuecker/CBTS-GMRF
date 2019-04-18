@@ -93,7 +93,11 @@ class trueField:
         self.yEnd = yEnd
 
         if self.sinusoidal:
-            self.fInit = lambda x, y: 0.5*(np.sin(x)+np.sin(y))
+            xGT = np.arange(par.xMin, par.xMax, par.dX)
+            yGT = np.arange(par.yMin, par.yMax, par.dY)
+            XGT, YGT = np.meshgrid(xGT,yGT)
+            zGT = np.sin(XGT)+np.sin(YGT)
+            self.fInit = interpolate.interp2d(xGT, yGT, zGT)
         else:
             xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
             yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
@@ -102,7 +106,8 @@ class trueField:
                             [1, 2, 3, 3, 2],
                             [1, 1, 2, 3, 3],
                             [1, 1, 2, 3, 3]])
-            self.fInit = interpolate.interp2d(xGT, yGT, zGT)
+
+        self.fInit = interpolate.interp2d(xGT, yGT, zGT)
 
     def field(self, x, y):
         if not par.sinusoidal:

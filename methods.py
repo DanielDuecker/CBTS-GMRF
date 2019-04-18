@@ -77,14 +77,8 @@ def plotFields(fig, x, y, trueField, gmrf, iterVec, timeVec, xHist, yHist):
     plt.ion()
 
     # Plotting ground truth
-    if par.sinusoidal:
-        X, Y = np.meshgrid(x, y)
-        fieldValues = trueField.field(X,Y)
-    else:
-        fieldValues = trueField.field(x,y)
-
     ax1 = fig.add_subplot(221)
-    ax1.contourf(x, y, fieldValues)
+    ax1.contourf(x, y, trueField.field(x,y))
     plt.title("True field")
 
     # Plotting conditioned mean
