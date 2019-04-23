@@ -4,6 +4,10 @@ import math
 import scipy
 import numpy as np
 
+T = 100
+dt = 0.1
+nIter = T/dt
+
 xMin = 0
 xMax = 10
 nX = 10
@@ -27,6 +31,28 @@ simga2 = 0.01
 Ks = methods.getPrecisionMatrix(gmrf1)
 h = lambda tau: lambd * math.exp(-abs(tau)/sigmaT)
 
-SigmaZero = scipy.linalg.solve_lyapunov(F, G*G.T)
+sigmaZero = scipy.linalg.solve_lyapunov(F, G*G.T)
+
+# Initialization
+sHeadZero = 0
+sigma = np.kron(np.eye(sigmaZero.shape[0]), sigmaT)
+
+tk = 0
+
+for i in range(nIter):
+    t = i*dt
+    if t-tk =! 0:
+        sHead = math.exp(np.kron(eye(F.shape[0]),F)*(t-tk))*skk
+        sigmaS = 666
+    else:
+        A = 666
+        C = 666
+        Q = 666
+        R = 666
+        #Kalman Regression
+        tk = t
+    f = 666
+    sigmaF = 666
+
 
 
