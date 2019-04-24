@@ -86,7 +86,7 @@ for i in range(nIter):
     else:
         Phi = methods.mapConDis(gmrf1, xMeas, yMeas)
         C = np.dot(Phi,np.dot(KsChol,np.kron(np.eye(gmrf1.nP), H)))
-        QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(F,tau)),np.dot(G,np.dot(G.T,scipy.linalg.expm(np.dot(F,tau).T)))),0,dt)
+        QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(F,tau)),np.dot(G,np.dot(G.T,scipy.linalg.expm(np.dot(F,tau).T)))),0,dt)[0]
         Q = np.kron(np.eye(gmrf1.nP), QBar)
         R = sigma2
 
@@ -96,15 +96,15 @@ for i in range(nIter):
 
         kalmanGain = np.dot(covPred,np.dot(C.T,np.linalg.inv(np.dot(C,np.dot(covPred,C.T))+R)))
         sUpdated = sPred + np.dot(kalmanGain,zMeas - np.dot(C,sPred))
-        covUpdated = np.dot(np.eye(gmrf1.nP)-np.dot(L,C),covPred)
+        covUpdated = np.dot(np.eye(gmrf1.nP)-np.dot(kalmanGain,C),covPred)
 
         s = sUpdated
         cov = covUpdated
         tk = t
 
-    hAug = np.dot(np.kron(np.eye(gmrf1.nP), H))
+    hAug = np.kron(np.eye(gmrf1.nP), H)
     gmrf1.meanCond = np.dot(KsChol,hAug,s)
-    gmrf1.covCond = np.dot(KsChol,np.dot(hAug,np.dot(cov,np.dot(hAug.T,KsCholch))))
+    gmrf1.covCond = np.dot(KsChol,np.dot(hAug,np.dot(cov,np.dot(hAug.T,KsChol))))
     gmrf1.diagCovCond = gmrf1.covCond.diagonal()
 
     # Time measurement
