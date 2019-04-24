@@ -6,6 +6,8 @@ import scipy
 from scipy import  integrate
 import numpy as np
 
+# Only for one agent! If multiple agents are used, increase dimensions properly
+
 T = 100
 dt = 0.1
 nIter = int(T/dt)
@@ -50,12 +52,12 @@ sigmaZero = scipy.linalg.solve_lyapunov(F, G*G.T)
 
 # Initialization
 sZero = 0
-Cov = np.kron(np.eye(gmrf1.nP), sigmaT)
+cov = np.kron(np.eye(gmrf1.nP), sigmaT)
 
 tk = 0
 
 skk = 1 #Fix this
-Covkk = 1#Fix this
+covkk = 1#Fix this
 for i in range(nIter):
     t = i*dt
     A = scipy.linalg.expm(np.kron(np.eye(gmrf1.nP), F) * (t - tk))
@@ -68,7 +70,7 @@ for i in range(nIter):
     if (t-tk)!=0:
         # Open loop prediciton
         sHead = A*skk
-        sigmaS = np.dot(A,np.dot(Covkk,A.T))
+        sigmaS = np.dot(A,np.dot(covkk,A.T))
     else:
         Phi = methods.mapConDis(gmrf1, xMeas, yMeas)
         C = np.dot(Phi,np.dot(KsChol,np.kron(np.eye(gmrf1.nP), H)))
@@ -77,11 +79,20 @@ for i in range(nIter):
         R = sigma2
 
         #Kalman Regression
-        # Add regression here
+        sPred =
+        covPred =
+
+        kalmanGain =
+        sUpdated =
+        covUpdated =
+
+        s = sUpdated
+        cov = covUpdated
         tk = t
 
-    f = 666
-    sigmaF = 666
+    hAug = np.dot(np.kron(np.eye(gmrf1.nP), H)
+    f = np.dot(KsChol,hAug,s))
+    covf = np.dot(KsChol,np.dot(hAug,np.dot(cov,np.dot(hAug.T,KsCholch))))
 
 
 
