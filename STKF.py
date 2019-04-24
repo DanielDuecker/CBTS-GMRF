@@ -2,9 +2,11 @@ import classes
 import methods
 import parameters as par
 import math
+import time
 import scipy
 from scipy import  integrate
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Only for one agent! If multiple agents are used, increase dimensions properly
 
@@ -37,6 +39,10 @@ yHist = [par.y0]  # y-state history vector
 xMeas = par.x0
 yMeas = par.y0
 
+# Time measurement vectors
+timeVec = []
+iterVec = []
+
 # State representation of Sr
 F = -1/sigmaT * np.ones((1,1))
 H = math.sqrt(2*lambd / sigmaT) * np.ones((1,1))
@@ -54,11 +60,17 @@ sigmaZero = scipy.linalg.solve_lyapunov(F, G*G.T)
 sZero = 0
 cov = np.kron(np.eye(gmrf1.nP), sigmaT)
 
+# Initialize Plot
+fig = plt.figure()
+methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
+plt.show()
+
 tk = 0
 
 skk = 1 #Fix this
 covkk = 1#Fix this
 for i in range(nIter):
+    timeBefore = time.time()
     t = i*dt
     A = scipy.linalg.expm(np.kron(np.eye(gmrf1.nP), F) * (t - tk))
 
@@ -79,20 +91,34 @@ for i in range(nIter):
         R = sigma2
 
         #Kalman Regression
-        sPred =
-        covPred =
+        sPred = np.dot(A,skk)
+        covPred = np.dot(A,np.dot(covkk,A.T)) + Q
 
-        kalmanGain =
-        sUpdated =
-        covUpdated =
+        kalmanGain = np.dot(covPred,np.dot(C.T,np.linalg.inv(np.dot(C,np.dot(covPred,C.T))+R)))
+        sUpdated = sPred + np.dot(kalmanGain,zMeas - np.dot(C,sPred))
+        covUpdated = np.dot(np.eye(gmrf1.nP)-np.dot(L,C),covPred)
 
         s = sUpdated
         cov = covUpdated
         tk = t
 
-    hAug = np.dot(np.kron(np.eye(gmrf1.nP), H)
-    f = np.dot(KsChol,hAug,s))
-    covf = np.dot(KsChol,np.dot(hAug,np.dot(cov,np.dot(hAug.T,KsCholch))))
+    hAug = np.dot(np.kron(np.eye(gmrf1.nP), H))
+    gmrf1.meanCond = np.dot(KsChol,hAug,s)
+    gmrf1.covCond = np.dot(KsChol,np.dot(hAug,np.dot(cov,np.dot(hAug.T,KsCholch))))
+    gmrf1.diagCovCond = gmrf1.covCond.diagonal()
 
+    # Time measurement
+    timeAfter = time.time()
+    iterVec.append(i)
+    timeVec.append(timeAfter - timeBefore)
 
+    # Plotting:
+    if not par.fastCalc:
+        methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
 
+    # Update ground truth:
+    if par.temporal:
+        trueField.updateField(i)
+
+    methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
+    plt.show(block=True)
