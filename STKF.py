@@ -1,5 +1,6 @@
 import classes
 import methods
+import parameters as par
 import math
 import scipy
 import numpy as np
@@ -18,12 +19,20 @@ nBeta = 0
 
 gmrf1 = classes.gmrf(xMin, xMax, nX, yMin, yMax, nY, nBeta)
 
+# Plotting grid
+x = np.arange(gmrf1.xMin, gmrf1.xMax, par.dX)
+y = np.arange(gmrf1.yMin, gmrf1.yMax, par.dY)
+X, Y = np.meshgrid(x, y)
+
+trueField = classes.trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
+
 sigmaT = 0.01
 lambd = 1
 
 xHist = [par.x0]  # x-state history vector
 yHist = [par.y0]  # y-state history vector
-
+xMeas = par.x0
+yMeas = par.y0
 
 # State representation of Sr
 F = -1/sigmaT * np.ones((1,1))
@@ -48,10 +57,10 @@ for i in range(nIter):
     t = i*dt
     A = scipy.linalg.expm(np.kron(np.eye(F.shape[0]), F) * (t - tk))
 
-    (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
+    zMeas = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
+    (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-1], yHist[-1], par.maxStepsize, gmrf1)
     xHist.append(xMeas)
     yHist.append(yMeas)
-    zMeas[(i+1) % par.nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
 
     if (t-tk)!=0:
         # Open loop prediciton
@@ -59,7 +68,9 @@ for i in range(nIter):
         sigmaS = np.dot(A,np.dot(Covkk,A.T))
     else:
         Phi = methods.mapConDis(gmrf1, xMeas, yMeas)
-        C = np.dot(Phi,np.dot(KsChol,np.kron(eye(H.shape[0]), H)))
+        print(KsChol.shape)
+        print(np.kron(np.eye(H.shape[0]), H).shape)
+        C = np.dot(Phi,np.dot(KsChol,np.kron(np.eye(H.shape[0]), H)))
         QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expmnp.dot(F,tau),np.dot(G,np.dot(G.T,scipy.linalg.expmnp.dot(F,tau.T)))),0,dt)
         Q = np.kron(np.eye(QBar.shape[0]), QBar)
         R =sigma2
