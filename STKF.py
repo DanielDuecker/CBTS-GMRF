@@ -40,7 +40,7 @@ iterVec = []
 
 trueField = classes.trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
 
-sigmaT = 1e20
+sigmaT = 1e10
 lambd = 1
 
 # State representation of Sr
