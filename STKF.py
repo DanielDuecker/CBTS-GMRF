@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 
 # Only for one agent! If multiple agents are used, increase dimensions properly
 
-T = 100
-dt = 0.1
+T = 5000
+dt = 0.5
 nIter = int(T/dt)
 
 xMin = 0
@@ -40,7 +40,7 @@ iterVec = []
 
 trueField = classes.trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
 
-sigmaT = 0.01
+sigmaT = 1e13
 lambd = 1
 
 # State representation of Sr
@@ -74,17 +74,17 @@ for i in range(nIter):
     t = i*dt
     A = scipy.linalg.expm(np.kron(np.eye(gmrf1.nP), F) * (t - tk))
 
-    if (t-tk) < 1:
+    if t%1 != 0:
         # Open loop prediciton
-        st = A*skk
+        st = np.dot(A,skk)
         covt = np.dot(A,np.dot(covkk,A.T))
     else:
+        print("get Measurement")
         zMeas = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
         (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-1], yHist[-1], par.maxStepsize, gmrf1)
         xHist.append(xMeas)
         yHist.append(yMeas)
         tk = t
-        print("check")
 
         Phi = methods.mapConDis(gmrf1, xMeas, yMeas)
         C = np.dot(Phi,np.dot(KsChol,np.kron(np.eye(gmrf1.nP), H)))
@@ -99,7 +99,6 @@ for i in range(nIter):
         kalmanGain = np.dot(covPred,np.dot(C.T,np.linalg.inv(np.dot(C,np.dot(covPred,C.T))+R)))
         sUpdated = sPred + np.dot(kalmanGain,zMeas - np.dot(C,sPred))
         covUpdated = np.dot(np.eye(gmrf1.nP)-np.dot(kalmanGain,C),covPred)
-        print(sUpdated.shape)
         skk = sUpdated
         covkk = covUpdated
 

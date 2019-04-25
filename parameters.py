@@ -16,10 +16,10 @@ if not truncation:
     nMeas = nIter
 
 (x0, y0) = (0, 0)  # initial state
-maxStepsize = 0.5  # maximum change in every state per iteration
+maxStepsize = 1  # maximum change in every state per iteration
 
-dxdt = 0.001  # Shift of true field in x direction
-dydt = 0.001  # Shift of true field in y direction
+dxdt = 0.0001  # Shift of true field in x direction
+dydt = 0.0001  # Shift of true field in y direction
 pulseTime = nIter/2 # Duration of sinusodial pulsation
 
 xMin = 0  # GMRF dimensions
