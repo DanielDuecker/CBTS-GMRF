@@ -29,11 +29,6 @@ x = np.arange(gmrf1.xMin, gmrf1.xMax, par.dX)
 y = np.arange(gmrf1.yMin, gmrf1.yMax, par.dY)
 X, Y = np.meshgrid(x, y)
 
-trueField = classes.trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
-
-sigmaT = 0.01
-lambd = 1
-
 xHist = [par.x0]  # x-state history vector
 yHist = [par.y0]  # y-state history vector
 xMeas = par.x0
@@ -42,6 +37,11 @@ yMeas = par.y0
 # Time measurement vectors
 timeVec = []
 iterVec = []
+
+trueField = classes.trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
+
+sigmaT = 0.01
+lambd = 1
 
 # State representation of Sr
 F = -1/sigmaT * np.ones((1,1))
@@ -68,22 +68,24 @@ plt.show()
 tk = 0
 
 for i in range(nIter):
-    print("Iteration ", i, " of ", par.nIter, ".")
+    print("Iteration ", i, " of ", nIter,".")
 
     timeBefore = time.time()
     t = i*dt
     A = scipy.linalg.expm(np.kron(np.eye(gmrf1.nP), F) * (t - tk))
 
-    zMeas = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
-    (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-1], yHist[-1], par.maxStepsize, gmrf1)
-    xHist.append(xMeas)
-    yHist.append(yMeas)
-
-    if (t-tk)!=0:
+    if (t-tk) < 1:
         # Open loop prediciton
-        sHead = A*skk
-        sigmaS = np.dot(A,np.dot(covkk,A.T))
+        st = A*skk
+        covt = np.dot(A,np.dot(covkk,A.T))
     else:
+        zMeas = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
+        (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-1], yHist[-1], par.maxStepsize, gmrf1)
+        xHist.append(xMeas)
+        yHist.append(yMeas)
+        tk = t
+        print("check")
+
         Phi = methods.mapConDis(gmrf1, xMeas, yMeas)
         C = np.dot(Phi,np.dot(KsChol,np.kron(np.eye(gmrf1.nP), H)))
         QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(F,tau)),np.dot(G,np.dot(G.T,scipy.linalg.expm(np.dot(F,tau).T)))),0,dt)[0]
@@ -97,14 +99,16 @@ for i in range(nIter):
         kalmanGain = np.dot(covPred,np.dot(C.T,np.linalg.inv(np.dot(C,np.dot(covPred,C.T))+R)))
         sUpdated = sPred + np.dot(kalmanGain,zMeas - np.dot(C,sPred))
         covUpdated = np.dot(np.eye(gmrf1.nP)-np.dot(kalmanGain,C),covPred)
-
+        print(sUpdated.shape)
         skk = sUpdated
         covkk = covUpdated
-        tk = t
+
+        st = sUpdated
+        covt = covUpdated
 
     hAug = np.kron(np.eye(gmrf1.nP), H)
-    gmrf1.meanCond = np.dot(KsChol,np.dot(hAug,sUpdated))
-    gmrf1.covCond = np.dot(KsChol,np.dot(hAug,np.dot(covUpdated,np.dot(hAug.T,KsChol))))
+    gmrf1.meanCond = np.dot(KsChol,np.dot(hAug,st))
+    gmrf1.covCond = np.dot(KsChol,np.dot(hAug,np.dot(covt,np.dot(hAug.T,KsChol))))
     gmrf1.diagCovCond = gmrf1.covCond.diagonal()
 
     # Time measurement
