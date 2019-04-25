@@ -70,7 +70,7 @@ tk = 0
 for i in range(nIter):
     print("Iteration ", i, " of ", nIter,".")
 
-    timeBefore = time.time()
+    timeBefore = time.time()"Save"
     t = i*dt
     A = scipy.linalg.expm(np.kron(np.eye(gmrf1.nP), F) * (t - tk))
 

@@ -58,7 +58,10 @@ for i in range(par.nIter-1):
 
     # Bayesian update
     if stkf:
-        (gmrf1.meanCond,gmrf1.covCond,gmrf1.diagCovCond) = stkf1.kalmanFilter(t,xMeas[-1],yMeas[-1],zMeas[-1])
+        stkf1.kalmanFilter(t, xMeas, yMeas, zMeas[i])
+        gmrf1.meanCond = stkf1.gmrf.meanCond
+        gmrf1.covCond = stkf1.gmrf.covCond
+        gmrf1.diagCovCond = stkf1.gmrf.diagCovCond
     else:
         if par.sequentialUpdate:
             gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])

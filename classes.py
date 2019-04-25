@@ -7,6 +7,7 @@ import math
 import parameters as par
 
 from scipy import interpolate
+from scipy import  integrate
 import scipy
 
 class gmrf:
@@ -155,10 +156,11 @@ class stkf:
         self.tk = 0
 
     def kalmanFilter(self,t,xMeas,yMeas,zMeas):
+            A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * (t - self.tk))
             if t % 1 != 0:
                 # Open loop prediciton
-                st = np.dot(self.A, self.skk)
-                covt = np.dot(self.A, np.dot(self.covkk, self.A.T))
+                st = np.dot(A, self.skk)
+                covt = np.dot(A, np.dot(self.covkk, A.T))
             else:
                 Phi = methods.mapConDis(self.gmrf, xMeas, yMeas)
                 C = np.dot(Phi, np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H)))
@@ -167,8 +169,8 @@ class stkf:
                 R = self.sigma2
 
                 # Kalman Regression
-                sPred = np.dot(self.A, self.skk)
-                covPred = np.dot(self.A, np.dot(self.covkk, self.A.T)) + Q
+                sPred = np.dot(A, self.skk)
+                covPred = np.dot(A, np.dot(self.covkk, A.T)) + Q
 
                 kalmanGain = np.dot(covPred, np.dot(C.T, np.linalg.inv(np.dot(C, np.dot(covPred, C.T)) + R)))
                 sUpdated = sPred + np.dot(kalmanGain, zMeas - np.dot(C, sPred))
@@ -183,5 +185,3 @@ class stkf:
             self.gmrf.meanCond = np.dot(self.KsChol, np.dot(hAug, st))
             self.gmrf.covCond = np.dot(self.KsChol, np.dot(hAug, np.dot(covt, np.dot(hAug.T, self.KsChol))))
             self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
-
-            return (self.gmrf.meanCond,self.gmrf.covCond,self.gmrf.diagCovCond)
