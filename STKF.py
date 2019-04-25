@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 
 # Only for one agent! If multiple agents are used, increase dimensions properly
 
-T = 5000
-dt = 0.5
+T = 10000
+dt = 1
 nIter = int(T/dt)
 
 xMin = 0
@@ -40,7 +40,7 @@ iterVec = []
 
 trueField = classes.trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
 
-sigmaT = 1e13
+sigmaT = 1e20
 lambd = 1
 
 # State representation of Sr
