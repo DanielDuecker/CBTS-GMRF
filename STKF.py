@@ -57,8 +57,8 @@ h = lambda tau: lambd * math.exp(-abs(tau)/sigmaT)
 sigmaZero = scipy.linalg.solve_lyapunov(F, G*G.T)
 
 # Initialization
-sZero = 0
-cov = np.kron(np.eye(gmrf1.nP), sigmaT)
+skk = np.zeros((gmrf1.nP,1))
+covkk = np.kron(np.eye(gmrf1.nP), sigmaT)
 
 # Initialize Plot
 fig = plt.figure()
@@ -67,9 +67,9 @@ plt.show()
 
 tk = 0
 
-skk = 1 #Fix this
-covkk = 1#Fix this
 for i in range(nIter):
+    print("Iteration ", i, " of ", par.nIter, ".")
+
     timeBefore = time.time()
     t = i*dt
     A = scipy.linalg.expm(np.kron(np.eye(gmrf1.nP), F) * (t - tk))
@@ -98,13 +98,13 @@ for i in range(nIter):
         sUpdated = sPred + np.dot(kalmanGain,zMeas - np.dot(C,sPred))
         covUpdated = np.dot(np.eye(gmrf1.nP)-np.dot(kalmanGain,C),covPred)
 
-        s = sUpdated
-        cov = covUpdated
+        skk = sUpdated
+        covkk = covUpdated
         tk = t
 
     hAug = np.kron(np.eye(gmrf1.nP), H)
-    gmrf1.meanCond = np.dot(KsChol,hAug,s)
-    gmrf1.covCond = np.dot(KsChol,np.dot(hAug,np.dot(cov,np.dot(hAug.T,KsChol))))
+    gmrf1.meanCond = np.dot(KsChol,np.dot(hAug,sUpdated))
+    gmrf1.covCond = np.dot(KsChol,np.dot(hAug,np.dot(covUpdated,np.dot(hAug.T,KsChol))))
     gmrf1.diagCovCond = gmrf1.covCond.diagonal()
 
     # Time measurement
@@ -120,5 +120,5 @@ for i in range(nIter):
     if par.temporal:
         trueField.updateField(i)
 
-    methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
-    plt.show(block=True)
+methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
+plt.show(block=True)

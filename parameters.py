@@ -3,11 +3,11 @@
 # main.py
 sequentialUpdate = False # Does not work with truncation!
 fastCalc = True # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
-truncation = True
+truncation = False
 sinusoidal = False # True: Use sinusoidal ground truth
-temporal = True # True: time varying field
+temporal = False # True: time varying field
 
-nIter = 5000 # number of iterations
+nIter = 1000 # number of iterations
 nMeas = 100 # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
 ov2 = 0.01 # measurement variance
 dX = dY = 0.01  # discretizaton in x and y for Plotting

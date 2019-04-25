@@ -83,7 +83,6 @@ def plotFields(fig, x, y, trueField, gmrf, iterVec, timeVec, xHist, yHist):
 
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
-    print(gmrf.meanCond.shape) # I dont know why there are two shape outputs....
     ax2.contourf(gmrf.x, gmrf.y, gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
     plt.xlabel("x in m")
     plt.ylabel("y in m")
