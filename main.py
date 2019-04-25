@@ -8,17 +8,18 @@ import numpy as np
 import methods
 import parameters as par
 from classes import gmrf
+from classes import  stkf
 from classes import trueField
 
 xHist = [par.x0]  # x-state history vector
 yHist = [par.y0]  # y-state history vector
 
-# Initialize GMRF   
-gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta)
-
 # Time measurement vectors
 timeVec = []
 iterVec = []
+
+# Initialize GMRF
+gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta)
 
 # Plotting grid
 x = np.arange(gmrf1.xMin, gmrf1.xMax, par.dX)
@@ -27,6 +28,9 @@ X, Y = np.meshgrid(x, y)
 
 """Ground Truth"""
 trueField = trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
+
+"""STKF"""
+stkf1 = stkf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta,trueField,par.dt,par.sigmaT,par.lambd,par.sigma2)
 
 """GMRF"""
 # Initialize Plot
@@ -48,13 +52,18 @@ Phi[0, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
 # Update and plot field belief
 for i in range(par.nIter-1):
     print("Iteration ", i, " of ", par.nIter, ".")
+    t = i*par.dt
+
     timeBefore = time.time()
 
     # Bayesian update
-    if par.sequentialUpdate:
-        gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])
+    if stkf:
+        (gmrf1.meanCond,gmrf1.covCond,gmrf1.diagCovCond) = stkf1.kalmanFilter(t,xMeas[-1],yMeas[-1],zMeas[-1])
     else:
-        gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
+        if par.sequentialUpdate:
+            gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])
+        else:
+            gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
 
     # Get next measurement according to dynamics, stack under measurement vector
     (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
