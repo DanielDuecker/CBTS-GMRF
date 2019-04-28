@@ -3,7 +3,7 @@
 # main.py
 stkf = True
 sequentialUpdate = False # Does not work with truncation!
-fastCalc = True # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
+fastCalc = False # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
 sinusoidal = True # True: Use sinusoidal ground truth
 temporal = False # True: time varying field
@@ -33,7 +33,7 @@ nBeta = 0  # regression coefficients
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 # stkf class
-sigmaT = 1e1
+sigmaT = 1e20
 lambd = 1
 sigma2 = 0.01
 
