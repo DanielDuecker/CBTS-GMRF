@@ -59,12 +59,14 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
         xNext = np.random.choice([x - stepsize, x + stepsize])
         yNext = np.random.choice([y - stepsize, y + stepsize])
 
-    (xUncertain,yUncertain) = np.unravel_index(np.argmin(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),axis=None),(gmrf.nY,gmrf.nX))
-    xNext = x + np.random.rand()*(xUncertain-x)
-    yNext = y + np.random.rand()*(yUncertain-y)
+    (xUncertain,yUncertain) = np.unravel_index(np.argmax(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),axis=None),(gmrf.nY,gmrf.nX))
+
+    xNext = round(x + np.random.rand()*(xUncertain-x),3)
+    yNext = round(y + np.random.rand()*(yUncertain-y),3)
+    print(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
 
     print("(", xNext, ",", yNext, ")")
-    print("(", x-xUncertain, ",", x-yUncertain, ")")
+    print("(", x, ",", y, ")")
     print(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[(xUncertain,yUncertain)])
 
     if xNext < gmrf.xMin:
