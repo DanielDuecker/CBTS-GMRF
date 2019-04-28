@@ -180,6 +180,7 @@ class stkf:
 
                 st = sUpdated
                 covt = covUpdated
+                self.tk = t
 
             hAug = np.kron(np.eye(self.gmrf.nP), self.H)
             self.gmrf.meanCond = np.dot(self.KsChol, np.dot(hAug, st))
