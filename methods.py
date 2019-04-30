@@ -63,7 +63,6 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
 
     xNext = round(x + np.random.rand()*(xUncertain-x),3)
     yNext = round(y + np.random.rand()*(yUncertain-y),3)
-    print(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
 
     print("(", xNext, ",", yNext, ")")
     print("(", x, ",", y, ")")
