@@ -43,11 +43,8 @@ def mapConDis(gmrf, xMeas, yMeas):
 #    return Lambda
 
 def getPrecisionMatrix(gmrf):
-    #diagQ = 2 * np.eye(gmrf.nP)
-    #Lambda = diagQ - np.eye(gmrf.nP, k=1) - np.eye(gmrf.nP, k=-1)
-    Lambda = -1*np.ones((gmrf.nP,gmrf.nP)) + 4*np.eye(gmrf.nP)
-    Lambda[0,0] = 2
-    Lambda[-1,-1] = 2
+    diagQ = 2 * np.eye(gmrf.nP)
+    Lambda = diagQ - np.eye(gmrf.nP, k=1) - np.eye(gmrf.nP, k=-1)
     return Lambda
 
 
@@ -62,11 +59,13 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
         xNext = np.random.choice([x - stepsize, x + stepsize])
         yNext = np.random.choice([y - stepsize, y + stepsize])
 
-    (xUncertain,yUncertain) = np.unravel_index(np.argmax(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),axis=None),(gmrf.nY,gmrf.nX))
+    # x and y are switched because of matrix/plot relation
+    (yUncertain,xUncertain) = np.unravel_index(np.argmax(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),axis=None),(gmrf.nY,gmrf.nX))
 
+    dist = np.sqrt((xUncertain-x)**2+(yUncertain-y)**2)
     if np.random.rand() < par.exploitingRate:
-        xNext = round(x + np.random.rand()*(xUncertain-x),3)
-        yNext = round(y + np.random.rand()*(yUncertain-y),3)
+        xNext = x + par.xVel*(xUncertain-x)/dist
+        yNext = y + par.yVel*(yUncertain-y)/dist
 
     if xNext < gmrf.xMin:
         xNext = x + stepsize
