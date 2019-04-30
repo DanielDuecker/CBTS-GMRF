@@ -56,8 +56,6 @@ for i in range(par.nIter-1):
 
     timeBefore = time.time()
 
-    print(gmrf1.diagCovCond[0:gmrf1.nP].reshape(gmrf1.nY, gmrf1.nX))
-
     # Bayesian update
     if par.stkf:
         stkf1.kalmanFilter(t, xMeas, yMeas, zMeas[i])

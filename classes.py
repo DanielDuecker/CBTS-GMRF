@@ -37,13 +37,9 @@ class gmrf:
 
         # Precision matrix for z values (without regression variable beta)
         self.Lambda = methods.getPrecisionMatrix(self)
-        np.set_printoptions(threshold=np.inf)
-        print(np.linalg.inv(self.Lambda).diagonal())
-        print("cc")
-        # Augmented prior covariance matrix
 
+        # Augmented prior covariance matrix
         covPriorUpperLeft = np.linalg.inv(self.Lambda) + np.dot(F, np.dot(self.Tinv, F.T))
-        #print(covPriorUpperLeft)
         covPriorUpperRight = np.dot(F, self.Tinv)
         covPriorLowerLeft = np.dot(F, self.Tinv).T
         covPriorLowerRight = self.Tinv
@@ -67,8 +63,9 @@ class gmrf:
         temp1 = np.dot(Phi, self.covPrior)
         temp2 = np.dot(np.linalg.inv(R), temp1)
         temp3 = np.dot(Phi.T, temp2)
-        self.covCond = self.covPrior - np.dot(self.covPrior, temp3)
-        # self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/par.ov2*np.dot(Phi.T,Phi))) # alternative way
+
+        self.covCond1 = self.covPrior - np.dot(self.covPrior, temp3)
+        #self.covCond2 = np.linalg.inv((np.linalg.inv(self.covPrior)+1/par.ov2*np.dot(Phi.T,Phi))) # alternative way
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
 
         "Update mean"
@@ -113,11 +110,17 @@ class trueField:
         else:
             xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
             yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
-            zGT = np.array([[1, 2, 2, 1, 1],
-                            [2, 4, 2, 1, 1],
-                            [1, 2, 3, 3, 2],
-                            [1, 1, 2, 3, 3],
-                            [1, 1, 2, 3, 3]])
+            #zGT = np.array([[1, 2, 2, 1, 1],
+                            #[2, 4, 2, 1, 1],
+                            #[1, 2, 3, 3, 2],
+                            #[1, 1, 2, 3, 3],
+                            #[1, 1, 2, 3, 3]])
+
+            zGT = np.array([[2, 4, 6, 7, 8],
+                          [2.1, 5, 7, 11.25, 9.5],
+                          [3, 5.6, 8.5, 17, 14.5],
+                          [2.5, 5.4, 6.9, 9, 8],
+                          [2, 2.3, 4, 6, 7.5]])
 
         self.fInit = interpolate.interp2d(xGT, yGT, zGT)
         self.levels = np.linspace(0, np.amax(zGT) + 0.5, 20)

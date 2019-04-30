@@ -8,7 +8,7 @@ truncation = False
 sinusoidal = False # True: Use sinusoidal ground truth
 temporal = False # True: time varying field
 
-exploitingRate = 0
+exploitingRate = 0.7
 
 nIter = 1000 # number of iterations
 dt = 1 # timestep per iteration
@@ -17,7 +17,9 @@ ov2 = 0.04 # measurement variance
 dX = dY = 0.01  # discretizaton in x and y for Plotting
 
 (x0, y0) = (0, 0)  # initial state
-maxStepsize = 1  # maximum change in every state per iteration
+maxStepsize = 0.2  # maximum change in every state per iteration
+xVel = maxStepsize
+yVel = maxStepsize
 
 dxdt = 0.0001  # Shift of true field in x direction
 dydt = 0.0001  # Shift of true field in y direction

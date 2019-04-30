@@ -45,6 +45,7 @@ def mapConDis(gmrf, xMeas, yMeas):
 def getPrecisionMatrix(gmrf):
     diagQ = 2 * np.eye(gmrf.nP)
     Lambda = diagQ - np.eye(gmrf.nP, k=1) - np.eye(gmrf.nP, k=-1)
+    # TODO: adapt to Geist paper
     return Lambda
 
 
