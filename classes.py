@@ -37,9 +37,13 @@ class gmrf:
 
         # Precision matrix for z values (without regression variable beta)
         self.Lambda = methods.getPrecisionMatrix(self)
-
+        np.set_printoptions(threshold=np.inf)
+        print(np.linalg.inv(self.Lambda).diagonal())
+        print("cc")
         # Augmented prior covariance matrix
+
         covPriorUpperLeft = np.linalg.inv(self.Lambda) + np.dot(F, np.dot(self.Tinv, F.T))
+        #print(covPriorUpperLeft)
         covPriorUpperRight = np.dot(F, self.Tinv)
         covPriorLowerLeft = np.dot(F, self.Tinv).T
         covPriorLowerRight = self.Tinv
@@ -58,7 +62,6 @@ class gmrf:
 
     def bayesianUpdate(self, zMeas, Phi):
         """Update conditioned precision matrix"""
-        meanOld = np.copy(self.meanCond)
         R = np.dot(Phi, np.dot(self.covPrior, Phi.T)) + par.ov2 * np.eye(
             len(zMeas))  # covariance matrix of measurements
         temp1 = np.dot(Phi, self.covPrior)
@@ -74,7 +77,6 @@ class gmrf:
                                                                   np.dot(Phi.T, zMeas - np.dot(Phi, self.meanPrior)))
         else:
             self.meanCond = np.dot(self.covPrior, np.dot(Phi.T, np.dot(np.linalg.inv(R), zMeas)))
-        print(np.linalg.norm(meanOld-self.meanCond))
 
     def seqBayesianUpdate(self, zMeas_k, Phi_k):
         Phi_k = Phi_k.reshape(1, self.nP + self.nBeta)
