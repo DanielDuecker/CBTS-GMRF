@@ -61,12 +61,9 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
 
     (xUncertain,yUncertain) = np.unravel_index(np.argmax(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),axis=None),(gmrf.nY,gmrf.nX))
 
-    xNext = round(x + np.random.rand()*(xUncertain-x),3)
-    yNext = round(y + np.random.rand()*(yUncertain-y),3)
-
-    print("(", xNext, ",", yNext, ")")
-    print("(", x, ",", y, ")")
-    print(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[(xUncertain,yUncertain)])
+    if np.random.rand() < par.exploitingRate:
+        xNext = round(x + np.random.rand()*(xUncertain-x),3)
+        yNext = round(y + np.random.rand()*(yUncertain-y),3)
 
     if xNext < gmrf.xMin:
         xNext = x + stepsize
@@ -87,12 +84,12 @@ def plotFields(fig, x, y, trueField, gmrf, iterVec, timeVec, xHist, yHist):
 
     # Plotting ground truth
     ax1 = fig.add_subplot(221)
-    ax1.contourf(x, y, trueField.field(x,y))
+    ax1.contourf(x, y, trueField.field(x,y),levels = trueField.levels)
     plt.title("True field")
 
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
-    ax2.contourf(gmrf.x, gmrf.y, gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
+    ax2.contourf(gmrf.x, gmrf.y, gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),levels = trueField.levels)
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Mean of belief")

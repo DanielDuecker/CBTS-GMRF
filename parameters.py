@@ -5,13 +5,15 @@ stkf = False
 sequentialUpdate = False # Does not work with truncation!
 fastCalc = False # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
-sinusoidal = True # True: Use sinusoidal ground truth
+sinusoidal = False # True: Use sinusoidal ground truth
 temporal = False # True: time varying field
 
-nIter = 10000 # number of iterations
+exploitingRate = 0
+
+nIter = 1000 # number of iterations
 dt = 1 # timestep per iteration
 nMeas = 100 # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
-ov2 = 0.01 # measurement variance
+ov2 = 0.04 # measurement variance
 dX = dY = 0.01  # discretizaton in x and y for Plotting
 
 (x0, y0) = (0, 0)  # initial state
@@ -23,10 +25,10 @@ pulseTime = nIter/2 # Duration of sinusodial pulsation
 
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 10
+nX = 50
 yMin = 0
 yMax = 10
-nY = 10
+nY = 25
 nBeta = 0  # regression coefficients
 
 # gmrf class

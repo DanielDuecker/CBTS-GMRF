@@ -58,6 +58,7 @@ class gmrf:
 
     def bayesianUpdate(self, zMeas, Phi):
         """Update conditioned precision matrix"""
+        meanOld = np.copy(self.meanCond)
         R = np.dot(Phi, np.dot(self.covPrior, Phi.T)) + par.ov2 * np.eye(
             len(zMeas))  # covariance matrix of measurements
         temp1 = np.dot(Phi, self.covPrior)
@@ -73,6 +74,7 @@ class gmrf:
                                                                   np.dot(Phi.T, zMeas - np.dot(Phi, self.meanPrior)))
         else:
             self.meanCond = np.dot(self.covPrior, np.dot(Phi.T, np.dot(np.linalg.inv(R), zMeas)))
+        print(np.linalg.norm(meanOld-self.meanCond))
 
     def seqBayesianUpdate(self, zMeas_k, Phi_k):
         Phi_k = Phi_k.reshape(1, self.nP + self.nBeta)
@@ -116,6 +118,7 @@ class trueField:
                             [1, 1, 2, 3, 3]])
 
         self.fInit = interpolate.interp2d(xGT, yGT, zGT)
+        self.levels = np.linspace(0, np.amax(zGT) + 0.5, 20)
 
     def field(self, x, y):
         if not par.sinusoidal:
