@@ -1,14 +1,14 @@
 # Parameter
 
 # main.py
-stkf = False
+stkf = True
 sequentialUpdate = True # Does not work with truncation!
-fastCalc = True# True: Fast Calculation, only one plot in the end; False: Live updating and plotting
+fastCalc = False# True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
-sinusoidal = True # True: Use sinusoidal ground truth
+sinusoidal = False # True: Use sinusoidal ground truth
 temporal = False # True: time varying field
 
-exploitingRate = 0
+exploitingRate = 1
 
 nIter = 1000 # number of iterations
 dt = 1 # timestep per iteration
@@ -27,10 +27,10 @@ pulseTime = nIter/2 # Duration of sinusodial pulsation
 
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 3
+nX = 10
 yMin = 0
 yMax = 10
-nY = 3
+nY = 10
 nBeta = 1  # regression coefficients
 
 # gmrf class

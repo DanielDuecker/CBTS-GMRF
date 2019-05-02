@@ -54,8 +54,18 @@ def getPrecisionMatrix(gmrf):
                     [0,0,0,-1,0,0,2,-1,0],
                     [0,0,0,0,-1,0,-1,3,-1],
                     [0,0,0,0,0,-1,0,-1,2]])
+    Lambda = 4*np.eye(gmrf.nP) - np.eye(gmrf.nP, k=gmrf.nX) - np.eye(gmrf.nP, k=-gmrf.nX)
+    Lambda = Lambda - np.eye(gmrf.nP, k=1) - np.eye(gmrf.nP, k=-1)
+
+    for i in range(gmrf.nP):
+        if (i % gmrf.nX) == 0: #left border
+            if i >= gmrf.nX:
+                Lambda[i,i-1] = 0
+        if (i % gmrf.nX) == (gmrf.nX-1): #right border
+            if i <= (gmrf.nP-gmrf.nX):
+                Lambda[i,i+1] = 0
     print(Lambda)
-    #Lambda = np.zeros((gmrf.nY,gmrf.nX))
+    #print(np.linalg.eig(Lambda))
     return Lambda
 
 

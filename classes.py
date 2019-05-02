@@ -152,7 +152,7 @@ class stkf:
 
         # Kernels
         self.Ks = methods.getPrecisionMatrix(self.gmrf)
-        self.KsChol = np.linalg.cholesky(self.Ks)
+        self.KsChol = scipy.linalg.cholesky(self.Ks)
         # h = lambda tau: lambd * math.exp(-abs(tau) / sigmaT)
 
         self.sigmaZero = scipy.linalg.solve_lyapunov(self.F, self.G * self.G.T)
