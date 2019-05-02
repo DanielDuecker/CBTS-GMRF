@@ -11,6 +11,8 @@ from classes import gmrf
 from classes import  stkf
 from classes import trueField
 
+np.set_printoptions(threshold=np.inf)
+
 xHist = [par.x0]  # x-state history vector
 yHist = [par.y0]  # y-state history vector
 

@@ -43,9 +43,19 @@ def mapConDis(gmrf, xMeas, yMeas):
 #    return Lambda
 
 def getPrecisionMatrix(gmrf):
-    diagQ = 2 * np.eye(gmrf.nP)
-    Lambda = diagQ - np.eye(gmrf.nP, k=1) - np.eye(gmrf.nP, k=-1)
-    # TODO: adapt to Geist paper
+    #diagQ = 2 * np.eye(gmrf.nP)
+    #Lambda = diagQ - np.eye(gmrf.nP, k=1) - np.eye(gmrf.nP, k=-1)
+    Lambda = np.array([[5,-1,0,-1,0,0,0,0,0],
+                    [-1,3,-1,0,-1,0,0,0,0],
+                    [0,-1,2,0,0,-1,0,0,0],
+                    [-1,0,0,3,-1,0,-1,0,0],
+                    [0,-1,0,-1,4,-1,0,-1,0],
+                    [0,0,-1,0,-1,3,0,0,-1],
+                    [0,0,0,-1,0,0,2,-1,0],
+                    [0,0,0,0,-1,0,-1,3,-1],
+                    [0,0,0,0,0,-1,0,-1,2]])
+    print(Lambda)
+    #Lambda = np.zeros((gmrf.nY,gmrf.nX))
     return Lambda
 
 
@@ -87,12 +97,12 @@ def plotFields(fig, x, y, trueField, gmrf, iterVec, timeVec, xHist, yHist):
 
     # Plotting ground truth
     ax1 = fig.add_subplot(221)
-    ax1.contourf(x, y, trueField.field(x,y),levels = trueField.levels)
+    ax1.contourf(x, y, trueField.field(x,y))
     plt.title("True field")
 
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
-    ax2.contourf(gmrf.x, gmrf.y, gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),levels = trueField.levels)
+    ax2.contourf(gmrf.x, gmrf.y, gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Mean of belief")

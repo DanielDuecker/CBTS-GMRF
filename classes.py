@@ -123,7 +123,6 @@ class trueField:
                           [2, 2.3, 4, 6, 7.5]])
 
         self.fInit = interpolate.interp2d(xGT, yGT, zGT)
-        self.levels = np.linspace(0, np.amax(zGT) + 0.5, 20)
 
     def field(self, x, y):
         if not par.sinusoidal:
