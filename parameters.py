@@ -1,19 +1,19 @@
 # Parameter
 
 # main.py
-stkf = True
-sequentialUpdate = True # Does not work with truncation!
-fastCalc = False# True: Fast Calculation, only one plot in the end; False: Live updating and plotting
+stkf = False
+sequentialUpdate = False  # Does not work with truncation!
+fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
-sinusoidal = False # True: Use sinusoidal ground truth
-temporal = False # True: time varying field
+sinusoidal = False  # True: Use sinusoidal ground truth
+temporal = False  # True: time varying field
 
-exploitingRate = 1
+exploitingRate = 0.7
 
-nIter = 1000 # number of iterations
-dt = 1 # timestep per iteration
-nMeas = 100 # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
-ov2 = 0.04 # measurement variance
+nIter = 1000  # number of iterations
+dt = 1  # timesteps per iteration
+nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
+ov2 = 0.04  # measurement variance
 dX = dY = 0.01  # discretizaton in x and y for Plotting
 
 (x0, y0) = (0, 0)  # initial state
@@ -23,14 +23,14 @@ yVel = maxStepsize
 
 dxdt = 0.0001  # Shift of true field in x direction
 dydt = 0.0001  # Shift of true field in y direction
-pulseTime = nIter/2 # Duration of sinusodial pulsation
+pulseTime = nIter / 2  # Duration of sinusodial pulsation
 
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 10
+nX = 30
 yMin = 0
 yMax = 10
-nY = 10
+nY = 30
 nBeta = 1  # regression coefficients
 
 # gmrf class

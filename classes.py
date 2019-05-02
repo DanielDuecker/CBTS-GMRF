@@ -7,8 +7,9 @@ import math
 import parameters as par
 
 from scipy import interpolate
-from scipy import  integrate
+from scipy import integrate
 import scipy
+
 
 class gmrf:
     def __init__(self, xMin, xMax, nX, yMin, yMax, nY, nBeta):
@@ -45,7 +46,7 @@ class gmrf:
         covPriorLowerRight = self.Tinv
         self.covPrior = np.vstack(
             (np.hstack((covPriorUpperLeft, covPriorUpperRight)), np.hstack((covPriorLowerLeft, covPriorLowerRight))))
-        self.meanPrior = np.zeros((self.nP+self.nBeta, 1))
+        self.meanPrior = np.zeros((self.nP + self.nBeta, 1))
 
         # Initialize augmented conditioned mean, covariance and precision matrices
         self.meanCond = np.zeros((self.nP + self.nBeta, 1))
@@ -64,8 +65,8 @@ class gmrf:
         temp2 = np.dot(np.linalg.inv(R), temp1)
         temp3 = np.dot(Phi.T, temp2)
 
-        self.covCond1 = self.covPrior - np.dot(self.covPrior, temp3)
-        #self.covCond2 = np.linalg.inv((np.linalg.inv(self.covPrior)+1/par.ov2*np.dot(Phi.T,Phi))) # alternative way
+        self.covCond = self.covPrior - np.dot(self.covPrior, temp3)
+        # self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/par.ov2*np.dot(Phi.T,Phi))) # alternative way
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
 
         "Update mean"
@@ -81,13 +82,14 @@ class gmrf:
 
         self.bSeq = self.bSeq + 1 / par.ov2 * Phi_k.T * zMeas_k  # sequential update canonical mean
         self.precCond = self.precCond + 1 / par.ov2 * np.dot(Phi_k.T, Phi_k)  # sequential update of precision matrix
-        self.diagCovCond = np.linalg.inv(self.precCond).diagonal().reshape(self.nP+self.nBeta, 1)  # works too
+        self.diagCovCond = np.linalg.inv(self.precCond).diagonal().reshape(self.nP + self.nBeta, 1)  # works too
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
 
         # TODO: Fix calculation of covariance diagonal
-        #hSeq = np.linalg.solve(self.precCond, Phi_k.T)
-        #self.diagCovCond = self.diagCovCond - 1 / (par.ov2 + np.dot(Phi_k, hSeq)[0, 0]) * np.dot(hSeq,
+        # hSeq = np.linalg.solve(self.precCond, Phi_k.T)
+        # self.diagCovCond = self.diagCovCond - 1 / (par.ov2 + np.dot(Phi_k, hSeq)[0, 0]) * np.dot(hSeq,
         #                                                            hSeq.T).diagonal().reshape(self.nP + self.nBeta, 1)
+
 
 class trueField:
     def __init__(self, xEnd, yEnd, sinusoidal, temporal):
@@ -104,42 +106,43 @@ class trueField:
         if self.sinusoidal:
             xGT = np.arange(par.xMin, par.xMax, par.dX)
             yGT = np.arange(par.yMin, par.yMax, par.dY)
-            XGT, YGT = np.meshgrid(xGT,yGT)
-            zGT = np.sin(XGT)+np.sin(YGT)
+            XGT, YGT = np.meshgrid(xGT, yGT)
+            zGT = np.sin(XGT) + np.sin(YGT)
             self.fInit = interpolate.interp2d(xGT, yGT, zGT)
         else:
             xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
             yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
-            #zGT = np.array([[1, 2, 2, 1, 1],
-                            #[2, 4, 2, 1, 1],
-                            #[1, 2, 3, 3, 2],
-                            #[1, 1, 2, 3, 3],
-                            #[1, 1, 2, 3, 3]])
+            # zGT = np.array([[1, 2, 2, 1, 1],
+            # [2, 4, 2, 1, 1],
+            # [1, 2, 3, 3, 2],
+            # [1, 1, 2, 3, 3],
+            # [1, 1, 2, 3, 3]])
 
             zGT = np.array([[2, 4, 6, 7, 8],
-                          [2.1, 5, 7, 11.25, 9.5],
-                          [3, 5.6, 8.5, 17, 14.5],
-                          [2.5, 5.4, 6.9, 9, 8],
-                          [2, 2.3, 4, 6, 7.5]])
+                            [2.1, 5, 7, 11.25, 9.5],
+                            [3, 5.6, 8.5, 17, 14.5],
+                            [2.5, 5.4, 6.9, 9, 8],
+                            [2, 2.3, 4, 6, 7.5]])
 
         self.fInit = interpolate.interp2d(xGT, yGT, zGT)
 
     def field(self, x, y):
         if not par.sinusoidal:
-            return self.fInit(x-self.xShift, y+self.yShift)
+            return self.fInit(x - self.xShift, y + self.yShift)
         else:
-            return self.cScale*self.fInit(x, y)
+            return self.cScale * self.fInit(x, y)
 
     def updateField(self, t):
-        self.xShift = par.dxdt*t % self.xEnd
-        self.yShift = par.dydt*t % self.yEnd
+        self.xShift = par.dxdt * t % self.xEnd
+        self.yShift = par.dydt * t % self.yEnd
         if t < par.pulseTime:
-            self.cScale = np.cos(math.pi*t/par.pulseTime)
+            self.cScale = np.cos(math.pi * t / par.pulseTime)
+
 
 class stkf:
-    def __init__(self,xMin, xMax, nX, yMin, yMax, nY, nBeta,trueField,dt,sigmaT,lambd,sigma2):
+    def __init__(self, xMin, xMax, nX, yMin, yMax, nY, nBeta, trueF, dt, sigmaT, lambd, sigma2):
         self.gmrf = gmrf(xMin, xMax, nX, yMin, yMax, nY, nBeta)
-        self.trueField = trueField
+        self.trueField = trueF
         self.dt = dt
         self.sigmaT = sigmaT
         self.lambd = lambd
@@ -152,7 +155,7 @@ class stkf:
 
         # Kernels
         self.Ks = methods.getPrecisionMatrix(self.gmrf)
-        self.KsChol = scipy.linalg.cholesky(self.Ks)
+        self.KsChol = np.linalg.cholesky(self.Ks)
         # h = lambda tau: lambd * math.exp(-abs(tau) / sigmaT)
 
         self.sigmaZero = scipy.linalg.solve_lyapunov(self.F, self.G * self.G.T)
@@ -162,34 +165,35 @@ class stkf:
         self.covkk = np.kron(np.eye(self.gmrf.nP), self.sigmaZero)
         self.tk = 0
 
-    def kalmanFilter(self,t,xMeas,yMeas,zMeas):
-            A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * (t - self.tk))
-            if t % 1 != 0:
-                # Open loop prediciton
-                st = np.dot(A, self.skk)
-                covt = np.dot(A, np.dot(self.covkk, A.T))
-            else:
-                Phi = methods.mapConDis(self.gmrf, xMeas, yMeas)
-                C = np.dot(Phi, np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H)))
-                QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(self.F, tau)), np.dot(self.G, np.dot(self.G.T, scipy.linalg.expm(np.dot(self.F,tau).T)))),0, self.dt)[0]
-                Q = np.kron(np.eye(self.gmrf.nP), QBar)
-                R = self.sigma2
+    def kalmanFilter(self, t, xMeas, yMeas, zMeas):
+        A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * (t - self.tk))
+        if t % 1 != 0:
+            # Open loop prediciton
+            st = np.dot(A, self.skk)
+            covt = np.dot(A, np.dot(self.covkk, A.T))
+        else:
+            Phi = methods.mapConDis(self.gmrf, xMeas, yMeas)
+            C = np.dot(Phi, np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H)))
+            QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(self.F, tau)), np.dot(self.G,
+                                            np.dot(self.G.T, scipy.linalg.expm(np.dot(self.F, tau).T)))), 0, self.dt)[0]
+            Q = np.kron(np.eye(self.gmrf.nP), QBar)
+            R = self.sigma2
 
-                # Kalman Regression
-                sPred = np.dot(A, self.skk)
-                covPred = np.dot(A, np.dot(self.covkk, A.T)) + Q
+            # Kalman Regression
+            sPred = np.dot(A, self.skk)
+            covPred = np.dot(A, np.dot(self.covkk, A.T)) + Q
 
-                kalmanGain = np.dot(covPred, np.dot(C.T, np.linalg.inv(np.dot(C, np.dot(covPred, C.T)) + R)))
-                sUpdated = sPred + np.dot(kalmanGain, zMeas - np.dot(C, sPred))
-                covUpdated = np.dot(np.eye(self.gmrf.nP) - np.dot(kalmanGain, C), covPred)
-                self.skk = sUpdated
-                self.covkk = covUpdated
+            kalmanGain = np.dot(covPred, np.dot(C.T, np.linalg.inv(np.dot(C, np.dot(covPred, C.T)) + R)))
+            sUpdated = sPred + np.dot(kalmanGain, zMeas - np.dot(C, sPred))
+            covUpdated = np.dot(np.eye(self.gmrf.nP) - np.dot(kalmanGain, C), covPred)
+            self.skk = sUpdated
+            self.covkk = covUpdated
 
-                st = sUpdated
-                covt = covUpdated
-                self.tk = t
+            st = sUpdated
+            covt = covUpdated
+            self.tk = t
 
-            hAug = np.kron(np.eye(self.gmrf.nP), self.H)
-            self.gmrf.meanCond = np.dot(self.KsChol, np.dot(hAug, st))
-            self.gmrf.covCond = np.dot(self.KsChol, np.dot(hAug, np.dot(covt, np.dot(hAug.T, self.KsChol))))
-            self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
+        hAug = np.kron(np.eye(self.gmrf.nP), self.H)
+        self.gmrf.meanCond = np.dot(self.KsChol, np.dot(hAug, st))
+        self.gmrf.covCond = np.dot(self.KsChol, np.dot(hAug, np.dot(covt, np.dot(hAug.T, self.KsChol))))
+        self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()

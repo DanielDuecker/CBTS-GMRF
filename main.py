@@ -8,7 +8,7 @@ import numpy as np
 import methods
 import parameters as par
 from classes import gmrf
-from classes import  stkf
+from classes import stkf
 from classes import trueField
 
 np.set_printoptions(threshold=np.inf)
@@ -32,7 +32,8 @@ X, Y = np.meshgrid(x, y)
 trueField = trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
 
 """STKF"""
-stkf1 = stkf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta,trueField,par.dt,par.sigmaT,par.lambd,par.sigma2)
+stkf1 = stkf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta, trueField, par.dt, par.sigmaT,
+             par.lambd, par.sigma2)
 
 """GMRF"""
 # Initialize Plot
@@ -46,15 +47,15 @@ xHist.append(xMeas)
 yHist.append(yMeas)
 
 # Initialize measurement vector and mapping matrix
-zMeas = np.zeros((par.nMeas,1))
-Phi = np.zeros((par.nMeas,gmrf1.nP+gmrf1.nBeta))
+zMeas = np.zeros((par.nMeas, 1))
+Phi = np.zeros((par.nMeas, gmrf1.nP + gmrf1.nBeta))
 zMeas[0] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
 Phi[0, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
 
 # Update and plot field belief
-for i in range(par.nIter-1):
+for i in range(par.nIter - 1):
     print("Iteration ", i, " of ", par.nIter, ".")
-    t = i*par.dt
+    t = i * par.dt
 
     timeBefore = time.time()
 
@@ -74,14 +75,14 @@ for i in range(par.nIter-1):
     (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
     xHist.append(xMeas)
     yHist.append(yMeas)
-    zMeas[(i+1) % par.nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
+    zMeas[(i + 1) % par.nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
 
     # Map measurement to surrounding grid vertices and stack under Phi matrix
-    Phi[(i+1) % par.nMeas, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
+    Phi[(i + 1) % par.nMeas, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
 
     # If truncated measurements are used, set conditioned mean and covariance as prior
     if par.truncation:
-        if (i+1) % par.nMeas == 0:
+        if (i + 1) % par.nMeas == 0:
             gmrf1.covPrior = gmrf1.covCond
             gmrf1.meanPrior = gmrf1.meanCond
 
@@ -92,7 +93,7 @@ for i in range(par.nIter-1):
 
     # Plotting:
     if not par.fastCalc:
-        #if i % (par.nIter/100) == 0:
+        # if i % (par.nIter/100) == 0:
         methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
 
     # Update ground truth:
@@ -104,7 +105,7 @@ plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
-#TODO augment to time dependent fields
-#TODO add outer grid
-#TODO boundary conditions
-#TODO use of sparse commands
+# TODO check covariance calculation for STKF
+# TODO add outer grid
+# TODO boundary conditions
+# TODO use of sparse commands

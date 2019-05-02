@@ -2,13 +2,26 @@
   <dictionary name="bfjs">
     <words>
       <w># regression coefficients</w>
+      <w>chol</w>
+      <w>covkk</w>
+      <w>covt</w>
       <w>diag</w>
       <w>discretizaton</w>
+      <w>dxdt</w>
+      <w>dydt</w>
       <w>geist</w>
       <w>gmrf</w>
+      <w>kalman</w>
+      <w>lambd</w>
       <w>linalg</w>
       <w>prec</w>
+      <w>pred</w>
+      <w>prediciton</w>
+      <w>sinusodial</w>
       <w>stepsize</w>
+      <w>stkf</w>
+      <w>timestep</w>
+      <w>timesteps</w>
       <w>tinv</w>
       <w>vertice</w>
     </words>

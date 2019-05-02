@@ -4,6 +4,7 @@ import numpy as np
 
 import parameters as par
 
+
 def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
     noise = np.random.normal(0, math.sqrt(noiseVariance))
     return (trueField.field(xMeas, yMeas) + noise)[0]
@@ -37,35 +38,20 @@ def mapConDis(gmrf, xMeas, yMeas):
     return Phi
 
 
-# def getPrecisionMatrix(gmrf):
-#    diagQ = 2*np.eye(gmrf.nP)
-#    Lambda = diagQ-np.eye(gmrf.nP,k=1)-np.eye(gmrf.nP,k=-1)
-#    return Lambda
-
 def getPrecisionMatrix(gmrf):
-    #diagQ = 2 * np.eye(gmrf.nP)
-    #Lambda = diagQ - np.eye(gmrf.nP, k=1) - np.eye(gmrf.nP, k=-1)
-    Lambda = np.array([[5,-1,0,-1,0,0,0,0,0],
-                    [-1,3,-1,0,-1,0,0,0,0],
-                    [0,-1,2,0,0,-1,0,0,0],
-                    [-1,0,0,3,-1,0,-1,0,0],
-                    [0,-1,0,-1,4,-1,0,-1,0],
-                    [0,0,-1,0,-1,3,0,0,-1],
-                    [0,0,0,-1,0,0,2,-1,0],
-                    [0,0,0,0,-1,0,-1,3,-1],
-                    [0,0,0,0,0,-1,0,-1,2]])
-    Lambda = 4*np.eye(gmrf.nP) - np.eye(gmrf.nP, k=gmrf.nX) - np.eye(gmrf.nP, k=-gmrf.nX)
-    Lambda = Lambda - np.eye(gmrf.nP, k=1) - np.eye(gmrf.nP, k=-1)
+    diagonalValue = 4  # needs to be high enough in order to create a strictly diagonal dominant matrix
+    Lambda = diagonalValue * np.eye(gmrf.nP) - np.eye(gmrf.nP, k=gmrf.nX) - np.eye(gmrf.nP, k=-gmrf.nX)
+    Lambda -= np.eye(gmrf.nP, k=1) - np.eye(gmrf.nP, k=-1)
 
+    # set precision entry to zero if left or right border is reached
+    # (since there is no connection between the two edge vertices)
     for i in range(gmrf.nP):
-        if (i % gmrf.nX) == 0: #left border
+        if (i % gmrf.nX) == 0:  # left border
             if i >= gmrf.nX:
-                Lambda[i,i-1] = 0
-        if (i % gmrf.nX) == (gmrf.nX-1): #right border
-            if i <= (gmrf.nP-gmrf.nX):
-                Lambda[i,i+1] = 0
-    print(Lambda)
-    #print(np.linalg.eig(Lambda))
+                Lambda[i, i - 1] = 0
+        if (i % gmrf.nX) == (gmrf.nX - 1):  # right border
+            if i <= (gmrf.nP - gmrf.nX):
+                Lambda[i, i + 1] = 0
     return Lambda
 
 
@@ -81,12 +67,17 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
         yNext = np.random.choice([y - stepsize, y + stepsize])
 
     # x and y are switched because of matrix/plot relation
-    (yUncertain,xUncertain) = np.unravel_index(np.argmax(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),axis=None),(gmrf.nY,gmrf.nX))
+    (yUncertain, xUncertain) = np.unravel_index(
+        np.argmax(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX), axis=None), (gmrf.nY, gmrf.nX))
 
-    dist = np.sqrt((xUncertain-x)**2+(yUncertain-y)**2)
+    dist = np.sqrt((xUncertain - x) ** 2 + (yUncertain - y) ** 2)
+
     if np.random.rand() < par.exploitingRate:
-        xNext = x + par.xVel*(xUncertain-x)/dist
-        yNext = y + par.yVel*(yUncertain-y)/dist
+        xNext = x + par.xVel * (xUncertain - x) / dist
+        yNext = y + par.yVel * (yUncertain - y) / dist
+        if dist == 0:
+            xNext = x
+            yNext = y
 
     if xNext < gmrf.xMin:
         xNext = x + stepsize
@@ -107,7 +98,7 @@ def plotFields(fig, x, y, trueField, gmrf, iterVec, timeVec, xHist, yHist):
 
     # Plotting ground truth
     ax1 = fig.add_subplot(221)
-    ax1.contourf(x, y, trueField.field(x,y))
+    ax1.contourf(x, y, trueField.field(x, y))
     plt.title("True field")
 
     # Plotting conditioned mean
@@ -117,7 +108,7 @@ def plotFields(fig, x, y, trueField, gmrf, iterVec, timeVec, xHist, yHist):
     plt.ylabel("y in m")
     plt.title("Mean of belief")
 
-    # Plotting precision matrix
+    # Plotting covariance matrix
     ax3 = fig.add_subplot(223)
     ax3.contourf(gmrf.x, gmrf.y, gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
     ax3.plot(xHist, yHist, 'black')
