@@ -1,4 +1,4 @@
-# Parameter file for main.py
+# classes for main.py
 
 import numpy as np
 
@@ -112,17 +112,17 @@ class trueField:
         else:
             xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
             yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
-            # zGT = np.array([[1, 2, 2, 1, 1],
-            # [2, 4, 2, 1, 1],
-            # [1, 2, 3, 3, 2],
-            # [1, 1, 2, 3, 3],
-            # [1, 1, 2, 3, 3]])
+            zGT = np.array([[1, 2, 2, 1, 1],
+             [2, 4, 2, 1, 1],
+             [1, 2, 3, 3, 2],
+             [1, 1, 2, 3, 3],
+             [1, 1, 2, 3, 3]])
 
-            zGT = np.array([[2, 4, 6, 7, 8],
-                            [2.1, 5, 7, 11.25, 9.5],
-                            [3, 5.6, 8.5, 17, 14.5],
-                            [2.5, 5.4, 6.9, 9, 8],
-                            [2, 2.3, 4, 6, 7.5]])
+            #zGT = np.array([[2, 4, 6, 7, 8],
+            #                [2.1, 5, 7, 11.25, 9.5],
+             #               [3, 5.6, 8.5, 17, 14.5],
+              #              [2.5, 5.4, 6.9, 9, 8],
+               #             [2, 2.3, 4, 6, 7.5]])
 
         self.fInit = interpolate.interp2d(xGT, yGT, zGT)
 
@@ -133,9 +133,9 @@ class trueField:
             return self.cScale * self.fInit(x, y)
 
     def updateField(self, t):
-        self.xShift = par.dxdt * t % self.xEnd
-        self.yShift = par.dydt * t % self.yEnd
         if t < par.pulseTime:
+            self.xShift = par.dxdt * t % self.xEnd
+            self.yShift = par.dydt * t % self.yEnd
             self.cScale = np.cos(math.pi * t / par.pulseTime)
 
 
@@ -148,9 +148,9 @@ class stkf:
         self.lambd = lambd
 
         # State representation of Sr
-        self.F = -1 / sigmaT * np.ones((1, 1))
-        self.H = math.sqrt(2 * lambd / sigmaT) * np.ones((1, 1))
-        self.G = np.ones((1, 1))
+        self.F = -1 / sigmaT * np.eye(1)
+        self.H = math.sqrt(2 * lambd / sigmaT) * np.eye(1)
+        self.G = np.eye(1)
         self.sigma2 = sigma2
 
         # Kernels
@@ -173,11 +173,12 @@ class stkf:
             covt = np.dot(A, np.dot(self.covkk, A.T))
         else:
             Phi = methods.mapConDis(self.gmrf, xMeas, yMeas)
-            C = np.dot(Phi, np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H)))
+            Cs = np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H))
+            C = np.dot(Phi, Cs)
             QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(self.F, tau)), np.dot(self.G,
                                             np.dot(self.G.T, scipy.linalg.expm(np.dot(self.F, tau).T)))), 0, self.dt)[0]
             Q = np.kron(np.eye(self.gmrf.nP), QBar)
-            R = self.sigma2
+            R = self.sigma2*np.eye(1)
 
             # Kalman Regression
             sPred = np.dot(A, self.skk)
@@ -193,7 +194,6 @@ class stkf:
             covt = covUpdated
             self.tk = t
 
-        hAug = np.kron(np.eye(self.gmrf.nP), self.H)
-        self.gmrf.meanCond = np.dot(self.KsChol, np.dot(hAug, st))
-        self.gmrf.covCond = np.dot(self.KsChol, np.dot(hAug, np.dot(covt, np.dot(hAug.T, self.KsChol))))
+        self.gmrf.meanCond = np.dot(Cs, st)
+        self.gmrf.covCond = np.dot(Cs, np.dot(covt, Cs.T))
         self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()

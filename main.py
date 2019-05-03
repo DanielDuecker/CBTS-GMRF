@@ -93,8 +93,8 @@ for i in range(par.nIter - 1):
 
     # Plotting:
     if not par.fastCalc:
-        # if i % (par.nIter/100) == 0:
-        methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
+        if i % (par.nIter/100) == 0:
+            methods.plotFields(fig, x, y, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
 
     # Update ground truth:
     if par.temporal:
@@ -105,7 +105,6 @@ plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
-# TODO check covariance calculation for STKF
 # TODO add outer grid
 # TODO boundary conditions
 # TODO use of sparse commands
