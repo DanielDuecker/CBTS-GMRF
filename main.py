@@ -25,7 +25,7 @@ iterVec = []
 gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta)
 
 # Initialize controller
-controller = control.piControl(par.R, par.g, par.varNoise, par.H, par.K, par.ctrSamplingTime, par.nUpdated)
+controller = control.piControl(par.R, par.g, par.lambd, par.H, par.K, par.ctrSamplingTime, par.nUpdated)
 
 # Plotting grid
 x = np.arange(gmrf1.xMin, gmrf1.xMax, par.dX)

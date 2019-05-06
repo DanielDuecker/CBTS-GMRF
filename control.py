@@ -5,10 +5,11 @@ import parameters as par
 import methods
 
 class piControl:
-    def __init__(self,R,g,varNoise,H,K,dt,nUpdated):
+    def __init__(self,R,g,lambd,H,K,dt,nUpdated):
         self.R = R
         self.g = g
-        self.varNoise = varNoise
+        self.lambd = lambd
+        self.varNoise = self.lambd*np.linalg.inv(R)
         self.H = H
         self.K = K
         self.dt = dt
@@ -22,19 +23,33 @@ class piControl:
 
         for n in range(self.nUpdated):
             for k in range(self.K):
-                noise = np.zeros((self.H, 1))
-                pathRollOut = np.zeros((2, self.H))
+                noise = np.zeros((self.K, self.H))
+                XpathRollOut = np.zeros((self.K, self.H))
+                YpathRollOut = np.zeros((self.K, self.H))
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
-                    noise[j] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
-                    pathRollOut[0, j] = x + par.xVel*math.cos(self.u0[j]+noise[j])
-                    pathRollOut[1, j] = y + par.yVel*math.sin(self.u0[j]+noise[j])
+                    noise[k,j] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
+                    XpathRollOut[k, j] = x + par.xVel*math.cos(self.u0[j]+noise[k,j])
+                    YpathRollOut[k, j] = y + par.yVel*math.sin(self.u0[j]+noise[k,j])
 
-                S = np.zeros((1,self.H+1))
+                S = np.zeros((self.K,self.H+1))
                 for i in range(self.H):
                     index = self.H-i-1
-                    Phi = methods.mapConDis(gmrf, pathRollOut[0, index], pathRollOut[1, index])
+                    Phi = methods.mapConDis(gmrf, XpathRollOut[k, index], YpathRollOut[k, index])
                     qhh = np.dot(Phi, np.dot(gmrf.covCond, Phi.T))
-                    S[0,index] = S[0,index+1] + qhh + 0.5*np.dot((self.u[index,0]+np.dot(M[index,index],noise[index,0])).T,np.dot(self.R[index,index],self.u[index,0]+np.dot(M[index,index],noise[index,0])))
-                print(S)
+                    S[k, index] = S[k, index+1] + qhh + 0.5*np.dot((self.u[index, 0]+np.dot(M[index, index], noise[k, index])).T, np.dot(self.R[index, index],self.u[index, 0]+np.dot(M[index, index], noise[k,index])))
 
+                # Compute probability of path segments
+                P = np.zeros((self.K, self.H))
+                for k in range(self.K):
+                    for i in range(self.H):
+                        probSum = 0
+                        for indexSum in range (self.K):
+                            probSum += math.exp(-S[indexSum, i]/self.lambd)
+                        P[k, i] = math.exp(-S[k, i]/self.lambd)/probSum
+
+                # Compute next control action
+                deltaU = np.zeros((self.H-1, 1))
+                for i in range(self.H):
+                    for k in range(self.K):
+                        deltaU[i, 0] += np.dot(P[k, i], np.dot(M[0:(i+1), 0:(i+1)], noise[k, 0:(i+1)].reshape(i,1))) #FIX THIS
