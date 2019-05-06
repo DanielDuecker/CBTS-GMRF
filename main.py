@@ -76,7 +76,7 @@ for i in range(par.nIter - 1):
             gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
 
     # Get Control action
-    controller.getAction()
+    controller.getAction(xMeas, yMeas)
 
     # Get next measurement according to dynamics, stack under measurement vector
     (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
