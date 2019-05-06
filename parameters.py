@@ -1,5 +1,6 @@
-# Parameters for all files
+import numpy as np
 
+# Parameters for all files
 # main.py
 stkf = True
 sequentialUpdate = True  # Does not work with truncation!
@@ -40,6 +41,15 @@ valueT = 1e-3  # Prior precision value for regression vector bet
 sigmaT = 1e7
 lambd = 1e2
 sigma2 = 0.01
+
+# PI2 controller
+H = 10 # control horizon steps
+R = np.eye(H)
+g = np.ones((H,1))
+varNoise = 0.01*np.eye(H)
+K = 20
+ctrSamplingTime = 0.01
+nUpdated = 30
 
 if not truncation:
     nMeas = nIter

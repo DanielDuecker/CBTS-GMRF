@@ -10,6 +10,7 @@ import parameters as par
 from classes import gmrf
 from classes import stkf
 from classes import trueField
+import control
 
 np.set_printoptions(threshold=np.inf)
 
@@ -22,6 +23,9 @@ iterVec = []
 
 # Initialize GMRF
 gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta)
+
+# Initialize controller
+controller = control.piControl(par.R, par.g, par.varNoise, par.H, par.K, par.ctrSamplingTime, par.nUpdated)
 
 # Plotting grid
 x = np.arange(gmrf1.xMin, gmrf1.xMax, par.dX)
@@ -70,6 +74,9 @@ for i in range(par.nIter - 1):
             gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])
         else:
             gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
+
+    # Get Control action
+    controller.getAction()
 
     # Get next measurement according to dynamics, stack under measurement vector
     (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
