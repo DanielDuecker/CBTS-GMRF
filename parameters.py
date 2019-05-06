@@ -1,16 +1,16 @@
 # Parameters for all files
 
 # main.py
-stkf = False
+stkf = True
 sequentialUpdate = True  # Does not work with truncation!
-fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
+fastCalc = True  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
-sinusoidal = True  # True: Use sinusoidal ground truth
-temporal = True  # True: time varying field
+sinusoidal = False  # True: Use sinusoidal ground truth
+temporal = False  # True: time varying field
 
 exploitingRate = 0
 
-nIter = 5000  # number of iterations
+nIter = 10000  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
 ov2 = 0.04  # measurement variance
@@ -37,8 +37,8 @@ nBeta = 1  # regression coefficients
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 # stkf class
-sigmaT = 1e10
-lambd = 1
+sigmaT = 1e7
+lambd = 1e2
 sigma2 = 0.01
 
 if not truncation:
