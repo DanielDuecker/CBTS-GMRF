@@ -26,6 +26,7 @@ class piControl:
                 noise = np.zeros((self.K, self.H))
                 XpathRollOut = np.zeros((self.K, self.H))
                 YpathRollOut = np.zeros((self.K, self.H))
+
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
                     noise[k,j] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
@@ -52,4 +53,5 @@ class piControl:
                 deltaU = np.zeros((self.H-1, 1))
                 for i in range(self.H):
                     for k in range(self.K):
-                        deltaU[i, 0] += np.dot(P[k, i], np.dot(M[0:(i+1), 0:(i+1)], noise[k, 0:(i+1)].reshape(i,1))) #FIX THIS
+                        print(noise[k, 0:(i+1)])
+                        deltaU[self.H:(self.H+1), 0] += np.dot(P[k, i], np.dot(M[0:(i+1), 0:(i+1)], noise[k, 0:(i+1)]))
