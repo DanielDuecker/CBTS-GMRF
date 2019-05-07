@@ -41,7 +41,7 @@ def mapConDis(gmrf, xMeas, yMeas):
 def getPrecisionMatrix(gmrf):
     diagonalValue = 4  # needs to be high enough in order to create a strictly diagonal dominant matrix
     Lambda = diagonalValue * np.eye(gmrf.nP) - np.eye(gmrf.nP, k=gmrf.nX) - np.eye(gmrf.nP, k=-gmrf.nX)
-    Lambda -= np.eye(gmrf.nP, k=1) - np.eye(gmrf.nP, k=-1)
+    Lambda -= np.eye(gmrf.nP, k=1) + np.eye(gmrf.nP, k=-1)
 
     # set precision entry to zero if left or right border is reached
     # (since there is no connection between the two edge vertices)

@@ -158,7 +158,7 @@ class stkf:
         self.KsChol = np.linalg.cholesky(self.Ks)
         # h = lambda tau: lambd * math.exp(-abs(tau) / sigmaT)
 
-        self.sigmaZero = scipy.linalg.solve_lyapunov(self.F, self.G * self.G.T)
+        self.sigmaZero = scipy.linalg.solve_continuous_lyapunov(self.F, -self.G * self.G.T)
 
         # Initialization
         self.skk = np.zeros((self.gmrf.nP, 1))
