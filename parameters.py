@@ -11,7 +11,7 @@ temporal = False  # True: time varying field
 
 exploitingRate = 0
 
-nIter = 10000  # number of iterations
+nIter = 1000  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
 ov2 = 0.04  # measurement variance
@@ -38,8 +38,8 @@ nBeta = 1  # regression coefficients
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 # stkf class
-sigmaT = 1e7
-lambd = 1e2
+sigmaT = 1e5
+lambd = 1
 sigma2 = 0.01
 
 # PI2 controller
