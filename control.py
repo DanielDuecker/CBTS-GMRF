@@ -22,8 +22,8 @@ class piControl:
         M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T))
 
         for n in range(self.nUpdated):
+            noise = np.zeros((self.K, self.H))
             for k in range(self.K):
-                noise = np.zeros((self.K, self.H))
                 XpathRollOut = np.zeros((self.K, self.H))
                 YpathRollOut = np.zeros((self.K, self.H))
 
@@ -40,18 +40,21 @@ class piControl:
                     qhh = np.dot(Phi, np.dot(gmrf.covCond, Phi.T))
                     S[k, index] = S[k, index+1] + qhh + 0.5*np.dot((self.u[index, 0]+np.dot(M[index, index], noise[k, index])).T, np.dot(self.R[index, index],self.u[index, 0]+np.dot(M[index, index], noise[k,index])))
 
-                # Compute probability of path segments
-                P = np.zeros((self.K, self.H))
-                for k in range(self.K):
-                    for i in range(self.H):
-                        probSum = 0
-                        for indexSum in range (self.K):
-                            probSum += math.exp(-S[indexSum, i]/self.lambd)
-                        P[k, i] = math.exp(-S[k, i]/self.lambd)/probSum
-
-                # Compute next control action
-                deltaU = np.zeros((self.H-1, 1))
+            # Compute probability of path segments
+            P = np.zeros((self.K, self.H))
+            for k in range(self.K):
                 for i in range(self.H):
-                    for k in range(self.K):
-                        print(noise[k, 0:(i+1)])
-                        deltaU[self.H:(self.H+1), 0] += np.dot(P[k, i], np.dot(M[0:(i+1), 0:(i+1)], noise[k, 0:(i+1)]))
+                    probSum = 0
+                    for indexSum in range (self.K):
+                        probSum += math.exp(-S[indexSum, i]/self.lambd)
+                    P[k, i] = math.exp(-S[k, i]/self.lambd)/probSum
+
+            # Compute next control action
+            deltaU = np.zeros((self.H-1, 1))
+            for i in range(self.H-1):
+                for k in range(self.K):
+                    print(P[k, i].shape)
+                    print(np.dot(M[i:self.H, i:self.H], noise[k, i:self.H]).shape)
+                    print(M[i:self.H, i:self.H].shape)
+                    print(noise[k, i:self.H].shape)
+                    deltaU[i, 0] += P[k, i]*np.dot(M[i:self.H, i:self.H], noise[k, i:self.H])
