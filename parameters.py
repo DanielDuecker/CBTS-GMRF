@@ -10,14 +10,14 @@ temporal = False  # True: time varying field
 
 exploitingRate = 0
 
-nIter = 10000  # number of iterations
+nIter = 1000  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
 ov2 = 0.04  # measurement variance
 dX = dY = 0.01  # discretizaton in x and y for Plotting
 
 (x0, y0) = (0, 0)  # initial state
-maxStepsize = 0.5  # maximum change in every state per iteration
+maxStepsize = 1  # maximum change in every state per iteration
 xVel = maxStepsize
 yVel = maxStepsize
 
@@ -37,8 +37,8 @@ nBeta = 1  # regression coefficients
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 # stkf class
-sigmaT = 1e7
-lambd = 1e2
+sigmaT = 5
+lambd = 2e3
 sigma2 = 0.01
 
 if not truncation:

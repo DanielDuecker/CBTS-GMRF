@@ -158,7 +158,7 @@ class stkf:
         self.KsChol = np.linalg.cholesky(self.Ks)
         # h = lambda tau: lambd * math.exp(-abs(tau) / sigmaT)
 
-        self.sigmaZero = scipy.linalg.solve_lyapunov(self.F, self.G * self.G.T)
+        self.sigmaZero = scipy.linalg.solve_continuous_lyapunov(self.F, -self.G * self.G.T)
 
         # Initialization
         self.skk = np.zeros((self.gmrf.nP, 1))
@@ -166,7 +166,7 @@ class stkf:
         self.tk = 0
 
     def kalmanFilter(self, t, xMeas, yMeas, zMeas):
-        A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * (t - self.tk))
+        A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * par.dt)
         if t % 1 != 0:
             # Open loop prediciton
             st = np.dot(A, self.skk)
@@ -176,7 +176,7 @@ class stkf:
             Cs = np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H))
             C = np.dot(Phi, Cs)
             QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(self.F, tau)), np.dot(self.G,
-                                            np.dot(self.G.T, scipy.linalg.expm(np.dot(self.F, tau).T)))), 0, self.dt)[0]
+                                            np.dot(self.G.T, scipy.linalg.expm(np.dot(self.F, tau)).T))), 0, par.dt)[0]
             Q = np.kron(np.eye(self.gmrf.nP), QBar)
             R = self.sigma2*np.eye(1)
 
@@ -192,7 +192,6 @@ class stkf:
 
             st = sUpdated
             covt = covUpdated
-            self.tk = t
 
         self.gmrf.meanCond = np.dot(Cs, st)
         self.gmrf.covCond = np.dot(Cs, np.dot(covt, Cs.T))
