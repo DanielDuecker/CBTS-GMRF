@@ -160,31 +160,29 @@ class stkf:
 
         self.sigmaZero = scipy.linalg.solve_continuous_lyapunov(self.F, -self.G * self.G.T)
 
+        self.A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * par.dt)
+        self.Cs = np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H))
+        QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(self.F, tau)), np.dot(self.G,np.dot(self.G.T,scipy.linalg.expm(np.dot(self.F,tau)).T))),0, par.dt)[0]
+        self.Q = np.kron(np.eye(self.gmrf.nP), QBar)
+        self.R = self.sigma2 * np.eye(1)
+
         # Initialization
         self.skk = np.zeros((self.gmrf.nP, 1))
         self.covkk = np.kron(np.eye(self.gmrf.nP), self.sigmaZero)
-        self.tk = 0
 
     def kalmanFilter(self, t, xMeas, yMeas, zMeas):
-        A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * par.dt)
         if t % 1 != 0:
             # Open loop prediciton
-            st = np.dot(A, self.skk)
-            covt = np.dot(A, np.dot(self.covkk, A.T))
+            st = np.dot(self.A, self.skk)
+            covt = np.dot(self.A, np.dot(self.covkk, self.A.T))
         else:
             Phi = methods.mapConDis(self.gmrf, xMeas, yMeas)
-            Cs = np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H))
-            C = np.dot(Phi, Cs)
-            QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(self.F, tau)), np.dot(self.G,
-                                            np.dot(self.G.T, scipy.linalg.expm(np.dot(self.F, tau)).T))), 0, par.dt)[0]
-            Q = np.kron(np.eye(self.gmrf.nP), QBar)
-            R = self.sigma2*np.eye(1)
+            C = np.dot(Phi, self.Cs)
 
             # Kalman Regression
-            sPred = np.dot(A, self.skk)
-            covPred = np.dot(A, np.dot(self.covkk, A.T)) + Q
-
-            kalmanGain = np.dot(covPred, np.dot(C.T, np.linalg.inv(np.dot(C, np.dot(covPred, C.T)) + R)))
+            sPred = np.dot(self.A, self.skk)
+            covPred = np.dot(self.A, np.dot(self.covkk, self.A.T)) + self.Q
+            kalmanGain = np.dot(covPred, np.dot(C.T, np.linalg.inv(np.dot(C, np.dot(covPred, C.T)) + self.R)))
             sUpdated = sPred + np.dot(kalmanGain, zMeas - np.dot(C, sPred))
             covUpdated = np.dot(np.eye(self.gmrf.nP) - np.dot(kalmanGain, C), covPred)
             self.skk = sUpdated
@@ -193,6 +191,6 @@ class stkf:
             st = sUpdated
             covt = covUpdated
 
-        self.gmrf.meanCond = np.dot(Cs, st)
-        self.gmrf.covCond = np.dot(Cs, np.dot(covt, Cs.T))
+        self.gmrf.meanCond = np.dot(self.Cs, st)
+        self.gmrf.covCond = np.dot(self.Cs, np.dot(covt, self.Cs.T))
         self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()

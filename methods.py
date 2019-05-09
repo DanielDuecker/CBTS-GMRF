@@ -34,7 +34,6 @@ def mapConDis(gmrf, xMeas, yMeas):
             -yRel + gmrf.dy / 2)  # upper right
     Phi[0, yPos * gmrf.nX + xPos] = -1 / (gmrf.dx * gmrf.dy) * (xRel - gmrf.dx / 2) * (
             -yRel + gmrf.dy / 2)  # upper left
-
     return Phi
 
 
