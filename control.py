@@ -53,8 +53,18 @@ class piControl:
             deltaU = np.zeros((self.H-1, 1))
             for i in range(self.H-1):
                 for k in range(self.K):
-                    print(P[k, i].shape)
-                    print(np.dot(M[i:self.H, i:self.H], noise[k, i:self.H]).shape)
-                    print(M[i:self.H, i:self.H].shape)
-                    print(noise[k, i:self.H].shape)
-                    deltaU[i, 0] += P[k, i]*np.dot(M[i:self.H, i:self.H], noise[k, i:self.H])
+                    deltaU[i:self.H, 0] += P[k, i]*np.dot(M[i:(self.H-1), i:(self.H-1)], noise[k, i:(self.H-1)])
+
+            realDeltaU = np.zeros((self.H-1, 1))
+            for i in range(self.H-1):
+                sumNum = 0
+                sumDen = 0
+                for h in range(self.H):
+                    print(deltaU[h:self.H,0].shape)
+                    print("i:",i)
+                    sumNum += (self.H-h)*deltaU[h:self.H,0][i]
+                    sumDen += self.H - h
+                realDeltaU[i,0] = sumNum/sumDen
+
+            self.u = self.u0 + realDeltaU
+            #print(self.u)
