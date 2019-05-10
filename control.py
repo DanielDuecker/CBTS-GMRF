@@ -14,29 +14,27 @@ class piControl:
         self.K = K
         self.dt = dt
         self.nUpdated = nUpdated
-        self.u0 = np.zeros((self.H,1))
-        self.u = self.u0
+        self.u = np.zeros((self.H, 1))
 
-        self.xTraj = np.zeros((1,self.K))
-        self.yTraj = np.zeros((1,self.K))
-        self.xPathRollOut = np.zeros((1,self.K))
-        self.yPathRollOut = np.zeros((1,self.K))
+        self.xTraj = np.zeros((1, self.K))
+        self.yTraj = np.zeros((1, self.K))
+        self.xPathRollOut = np.zeros((1, self.K))
+        self.yPathRollOut = np.zeros((1, self.K))
 
     def stateDynamics(self,x,y,u):
         xNext = x + par.xVel * math.cos(u)
         yNext = y + par.yVel * math.sin(u)
-        return (xNext,yNext)
+        return xNext, yNext
 
     def trajectoryFromControl(self,x,y,u):
-        xTraj = np.zeros((len(u),1))
-        yTraj = np.zeros((len(u),1))
-        (xTraj[0],yTraj[0]) = (x,y)
+        xTraj = np.zeros((len(u), 1))
+        yTraj = np.zeros((len(u), 1))
+        (xTraj[0],yTraj[0]) = (x, y)
         for i in range(len(u)-1):
             (xTraj[i+1],yTraj[i+1]) = self.stateDynamics(xTraj[i],yTraj[i],u[i])
-        return (xTraj, yTraj)
+        return xTraj, yTraj
 
     def getNewState(self, gmrf, x, y):
-        self.u0 = self.u
         M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T))/(np.dot(self.g.T, np.dot(np.linalg.inv(self.R),self.g)))
 
         for n in range(self.nUpdated):
@@ -44,6 +42,7 @@ class piControl:
             self.xPathRollOut = np.zeros((self.H, self.K))
             self.yPathRollOut = np.zeros((self.H, self.K))
 
+            S = np.zeros((self.H + 1, self.K))
             for k in range(self.K):
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
@@ -53,7 +52,6 @@ class piControl:
                 self.xPathRollOut[:,k] = xTrVec[:,0]
                 self.yPathRollOut[:,k] = yTrVec[:,0]
 
-                S = np.zeros((self.H+1, self.K))
                 for i in range(self.H):
                     index = self.H-i-1
                     Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
@@ -83,7 +81,8 @@ class piControl:
                     sumDen += (self.H - h)
                 realDeltaU[i, 0] = sumNum/sumDen
 
-            self.u = self.u0 + realDeltaU
+            self.u += realDeltaU
+
         (self.xTraj,self.yTraj) = self.trajectoryFromControl(x,y,self.u)
         (xNext,yNext) = (self.xTraj[1],self.yTraj[1])
 

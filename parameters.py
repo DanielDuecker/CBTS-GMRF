@@ -46,8 +46,8 @@ sigma2 = 0.01
 H = 10 # control horizon steps
 R = np.eye(H)
 g = np.ones((H,1))
-lambd = 1
-K = 20
+lambd = 10
+K = 5
 ctrSamplingTime = 0.01
 nUpdated = 10
 
