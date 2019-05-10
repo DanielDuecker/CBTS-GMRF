@@ -83,9 +83,6 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
             xNext = x
             yNext = y
 
-    return (xNext,yNext)
-
-def stateSanityCheck(xNext,yNext):
     if xNext < gmrf.xMin:
         xNext = x + par.xVel
     elif xNext > gmrf.xMax:
@@ -95,10 +92,10 @@ def stateSanityCheck(xNext,yNext):
         yNext = y + par.yVel
     elif yNext > gmrf.yMax:
         yNext = y - par.yVel
-    return (xNext,yNext)
 
+    return (xNext, yNext)
 
-def plotFields(fig, x, y, trueField, gmrf, iterVec, timeVec, xHist, yHist):
+def plotFields(fig, x, y, xTraj, yTraj, trueField, gmrf, iterVec, timeVec, xHist, yHist):
     plt.clf()
     plt.ion()
 
@@ -118,6 +115,8 @@ def plotFields(fig, x, y, trueField, gmrf, iterVec, timeVec, xHist, yHist):
     ax3 = fig.add_subplot(223)
     ax3.contourf(gmrf.x, gmrf.y, gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
     ax3.plot(xHist, yHist, 'black')
+    if par.PIControl:
+        ax3.plot(xTraj,yTraj,'blue')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Uncertainty belief")

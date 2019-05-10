@@ -17,16 +17,17 @@ class piControl:
         self.u0 = np.zeros((self.H,1))
         self.u = self.u0
 
-    def stateDynamics(self,x,y,u):
+    def stateDynamics(self,x,y):
         xNext = x + par.xVel * math.cos(self.u[0])
         yNext = y + par.yVel * math.sin(self.u[0])
         return (xNext,yNext)
 
     def trajectoryFromControl(self,x,y,u):
-        xTraj,yTraj = np.zeros((len(u),1))
+        xTraj = np.zeros((len(u),1))
+        yTraj = np.zeros((len(u),1))
         (xTraj[0],yTraj[0]) = (x,y)
-        for i in range(len(u)):
-            (x[i],y[i]) = self.stateDynamics(xTraj[i],yTraj[i],u[i])
+        for i in range(len(u)-1):
+            (xTraj[i+1],yTraj[i+1]) = self.stateDynamics(xTraj[i],yTraj[i])
         return (xTraj,yTraj)
 
     def getNewState(self, gmrf, x, y):
@@ -76,12 +77,18 @@ class piControl:
                 realDeltaU[i, 0] = sumNum/sumDen
 
             self.u = self.u0 + realDeltaU
-            print(self.u)
 
-
-        (xTraj,yTraj) = self.trajectoryFromControl(x,y,u)
+        (xTraj,yTraj) = self.trajectoryFromControl(x,y,self.u)
         (xNext,yNext) = (xTraj[1],yTraj[1])
 
+        if xNext < gmrf.xMin:
+            xNext = x + par.xVel
+        elif xNext > gmrf.xMax:
+            xNext = x - par.xVel
 
+        if yNext < gmrf.yMin:
+            yNext = y + par.yVel
+        elif yNext > gmrf.yMax:
+            yNext = y - par.yVel
 
-        return (xNext,yNext)
+        return (xNext,yNext,xTraj,yTraj)
