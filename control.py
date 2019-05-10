@@ -65,6 +65,17 @@ class piControl:
 
             self.u = self.u0 + realDeltaU
 
-        xMeas = x + par.xVel * math.cos(self.u[0])
-        yMeas = y + par.yVel * math.sin(self.u[0])
-        return (xMeas,yMeas)
+        xNext = x + par.xVel * math.cos(self.u[0])
+        yNext = y + par.yVel * math.sin(self.u[0])
+
+        if xNext < gmrf.xMin:
+            xNext = x + par.xVel
+        elif xNext > gmrf.xMax:
+            xNext = x - par.xVel
+
+        if yNext < gmrf.yMin:
+            yNext = y + par.yVel
+        elif yNext > gmrf.yMax:
+            yNext = y - par.yVel
+
+        return (xNext,yNext)
