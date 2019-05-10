@@ -22,49 +22,49 @@ class piControl:
         M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T))
 
         for n in range(self.nUpdated):
-            noise = np.zeros((self.K, self.H))
+            noise = np.zeros((self.H, self.K))
             for k in range(self.K):
-                XpathRollOut = np.zeros((self.K, self.H))
-                YpathRollOut = np.zeros((self.K, self.H))
+                xPathRollOut = np.zeros((self.H, self.K))
+                yPathRollOut = np.zeros((self.H, self.K))
 
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
-                    noise[k,j] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
-                    XpathRollOut[k, j] = x + par.xVel*math.cos(self.u0[j]+noise[k,j])
-                    YpathRollOut[k, j] = y + par.yVel*math.sin(self.u0[j]+noise[k,j])
+                    noise[j,k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
+                    xPathRollOut[j, k] = x + par.xVel*math.cos(self.u0[j]+noise[j, k])
+                    yPathRollOut[j, k] = y + par.yVel*math.sin(self.u0[j]+noise[j, k])
 
-                S = np.zeros((self.K,self.H+1))
+                S = np.zeros((self.H+1, self.K))
                 for i in range(self.H):
                     index = self.H-i-1
-                    Phi = methods.mapConDis(gmrf, XpathRollOut[k, index], YpathRollOut[k, index])
+                    Phi = methods.mapConDis(gmrf, xPathRollOut[index, k], yPathRollOut[index, k])
                     qhh = np.dot(Phi, np.dot(gmrf.covCond, Phi.T))
-                    S[k, index] = S[k, index+1] + qhh + 0.5*np.dot((self.u[index, 0]+np.dot(M[index, index], noise[k, index])).T, np.dot(self.R[index, index],self.u[index, 0]+np.dot(M[index, index], noise[k,index])))
+                    S[index, k] = S[index+1, k] + qhh + 0.5*np.dot((self.u[index, 0]+np.dot(M[index, index], noise[index, k])).T, np.dot(self.R[index, index],self.u[index, 0]+np.dot(M[index, index], noise[index, k])))
 
             # Compute probability of path segments
-            P = np.zeros((self.K, self.H))
+            P = np.zeros((self.H, self.K))
             for k in range(self.K):
                 for i in range(self.H):
                     probSum = 0
-                    for indexSum in range (self.K):
-                        probSum += math.exp(-S[indexSum, i]/self.lambd)
-                    P[k, i] = math.exp(-S[k, i]/self.lambd)/probSum
+                    for indexSum in range(self.K):
+                        probSum += math.exp(-S[i, indexSum]/self.lambd)
+                    P[i, k] = math.exp(-S[i, k]/self.lambd)/probSum
 
             # Compute next control action
-            deltaU = np.zeros((self.H-1, 1))
-            for i in range(self.H-1):
-                for k in range(self.K):
-                    deltaU[i:self.H, 0] += P[k, i]*np.dot(M[i:(self.H-1), i:(self.H-1)], noise[k, i:(self.H-1)])
+            deltaU = np.zeros((self.H, self.H))
+            for i in range(self.H):
+                deltaU[i:self.H,i] += np.dot(np.dot(M[i:self.H, i:self.H], noise[i:self.H,:]),P[i,:].T)
 
-            realDeltaU = np.zeros((self.H-1, 1))
-            for i in range(self.H-1):
+            realDeltaU = np.zeros((self.H, 1))
+            for i in range(self.H):
                 sumNum = 0
                 sumDen = 0
                 for h in range(self.H):
-                    print(deltaU[h:self.H,0].shape)
-                    print("i:",i)
-                    sumNum += (self.H-h)*deltaU[h:self.H,0][i]
-                    sumDen += self.H - h
-                realDeltaU[i,0] = sumNum/sumDen
+                    sumNum += (self.H - h)*deltaU[:, i][i]
+                    sumDen += (self.H - h)
+                realDeltaU[i, 0] = sumNum/sumDen
 
             self.u = self.u0 + realDeltaU
-            #print(self.u)
+
+        xMeas = x + par.xVel * math.cos(self.u[0])
+        yMeas = y + par.yVel * math.sin(self.u[0])
+        return (xMeas,yMeas)

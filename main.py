@@ -75,11 +75,13 @@ for i in range(par.nIter - 1):
         else:
             gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
 
-    # Get Control action
-    controller.getAction(gmrf1, xMeas, yMeas)
+    if par.PIControl:
+        # Get Control action
+        (xMeas,yMeas) = controller.getAction(gmrf1, xMeas, yMeas)
+    else:
+        # Get next measurement according to dynamics, stack under measurement vector
+        (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
 
-    # Get next measurement according to dynamics, stack under measurement vector
-    (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
     xHist.append(xMeas)
     yHist.append(yMeas)
     zMeas[(i + 1) % par.nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
