@@ -42,7 +42,7 @@ stkf1 = stkf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta, 
 """GMRF"""
 # Initialize Plot
 fig = plt.figure()
-methods.plotFields(fig, x, y, [], [], trueField, gmrf1, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, trueField, gmrf1, controller, iterVec, timeVec, xHist, yHist)
 plt.show()
 
 # Get first measurement:
@@ -77,7 +77,7 @@ for i in range(par.nIter - 1):
 
     if par.PIControl:
         # Get next state according to PI Controller
-        (xMeas, yMeas, xTraj, yTraj) = controller.getNewState(gmrf1, xMeas, yMeas)
+        (xMeas, yMeas) = controller.getNewState(gmrf1, xMeas, yMeas)
     else:
         # Get next measurement according to dynamics, stack under measurement vector
         (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
@@ -103,13 +103,13 @@ for i in range(par.nIter - 1):
     # Plotting:
     if not par.fastCalc:
         #if i % (par.nIter/100) == 0:
-        methods.plotFields(fig, x, y, xTraj, yTraj, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
+        methods.plotFields(fig, x, y, trueField, gmrf1, controller, iterVec, timeVec, xHist, yHist)
 
     # Update ground truth:
     if par.temporal:
         trueField.updateField(i)
 
-methods.plotFields(fig, x, y, xTraj, yTraj, trueField, gmrf1, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, trueField, gmrf1, controller, iterVec, timeVec, xHist, yHist)
 plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")

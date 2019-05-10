@@ -95,7 +95,7 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
 
     return (xNext, yNext)
 
-def plotFields(fig, x, y, xTraj, yTraj, trueField, gmrf, iterVec, timeVec, xHist, yHist):
+def plotFields(fig, x, y, trueField, gmrf, controller, iterVec, timeVec, xHist, yHist):
     plt.clf()
     plt.ion()
 
@@ -116,7 +116,9 @@ def plotFields(fig, x, y, xTraj, yTraj, trueField, gmrf, iterVec, timeVec, xHist
     ax3.contourf(gmrf.x, gmrf.y, gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
     ax3.plot(xHist, yHist, 'black')
     if par.PIControl:
-        ax3.plot(xTraj,yTraj,'blue')
+        ax3.plot(controller.xTraj,controller.yTraj,'blue')
+        for k in range(par.K):
+            ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Uncertainty belief")

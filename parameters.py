@@ -11,7 +11,6 @@ temporal = False  # True: time varying field
 PIControl = True
 
 exploitingRate = 0
-
 nIter = 1000  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
@@ -47,10 +46,10 @@ sigma2 = 0.01
 H = 10 # control horizon steps
 R = np.eye(H)
 g = np.ones((H,1))
-lambd = 0.01
+lambd = 1
 K = 20
 ctrSamplingTime = 0.01
-nUpdated = 30
+nUpdated = 10
 
 if not truncation:
     nMeas = nIter
