@@ -47,6 +47,7 @@ plt.show()
 
 # Get first measurement:
 (xMeas, yMeas) = methods.getNextState(par.x0, par.y0, par.x0, par.y0, par.maxStepsize, gmrf1)
+(xMeas,yMeas) = methods.stateSanityCheck(xMeas, yMeas)
 xHist.append(xMeas)
 yHist.append(yMeas)
 
@@ -76,11 +77,14 @@ for i in range(par.nIter - 1):
             gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
 
     if par.PIControl:
-        # Get Control action
-        (xMeas,yMeas) = controller.getAction(gmrf1, xMeas, yMeas)
+        # Get next state according to PI Controller
+        (xTraj, yTraj) = controller.getNewState(gmrf1, xMeas, yMeas)
+        (xMeas, yMeas) = (xTraj[1], yTraj[1])
     else:
         # Get next measurement according to dynamics, stack under measurement vector
         (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
+
+    (xMeas,yMeas) = methods.stateSanityCheck(xMeas, yMeas)
 
     xHist.append(xMeas)
     yHist.append(yMeas)

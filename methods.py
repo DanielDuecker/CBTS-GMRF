@@ -26,14 +26,18 @@ def mapConDis(gmrf, xMeas, yMeas):
     # Local coordinate system is different from Geist! (e_y=-e_y_Geist)
     # because now mean vector is [vertice0,vertice1,vertice3,...])
     # Calculate weights at neighbouring positions
-    Phi[0, (yPos + 1) * gmrf.nX + xPos] = 1 / (gmrf.dx * gmrf.dy) * (xRel - gmrf.dx / 2) * (
+    try:
+        Phi[0, (yPos + 1) * gmrf.nX + xPos] = 1 / (gmrf.dx * gmrf.dy) * (xRel - gmrf.dx / 2) * (
             -yRel - gmrf.dy / 2)  # lower left
-    Phi[0, (yPos + 1) * gmrf.nX + xPos + 1] = -1 / (gmrf.dx * gmrf.dy) * (xRel + gmrf.dx / 2) * (
+        Phi[0, (yPos + 1) * gmrf.nX + xPos + 1] = -1 / (gmrf.dx * gmrf.dy) * (xRel + gmrf.dx / 2) * (
             -yRel - gmrf.dy / 2)  # lower right
-    Phi[0, yPos * gmrf.nX + xPos + 1] = 1 / (gmrf.dx * gmrf.dy) * (xRel + gmrf.dx / 2) * (
+        Phi[0, yPos * gmrf.nX + xPos + 1] = 1 / (gmrf.dx * gmrf.dy) * (xRel + gmrf.dx / 2) * (
             -yRel + gmrf.dy / 2)  # upper right
-    Phi[0, yPos * gmrf.nX + xPos] = -1 / (gmrf.dx * gmrf.dy) * (xRel - gmrf.dx / 2) * (
+        Phi[0, yPos * gmrf.nX + xPos] = -1 / (gmrf.dx * gmrf.dy) * (xRel - gmrf.dx / 2) * (
             -yRel + gmrf.dy / 2)  # upper left
+
+    except:
+        print("Error! Agent is out of bound with state (",xMeas,",",yMeas,")")
 
     return Phi
 
@@ -79,17 +83,19 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
             xNext = x
             yNext = y
 
+    return (xNext,yNext)
+
+def stateSanityCheck(xNext,yNext):
     if xNext < gmrf.xMin:
-        xNext = x + stepsize
+        xNext = x + par.xVel
     elif xNext > gmrf.xMax:
-        xNext = x - stepsize
+        xNext = x - par.xVel
 
     if yNext < gmrf.yMin:
-        yNext = y + stepsize
+        yNext = y + par.yVel
     elif yNext > gmrf.yMax:
-        yNext = y - stepsize
-
-    return xNext, yNext
+        yNext = y - par.yVel
+    return (xNext,yNext)
 
 
 def plotFields(fig, x, y, trueField, gmrf, iterVec, timeVec, xHist, yHist):
