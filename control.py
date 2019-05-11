@@ -52,10 +52,12 @@ class piControl:
                 self.xPathRollOut[:,k] = xTrVec[:,0]
                 self.yPathRollOut[:,k] = yTrVec[:,0]
 
+                # compute path costs
                 for i in range(self.H):
                     index = self.H-i-1
                     Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
                     qhh = np.dot(Phi, np.dot(gmrf.covCond, Phi.T))
+
                     S[index, k] = S[index+1, k] + qhh + 0.5*np.dot((self.u[index, 0]+np.dot(M[index, index], noise[index, k])).T, np.dot(self.R[index, index],self.u[index, 0]+np.dot(M[index, index], noise[index, k])))
 
             # Compute probability of path segments
@@ -83,7 +85,7 @@ class piControl:
 
             self.u += realDeltaU
 
-        (self.xTraj,self.yTraj) = self.trajectoryFromControl(x,y,self.u)
+        (self.xTraj, self.yTraj) = self.trajectoryFromControl(x, y, self.u)
         (xNext,yNext) = (self.xTraj[1],self.yTraj[1])
 
         if xNext < gmrf.xMin:
