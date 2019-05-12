@@ -131,3 +131,17 @@ def plotFields(fig, x, y, trueField, gmrf, controller, iterVec, timeVec, xHist, 
     plt.title("Update calculation time over iteration index")
 
     fig.canvas.draw()
+
+def sanityCheck(xVec,yVec,gmrf):
+    for x in xVec:
+        if x < gmrf.xMin:
+            return False
+        elif x > gmrf.xMax:
+            return False
+
+    for y in yVec:
+        if y < gmrf.yMin:
+            return False
+        elif y > gmrf.yMax:
+            return False
+    return True

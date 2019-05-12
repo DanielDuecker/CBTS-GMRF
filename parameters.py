@@ -18,7 +18,7 @@ ov2 = 0.04  # measurement variance
 dX = dY = 0.01  # discretizaton in x and y for Plotting
 
 (x0, y0) = (0, 0)  # initial state
-maxStepsize = 0.5  # maximum change in every state per iteration
+maxStepsize = 0.3  # maximum change in every state per iteration
 xVel = maxStepsize
 yVel = maxStepsize
 
@@ -28,10 +28,10 @@ pulseTime = nIter / 2  # Duration of sinusodial pulsation
 
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 10
+nX = 20
 yMin = 0
 yMax = 10
-nY = 10
+nY = 20
 nBeta = 1  # regression coefficients
 
 # gmrf class
@@ -43,10 +43,11 @@ lambd = 1
 sigma2 = 0.01
 
 # PI2 controller
-H = 10 # control horizon steps
-R = 0.01*np.eye(H)
+H = 20 # control horizon steps
+controlCost = 100
+R = controlCost*np.eye(H)
 g = np.ones((H,1))
-lambd = 1
+lambd = 100
 K = 5
 ctrSamplingTime = 0.01
 nUpdated = 10

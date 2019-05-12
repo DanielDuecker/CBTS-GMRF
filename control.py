@@ -14,7 +14,7 @@ class piControl:
         self.K = K
         self.dt = dt
         self.nUpdated = nUpdated
-        self.u = np.zeros((self.H, 1))
+        self.u = math.pi / 4*np.ones((self.H, 1))
 
         self.xTraj = np.zeros((1, self.K))
         self.yTraj = np.zeros((1, self.K))
@@ -36,7 +36,6 @@ class piControl:
 
     def getNewState(self, gmrf, x, y):
         M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T))/(np.dot(self.g.T, np.dot(np.linalg.inv(self.R),self.g)))
-
         for n in range(self.nUpdated):
             noise = np.zeros((self.H, self.K))
             self.xPathRollOut = np.zeros((self.H, self.K))
@@ -46,25 +45,29 @@ class piControl:
             for k in range(self.K):
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
-                    noise[j,k] = np.random.normal(math.pi/4, math.sqrt(self.varNoise[j, j]))
+                    noise[j, k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
+                    (xTrVec, yTrVec) = self.trajectoryFromControl(x, y, self.u[:, 0] + noise[:, k])
 
-                (xTrVec,yTrVec) = self.trajectoryFromControl(x, y, self.u[:, 0] + noise[:, k])
-                self.xPathRollOut[:,k] = xTrVec[:,0]
-                self.yPathRollOut[:,k] = yTrVec[:,0]
+                    # repeat if states are out of bound
+                    #while not methods.sanityCheck(xTrVec[:, 0], yTrVec[:, 0], gmrf):
+                    #    noise[j,k] = np.random.normal(math.pi/4, math.sqrt(self.varNoise[j, j]))
+                    #    (xTrVec,yTrVec) = self.trajectoryFromControl(x, y, self.u[:, 0] + noise[:, k])
+
+                    self.xPathRollOut[:,k] = xTrVec[:,0]
+                    self.yPathRollOut[:,k] = yTrVec[:,0]
 
                 # compute path costs
                 for i in range(self.H):
                     index = self.H-i-1
                     Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
-                    qhh = np.dot(Phi, np.dot(gmrf.covCond, Phi.T))
-
+                    qhh = np.dot(Phi, np.dot(np.linalg.inv(gmrf.covCond), Phi.T))
                     S[index, k] = S[index+1, k] + qhh + 0.5*np.dot((self.u[index, 0]+np.dot(M[index, index], noise[index, k])).T, np.dot(self.R[index, index],self.u[index, 0]+np.dot(M[index, index], noise[index, k])))
 
             # Compute probability of path segments
             P = np.zeros((self.H, self.K))
             for k in range(self.K):
                 for i in range(self.H):
-                    probSum = 0
+                    probSum = 1e-10
                     for indexSum in range(self.K):
                         probSum += math.exp(-S[i, indexSum]/self.lambd)
                     P[i, k] = math.exp(-S[i, k]/self.lambd)/probSum
