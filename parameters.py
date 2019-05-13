@@ -2,7 +2,7 @@ import numpy as np
 
 # Parameters for all files
 # main.py
-stkf = False
+stkf = True
 sequentialUpdate = True  # Does not work with truncation!
 fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
@@ -48,9 +48,9 @@ controlCost = 1e3 #1e3
 R = controlCost*np.eye(H)
 g = np.ones((H,1))
 lambd = 100 #100
-K = 3
+K = 10
 ctrSamplingTime = 0.01
-nUpdated = 3
+nUpdated = 10
 
 if not truncation:
     nMeas = nIter

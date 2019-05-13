@@ -70,10 +70,15 @@ class piControl:
             P = np.zeros((self.H, self.K))
             for k in range(self.K):
                 for i in range(self.H):
-                    probSum = 1e-1000
+                    probSum = 1e-10000
                     for indexSum in range(self.K):
                         probSum += math.exp(-S[i, indexSum]/self.lambd)
                     P[i, k] = math.exp(-S[i, k]/self.lambd)/probSum
+
+            # Check if probabilities of path segments add up to 1
+            for i in range(self.H):
+                if abs(1-sum(P[i, :]))>0.001:
+                    input("Warning! Path probabilities don't add up to 1!")
 
             # Compute next control action
             deltaU = np.zeros((self.H, self.H))
