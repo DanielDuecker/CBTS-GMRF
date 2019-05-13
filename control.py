@@ -5,12 +5,33 @@ import parameters as par
 import methods
 import time
 
+class agent:
+    def __init__(self,x0,y0,alpha0):
+        self.x = x0
+        self.y = y0
+        self.alpha = alpha0
+
+    def stateDynamics(self, x, y, alpha, u):
+        alpha += u
+        x += par.maxStepsize * math.cos(alpha)
+        y += par.maxStepsize * math.sin(alpha)
+        return x, y, alpha
+
+    def trajectoryFromControl(self,u):
+        xTraj = np.zeros((len(u), 1))
+        yTraj = np.zeros((len(u), 1))
+        (xTraj[0],yTraj[0],alpha) = (self.x, self.y,self.alpha)
+        for i in range(len(u)-1):
+            (xTraj[i+1],yTraj[i+1],alpha) = self.stateDynamics(xTraj[i],yTraj[i],alpha,u[i])
+        return xTraj, yTraj
+
 class piControl:
     def __init__(self,R,g,lambd,H,K,dt,nUpdated):
         self.R = R
         self.g = g
         self.lambd = lambd
-        self.varNoise = self.lambd*np.linalg.inv(self.R)
+        #self.varNoise = self.lambd*np.linalg.inv(self.R)
+        self.varNoise = 0.01 * np.linalg.inv(self.R)
         self.H = H
         self.K = K
         self.dt = dt
@@ -22,20 +43,7 @@ class piControl:
         self.xPathRollOut = np.zeros((1, self.K))
         self.yPathRollOut = np.zeros((1, self.K))
 
-    def stateDynamics(self,x,y,u):
-        xNext = x + par.xVel * math.cos(u)
-        yNext = y + par.yVel * math.sin(u)
-        return xNext, yNext
-
-    def trajectoryFromControl(self,x,y,u):
-        xTraj = np.zeros((len(u), 1))
-        yTraj = np.zeros((len(u), 1))
-        (xTraj[0],yTraj[0]) = (x, y)
-        for i in range(len(u)-1):
-            (xTraj[i+1],yTraj[i+1]) = self.stateDynamics(xTraj[i],yTraj[i],u[i])
-        return xTraj, yTraj
-
-    def getNewState(self, gmrf, x, y):
+    def getNewState(self, agent, gmrf):
         M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T))/(np.dot(self.g.T, np.dot(np.linalg.inv(self.R), self.g)))
         for n in range(self.nUpdated):
             noise = np.zeros((self.H, self.K))
@@ -47,7 +55,7 @@ class piControl:
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
                     noise[j, k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
-                    (xTrVec, yTrVec) = self.trajectoryFromControl(x, y, self.u[:, 0] + noise[:, k])
+                    (xTrVec, yTrVec) = agent.trajectoryFromControl(self.u[:, 0] + noise[:, k])
 
                     # Todo: remove this
                     # repeat if states are out of bound
@@ -102,7 +110,7 @@ class piControl:
 
             self.u += weigthedDeltaU
 
-        (self.xTraj, self.yTraj) = self.trajectoryFromControl(x, y, self.u)
+        (self.xTraj, self.yTraj) = agent.trajectoryFromControl(self.u)
 
         # repelling if border is hit
         #if not methods.sanityCheck(self.xTraj[1], self.yTraj[1], gmrf):

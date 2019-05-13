@@ -27,6 +27,9 @@ gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta)
 # Initialize controller
 controller = control.piControl(par.R, par.g, par.lambd, par.H, par.K, par.ctrSamplingTime, par.nUpdated)
 
+# Initialize agent
+auv = control.agent(par.x0, par.y0, par.alpha0)
+
 # Plotting grid
 x = np.arange(gmrf1.xMin, gmrf1.xMax, par.dX)
 y = np.arange(gmrf1.yMin, gmrf1.yMax, par.dY)
@@ -77,7 +80,7 @@ for i in range(par.nIter - 1):
 
     if par.PIControl:
         # Get next state according to PI Controller
-        (xMeas, yMeas) = controller.getNewState(gmrf1, xMeas, yMeas)
+        (xMeas, yMeas) = controller.getNewState(auv, gmrf1)
     else:
         # Get next measurement according to dynamics, stack under measurement vector
         (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)

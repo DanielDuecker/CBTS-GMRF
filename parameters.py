@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 # Parameters for all files
 # main.py
@@ -17,7 +18,7 @@ nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for 
 ov2 = 0.04  # measurement variance
 dX = dY = 0.01  # discretizaton in x and y for Plotting
 
-(x0, y0) = (0, 0)  # initial state
+(x0, y0, alpha0) = (0, 0, math.pi/4)  # initial state
 maxStepsize = 0.3  # maximum change in every state per iteration
 xVel = maxStepsize
 yVel = maxStepsize
@@ -43,11 +44,11 @@ lambd = 1
 sigma2 = 0.01
 
 # PI2 controller
-H = 10 # control horizon steps
-controlCost = 1e3 #1e3
+H = 20 # control horizon steps
+controlCost = 1 #1e3
 R = controlCost*np.eye(H)
 g = np.ones((H,1))
-lambd = 100 #100
+lambd = 1 #100
 K = 3
 ctrSamplingTime = 0.01
 nUpdated = 15
