@@ -49,6 +49,7 @@ class piControl:
                     noise[j, k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
                     (xTrVec, yTrVec) = self.trajectoryFromControl(x, y, self.u[:, 0] + noise[:, k])
 
+                    # Todo: remove this
                     # repeat if states are out of bound
                     #while not methods.sanityCheck(xTrVec[:, 0], yTrVec[:, 0], gmrf):
                     #    noise[j, k] = np.random.normal(math.pi/4, 2*math.sqrt(self.varNoise[j, j]))
@@ -75,12 +76,12 @@ class piControl:
                         probSum += math.exp(-S[i, indexSum]/self.lambd)
                     P[i, k] = math.exp(-S[i, k]/self.lambd)/probSum
 
-            for k in range(self.K):
-                if not methods.sanityCheck(self.xPathRollOut[(self.H-1):self.H, k],self.yPathRollOut[(self.H-1):self.H, k],gmrf):
-                    for i in range(self.H):
-                        rescaling = sum(P[i, :])-P[i, k]
-                        P[i, :] /= rescaling
-                    P[:, k] = np.zeros(self.H)
+            #for k in range(self.K):
+            #    if not methods.sanityCheck(self.xPathRollOut[(self.H-1):self.H, k],self.yPathRollOut[(self.H-1):self.H, k],gmrf):
+            #        for i in range(self.H):
+            #            rescaling = sum(P[i, :])-P[i, k]
+            #            P[i, :] /= rescaling
+            #        P[:, k] = np.zeros(self.H)
 
             # Check if probabilities of path segments add up to 1
             for i in range(self.H):
@@ -89,26 +90,24 @@ class piControl:
 
             # Compute next control action
             deltaU = np.zeros((self.H, self.H))
+            weigthedDeltaU = np.zeros((self.H, 1))
             for i in range(self.H):
-                deltaU[i:self.H,i] += np.dot(np.dot(M[i:self.H, i:self.H], noise[i:self.H,:]),P[i,:].T)
-
-            realDeltaU = np.zeros((self.H, 1))
-            for i in range(self.H):
+                deltaU[i:self.H, i] = np.dot(np.dot(M[i:self.H, i:self.H], noise[i:self.H,:]),P[i,:].T)
                 sumNum = 0
                 sumDen = 0
                 for h in range(self.H):
                     sumNum += (self.H - h)*deltaU[:, i][i]
                     sumDen += (self.H - h)
-                realDeltaU[i, 0] = sumNum/sumDen
+                weigthedDeltaU[i, 0] = sumNum/sumDen
 
-            self.u += realDeltaU
+            self.u += weigthedDeltaU
 
         (self.xTraj, self.yTraj) = self.trajectoryFromControl(x, y, self.u)
 
+        # repelling if border is hit
         #if not methods.sanityCheck(self.xTraj[1], self.yTraj[1], gmrf):
         #    self.u[0] += math.pi
 
-        #(self.xTraj, self.yTraj) = self.trajectoryFromControl(x, y, self.u)
         (xNext, yNext) = (self.xTraj[1], self.yTraj[1])
 
         return (xNext, yNext)
