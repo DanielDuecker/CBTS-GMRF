@@ -10,7 +10,7 @@ class piControl:
         self.R = R
         self.g = g
         self.lambd = lambd
-        self.varNoise = self.lambd*np.linalg.inv(R)
+        self.varNoise = self.lambd*np.linalg.inv(self.R)
         self.H = H
         self.K = K
         self.dt = dt
@@ -70,7 +70,7 @@ class piControl:
             P = np.zeros((self.H, self.K))
             for k in range(self.K):
                 for i in range(self.H):
-                    probSum = 1e-10
+                    probSum = 1e-1000
                     for indexSum in range(self.K):
                         probSum += math.exp(-S[i, indexSum]/self.lambd)
                     P[i, k] = math.exp(-S[i, k]/self.lambd)/probSum

@@ -104,6 +104,7 @@ for i in range(par.nIter - 1):
     if not par.fastCalc:
         #if i % (par.nIter/100) == 0:
         methods.plotFields(fig, x, y, trueField, gmrf1, controller, iterVec, timeVec, xHist, yHist)
+        #input("press key:")
 
     # Update ground truth:
     if par.temporal:
