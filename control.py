@@ -70,15 +70,21 @@ class piControl:
             P = np.zeros((self.H, self.K))
             for k in range(self.K):
                 for i in range(self.H):
-                    probSum = 1e-10000
+                    probSum = 1e-1000
                     for indexSum in range(self.K):
                         probSum += math.exp(-S[i, indexSum]/self.lambd)
                     P[i, k] = math.exp(-S[i, k]/self.lambd)/probSum
 
+            for k in range(self.K):
+                if not methods.sanityCheck(self.xPathRollOut[(self.H-1):self.H, k],self.yPathRollOut[(self.H-1):self.H, k],gmrf):
+                    for i in range(self.H):
+                        P[i, :] /= rescaling
+                    P[:, k] = np.zeros(self.H)
+
             # Check if probabilities of path segments add up to 1
             for i in range(self.H):
                 if abs(1-sum(P[i, :]))>0.001:
-                    input("Warning! Path probabilities don't add up to 1!")
+                    print("Warning! Path probabilities don't add up to 1!")
 
             # Compute next control action
             deltaU = np.zeros((self.H, self.H))
@@ -98,10 +104,10 @@ class piControl:
 
         (self.xTraj, self.yTraj) = self.trajectoryFromControl(x, y, self.u)
 
-        if not methods.sanityCheck(self.xTraj[1], self.yTraj[1], gmrf):
-            self.u[0] += math.pi
+        #if not methods.sanityCheck(self.xTraj[1], self.yTraj[1], gmrf):
+        #    self.u[0] += math.pi
 
-        (self.xTraj, self.yTraj) = self.trajectoryFromControl(x, y, self.u)
+        #(self.xTraj, self.yTraj) = self.trajectoryFromControl(x, y, self.u)
         (xNext, yNext) = (self.xTraj[1], self.yTraj[1])
 
         return (xNext, yNext)

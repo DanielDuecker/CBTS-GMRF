@@ -19,7 +19,7 @@ def mapConDis(gmrf, xMeas, yMeas):
     xRel = (xMeas - gmrf.xMin) % gmrf.dx - gmrf.dx / 2
     yRel = (yMeas - gmrf.yMin) % gmrf.dy - gmrf.dy / 2
 
-    # Get index of upper left neighbor 
+    # Get index of upper left neighbor
     xPos = int((xMeas - gmrf.xMin) / gmrf.dx)
     yPos = int((yMeas - gmrf.yMin) / gmrf.dy)
 
@@ -117,12 +117,12 @@ def plotFields(fig, x, y, trueField, gmrf, controller, iterVec, timeVec, xHist, 
     ax3.plot(xHist, yHist, 'black')
     if par.PIControl:
         ax3.plot(controller.xTraj,controller.yTraj,'blue')
-        for k in range(par.K):
-            ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
+        #for k in range(par.K):
+         #   ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
         #TODO: Delete
-        #ax3.plot(controller.xPathRollOut[:, 0], controller.yPathRollOut[:, 0], 'red')
-        #ax3.plot(controller.xPathRollOut[:, 1], controller.yPathRollOut[:, 1], 'orange')
-        #ax3.plot(controller.xPathRollOut[:, 2], controller.yPathRollOut[:, 2], 'green')
+        ax3.plot(controller.xPathRollOut[:, 0], controller.yPathRollOut[:, 0], 'red')
+        ax3.plot(controller.xPathRollOut[:, 1], controller.yPathRollOut[:, 1], 'orange')
+        ax3.plot(controller.xPathRollOut[:, 2], controller.yPathRollOut[:, 2], 'green')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Uncertainty belief")
