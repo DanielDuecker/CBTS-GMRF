@@ -44,11 +44,11 @@ sigma2 = 0.01
 
 # PI2 controller
 H = 15 # control horizon steps
-controlCost = 1e3
+controlCost = 1e3 #1e3
 R = controlCost*np.eye(H)
 g = np.ones((H,1))
-lambd = 100
-K = 3
+lambd = 100 #100
+K = 10
 ctrSamplingTime = 0.01
 nUpdated = 10
 

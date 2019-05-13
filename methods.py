@@ -117,10 +117,11 @@ def plotFields(fig, x, y, trueField, gmrf, controller, iterVec, timeVec, xHist, 
     ax3.plot(xHist, yHist, 'black')
     if par.PIControl:
         ax3.plot(controller.xTraj,controller.yTraj,'blue')
-        #for k in range(par.K):
-        ax3.plot(controller.xPathRollOut[:, 0], controller.yPathRollOut[:, 0], 'red')
-        ax3.plot(controller.xPathRollOut[:, 1], controller.yPathRollOut[:, 1], 'orange')
-        ax3.plot(controller.xPathRollOut[:, 2], controller.yPathRollOut[:, 2], 'green')
+        for k in range(par.K):
+            ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'red')
+        #ax3.plot(controller.xPathRollOut[:, 0], controller.yPathRollOut[:, 0], 'red')
+        #ax3.plot(controller.xPathRollOut[:, 1], controller.yPathRollOut[:, 1], 'orange')
+        #ax3.plot(controller.xPathRollOut[:, 2], controller.yPathRollOut[:, 2], 'green')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Uncertainty belief")
