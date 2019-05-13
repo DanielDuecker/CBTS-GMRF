@@ -78,6 +78,7 @@ class piControl:
             for k in range(self.K):
                 if not methods.sanityCheck(self.xPathRollOut[(self.H-1):self.H, k],self.yPathRollOut[(self.H-1):self.H, k],gmrf):
                     for i in range(self.H):
+                        rescaling = sum(P[i, :])-P[i, k]
                         P[i, :] /= rescaling
                     P[:, k] = np.zeros(self.H)
 
