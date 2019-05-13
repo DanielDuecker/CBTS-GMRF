@@ -28,10 +28,10 @@ pulseTime = nIter / 2  # Duration of sinusodial pulsation
 
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 20
+nX = 10
 yMin = 0
 yMax = 10
-nY = 20
+nY = 10
 nBeta = 1  # regression coefficients
 
 # gmrf class
@@ -43,12 +43,12 @@ lambd = 1
 sigma2 = 0.01
 
 # PI2 controller
-H = 20 # control horizon steps
-controlCost = 100
+H = 15 # control horizon steps
+controlCost = 1e3
 R = controlCost*np.eye(H)
 g = np.ones((H,1))
 lambd = 100
-K = 5
+K = 3
 ctrSamplingTime = 0.01
 nUpdated = 10
 

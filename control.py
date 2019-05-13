@@ -3,6 +3,7 @@ import math
 import matplotlib.pyplot as plt
 import parameters as par
 import methods
+import time
 
 class piControl:
     def __init__(self,R,g,lambd,H,K,dt,nUpdated):
@@ -35,7 +36,7 @@ class piControl:
         return xTraj, yTraj
 
     def getNewState(self, gmrf, x, y):
-        M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T))/(np.dot(self.g.T, np.dot(np.linalg.inv(self.R),self.g)))
+        M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T))/(np.dot(self.g.T, np.dot(np.linalg.inv(self.R), self.g)))
         for n in range(self.nUpdated):
             noise = np.zeros((self.H, self.K))
             self.xPathRollOut = np.zeros((self.H, self.K))
@@ -50,18 +51,20 @@ class piControl:
 
                     # repeat if states are out of bound
                     #while not methods.sanityCheck(xTrVec[:, 0], yTrVec[:, 0], gmrf):
-                    #    noise[j,k] = np.random.normal(math.pi/4, math.sqrt(self.varNoise[j, j]))
-                    #    (xTrVec,yTrVec) = self.trajectoryFromControl(x, y, self.u[:, 0] + noise[:, k])
+                    #    noise[j, k] = np.random.normal(math.pi/4, 2*math.sqrt(self.varNoise[j, j]))
+                    #    (xTrVec, yTrVec) = self.trajectoryFromControl(x, y, self.u[:, 0] + noise[:, k])
 
-                    self.xPathRollOut[:,k] = xTrVec[:,0]
-                    self.yPathRollOut[:,k] = yTrVec[:,0]
+                    self.xPathRollOut[:, k] = xTrVec[:, 0]
+                    self.yPathRollOut[:, k] = yTrVec[:, 0]
 
                 # compute path costs
+                stateCost = 0
                 for i in range(self.H):
                     index = self.H-i-1
                     Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
-                    qhh = np.dot(Phi, np.dot(np.linalg.inv(gmrf.covCond), Phi.T))
-                    S[index, k] = S[index+1, k] + qhh + 0.5*np.dot((self.u[index, 0]+np.dot(M[index, index], noise[index, k])).T, np.dot(self.R[index, index],self.u[index, 0]+np.dot(M[index, index], noise[index, k])))
+                    stateCost += np.dot(Phi, np.dot(np.linalg.inv(gmrf.covCond), Phi.T))
+                    uHead = self.u[index:self.H,0] + np.dot(M[index:self.H,index:self.H],noise[index:self.H,k])
+                    S[index, k] = S[index+1, k] + stateCost + 0.5*np.dot(uHead.T, np.dot(self.R[index:self.H,index:self.H],uHead))
 
             # Compute probability of path segments
             P = np.zeros((self.H, self.K))
@@ -89,16 +92,11 @@ class piControl:
             self.u += realDeltaU
 
         (self.xTraj, self.yTraj) = self.trajectoryFromControl(x, y, self.u)
-        (xNext,yNext) = (self.xTraj[1],self.yTraj[1])
 
-        if xNext < gmrf.xMin:
-            xNext = x + par.xVel
-        elif xNext > gmrf.xMax:
-            xNext = x - par.xVel
+        if not methods.sanityCheck(self.xTraj[1], self.yTraj[1], gmrf):
+            self.u[0] += math.pi
 
-        if yNext < gmrf.yMin:
-            yNext = y + par.yVel
-        elif yNext > gmrf.yMax:
-            yNext = y - par.yVel
+        (self.xTraj, self.yTraj) = self.trajectoryFromControl(x, y, self.u)
+        (xNext, yNext) = (self.xTraj[1], self.yTraj[1])
 
-        return (xNext,yNext)
+        return (xNext, yNext)
