@@ -17,13 +17,13 @@ class agent:
         y += par.maxStepsize * math.sin(alpha)
         return x, y, alpha
 
-    def trajectoryFromControl(self,u):
+    def trajectoryFromControl(self,x,y,alpha,u):
         xTraj = np.zeros((len(u), 1))
         yTraj = np.zeros((len(u), 1))
-        (xTraj[0],yTraj[0],alpha) = (self.x, self.y,self.alpha)
+        (xTraj[0], yTraj[0], alphaNew) = (x, y, alpha)
         for i in range(len(u)-1):
-            (xTraj[i+1],yTraj[i+1],alpha) = self.stateDynamics(xTraj[i],yTraj[i],alpha,u[i])
-        return xTraj, yTraj
+            (xTraj[i+1],yTraj[i+1],alphaNew) = self.stateDynamics(xTraj[i],yTraj[i],alphaNew,u[i])
+        return xTraj, yTraj, alphaNew
 
 class piControl:
     def __init__(self,R,g,lambd,H,K,dt,nUpdated):
@@ -55,7 +55,7 @@ class piControl:
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
                     noise[j, k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
-                    (xTrVec, yTrVec) = agent.trajectoryFromControl(self.u[:, 0] + noise[:, k])
+                    (xTrVec, yTrVec, alphaNew) = agent.trajectoryFromControl(self.u[:, 0] + noise[:, k]) # FIX THIS
 
                     # Todo: remove this
                     # repeat if states are out of bound
@@ -110,12 +110,12 @@ class piControl:
 
             self.u += weigthedDeltaU
 
-        (self.xTraj, self.yTraj) = agent.trajectoryFromControl(self.u)
+        (self.xTraj, self.yTraj, agent.alpha) = agent.trajectoryFromControl(self.u)
 
         # repelling if border is hit
         #if not methods.sanityCheck(self.xTraj[1], self.yTraj[1], gmrf):
         #    self.u[0] += math.pi
 
-        (xNext, yNext) = (self.xTraj[1], self.yTraj[1])
+        (agent.x, agent.y) = (self.xTraj[1], self.yTraj[1])
 
-        return (xNext, yNext)
+        return (agent.x, agent.y)
