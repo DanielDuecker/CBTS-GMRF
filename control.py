@@ -45,6 +45,9 @@ class piControl:
         self.yPathRollOut = np.zeros((1, self.K))
 
     def getNewState(self, agent, gmrf):
+        self.u[0:-2,0] = self.u[1:-1,0]
+        self.u[-1,0] = 0
+
         M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T))/(np.dot(self.g.T, np.dot(np.linalg.inv(self.R), self.g)))
         for n in range(self.nUpdated):
             noise = np.zeros((self.H, self.K))
@@ -72,7 +75,7 @@ class piControl:
                 for i in range(self.H):
                     index = self.H-i-1
                     if not methods.sanityCheck(self.xPathRollOut[index, k]*np.eye(1), self.yPathRollOut[index, k]*np.eye(1), gmrf):
-                        stateCost += np.amax(1/gmrf.covCond.diagonal())
+                        stateCost += 10*np.amax(1/gmrf.covCond.diagonal())
                     else:
                         Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
                         stateCost += np.dot(Phi,1/gmrf.covCond.diagonal())
@@ -125,16 +128,14 @@ class piControl:
 
         (agent.x, agent.y, agent.alpha) = (self.xTraj[1], self.yTraj[1], self.alphaTraj[1])
 
-        for x in self.xTraj:
-            if x < gmrf.xMin:
-                agent.x = gmrf.xMin
-            elif x > gmrf.xMax:
-                agent.x = gmrf.xMax
+        if agent.x < gmrf.xMin:
+            agent.x = gmrf.xMin
+        elif agent.x > gmrf.xMax:
+            agent.x = gmrf.xMax
 
-        for y in self.yTraj:
-            if y < gmrf.yMin:
-                agent.y = gmrf.yMin
-            elif y > gmrf.yMax:
-                agent.y = gmrf.yMax
+        if agent.y < gmrf.yMin:
+            agent.y = gmrf.yMin
+        elif agent.y > gmrf.yMax:
+            agent.y = gmrf.yMax
 
         return (agent.x, agent.y)

@@ -3,7 +3,7 @@ import math
 
 # Parameters for all files
 # main.py
-stkf = True
+stkf = False
 sequentialUpdate = True  # Does not work with truncation!
 fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
@@ -45,10 +45,10 @@ sigma2 = 0.01
 
 # PI2 controller
 H = 15 # control horizon steps
-controlCost = 1e1 # 1e1
+controlCost = 0.5*1e0 # 1e1
 R = controlCost*np.eye(H)
 g = np.ones((H,1))
-lambd = 1e-1 # 1e-1
+lambd = 1e-2 # 1e-1
 K = 20
 ctrSamplingTime = 0.01
 nUpdated = 10
