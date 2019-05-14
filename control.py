@@ -17,16 +17,17 @@ class agent:
         y += par.maxStepsize * math.sin(alpha)
         return x, y, alpha
 
-    def trajectoryFromControl(self,x,y,alpha,u):
+    def trajectoryFromControl(self,u):
         xTraj = np.zeros((len(u), 1))
         yTraj = np.zeros((len(u), 1))
-        (xTraj[0], yTraj[0], alphaNew) = (x, y, alpha)
+        alphaTraj = np.zeros((len(u), 1))
+        (xTraj[0], yTraj[0], alphaTraj[0]) = (self.x, self.y, self.alpha)
         for i in range(len(u)-1):
-            (xTraj[i+1],yTraj[i+1],alphaNew) = self.stateDynamics(xTraj[i],yTraj[i],alphaNew,u[i])
-        return xTraj, yTraj, alphaNew
+            (xTraj[i+1], yTraj[i+1], alphaTraj[i+1]) = self.stateDynamics(xTraj[i], yTraj[i], alphaTraj[i], u[i])
+        return xTraj, yTraj, alphaTraj
 
 class piControl:
-    def __init__(self,R,g,lambd,H,K,dt,nUpdated):
+    def __init__(self, R, g, lambd, H, K, dt, nUpdated):
         self.R = R
         self.g = g
         self.lambd = lambd
@@ -36,10 +37,11 @@ class piControl:
         self.K = K
         self.dt = dt
         self.nUpdated = nUpdated
-        self.u = math.pi / 4*np.ones((self.H, 1))
+        self.u = np.zeros((self.H, 1))
 
         self.xTraj = np.zeros((1, self.K))
         self.yTraj = np.zeros((1, self.K))
+        self.alphaTraj = np.zeros((1, self.K))
         self.xPathRollOut = np.zeros((1, self.K))
         self.yPathRollOut = np.zeros((1, self.K))
 
@@ -55,7 +57,7 @@ class piControl:
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
                     noise[j, k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
-                    (xTrVec, yTrVec, alphaNew) = agent.trajectoryFromControl(self.u[:, 0] + noise[:, k]) # FIX THIS
+                    (xTrVec, yTrVec, alphaNew) = agent.trajectoryFromControl(self.u[:, 0] + noise[:, k])
 
                     # Todo: remove this
                     # repeat if states are out of bound
@@ -110,12 +112,12 @@ class piControl:
 
             self.u += weigthedDeltaU
 
-        (self.xTraj, self.yTraj, agent.alpha) = agent.trajectoryFromControl(self.u)
+        (self.xTraj, self.yTraj, self.alphaTraj) = agent.trajectoryFromControl(self.u)
 
         # repelling if border is hit
         #if not methods.sanityCheck(self.xTraj[1], self.yTraj[1], gmrf):
         #    self.u[0] += math.pi
 
-        (agent.x, agent.y) = (self.xTraj[1], self.yTraj[1])
+        (agent.x, agent.y, agent.alpha) = (self.xTraj[1], self.yTraj[1], self.alphaTraj[1])
 
         return (agent.x, agent.y)

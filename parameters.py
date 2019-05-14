@@ -44,14 +44,14 @@ lambd = 1
 sigma2 = 0.01
 
 # PI2 controller
-H = 20 # control horizon steps
+H = 10 # control horizon steps
 controlCost = 1 #1e3
 R = controlCost*np.eye(H)
 g = np.ones((H,1))
-lambd = 1 #100
+lambd = 100 #100
 K = 3
 ctrSamplingTime = 0.01
-nUpdated = 15
+nUpdated = 3
 
 if not truncation:
     nMeas = nIter
