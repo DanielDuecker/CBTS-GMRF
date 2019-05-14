@@ -9,7 +9,7 @@ class agent:
     def __init__(self,x0,y0,alpha0):
         self.x = x0
         self.y = y0
-        self.alpha = alpha0
+        self.alpha = alpha0 # angle of direction of movement
 
     def stateDynamics(self, x, y, alpha, u):
         alpha += u
@@ -78,7 +78,7 @@ class piControl:
                         stateCost += 10*np.amax(1/gmrf.covCond.diagonal())
                     else:
                         Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
-                        stateCost += np.dot(Phi,1/gmrf.covCond.diagonal())
+                        stateCost += 1/np.dot(Phi,gmrf.covCond.diagonal())
                     uHead = self.u[index:self.H,0] + np.dot(M[index:self.H,index:self.H],noise[index:self.H,k])
                     S[index, k] = S[index+1, k] + stateCost + 0.5*np.dot(uHead.T, np.dot(self.R[index:self.H,index:self.H],uHead))
 
@@ -87,24 +87,12 @@ class piControl:
 
             # Compute probability of path segments
             P = np.zeros((self.H, self.K))
+            expS = np.zeros((self.H, self.K))
             for k in range(self.K):
                 for i in range(self.H):
-                    probSum = 1e-100
-                    for indexSum in range(self.K):
-                        probSum += math.exp(-S[i, indexSum]/self.lambd)
-                    P[i, k] = math.exp(-S[i, k]/self.lambd)/probSum
-
-            #for k in range(self.K):
-            #    if not methods.sanityCheck(self.xPathRollOut[(self.H-1):self.H, k],self.yPathRollOut[(self.H-1):self.H, k],gmrf):
-            #        for i in range(self.H):
-            #            rescaling = sum(P[i, :])-P[i, k]
-            #            P[i, :] /= rescaling
-            #        P[:, k] = np.zeros(self.H)
-
-            # Check if probabilities of path segments add up to 1
-            for i in range(self.H):
-                if abs(1-sum(P[i, :]))>0.001:
-                    print("Warning! Path probabilities don't add up to 1!")
+                    expS[i,k] = math.exp(-S[i, k]/self.lambd)
+                for i in range(self.H):
+                    P[i, k] = expS[i, k] / sum(expS[i,:])
 
             # Compute next control action
             deltaU = np.zeros((self.H, self.H))
