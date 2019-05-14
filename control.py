@@ -119,6 +119,12 @@ class piControl:
 
         (self.xTraj, self.yTraj, self.alphaTraj) = agent.trajectoryFromControl(self.u)
 
+        # repelling if border is hit
+        #if not methods.sanityCheck(self.xTraj[1], self.yTraj[1], gmrf):
+        #    self.u[0] += math.pi
+
+        (agent.x, agent.y, agent.alpha) = (self.xTraj[1], self.yTraj[1], self.alphaTraj[1])
+
         for x in self.xTraj:
             if x < gmrf.xMin:
                 agent.x = gmrf.xMin
@@ -130,11 +136,5 @@ class piControl:
                 agent.y = gmrf.yMin
             elif y > gmrf.yMax:
                 agent.y = gmrf.yMax
-
-        # repelling if border is hit
-        #if not methods.sanityCheck(self.xTraj[1], self.yTraj[1], gmrf):
-        #    self.u[0] += math.pi
-
-        (agent.x, agent.y, agent.alpha) = (self.xTraj[1], self.yTraj[1], self.alphaTraj[1])
 
         return (agent.x, agent.y)
