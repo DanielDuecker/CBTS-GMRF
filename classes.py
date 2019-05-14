@@ -198,13 +198,10 @@ class stkf:
         self.gmrf.covCond = np.dot(Cs, np.dot(covt, Cs.T))
         self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
 
-        #self.gmrf.covCond = np.eye(self.gmrf.nP+self.gmrf.nBeta)
+        #self.gmrf.covCond = 20*np.eye(self.gmrf.nP+self.gmrf.nBeta)
         #for i in range(self.gmrf.nP+self.gmrf.nBeta):
         #    if i%5 == 0:
-        #        self.gmrf.covCond[i, i+1] = -10
-        #        self.gmrf.covCond[i, i] = -10
-        #        self.gmrf.covCond[i+1, i] = -10
+        #        self.gmrf.covCond[i, i+1] = 10
+        #        self.gmrf.covCond[i, i] = 10
+        #        self.gmrf.covCond[i+1, i] = 10
         #self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
-        #tesCov=self.gmrf.diagCovCond.reshape(10,10)
-        #tesPrec = np.linalg.inv(self.gmrf.covCond).diagonal().reshape(10, 10)
-        #test=1

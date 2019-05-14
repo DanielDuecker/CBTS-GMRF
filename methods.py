@@ -118,7 +118,7 @@ def plotFields(fig, x, y, trueField, gmrf, controller, iterVec, timeVec, xHist, 
     if par.PIControl:
         ax3.plot(controller.xTraj,controller.yTraj,'blue')
         for k in range(par.K):
-            ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
+           ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
         #TODO: Delete
         #ax3.plot(controller.xPathRollOut[:, 0], controller.yPathRollOut[:, 0], 'red')
         #ax3.plot(controller.xPathRollOut[:, 1], controller.yPathRollOut[:, 1], 'orange')

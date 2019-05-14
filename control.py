@@ -72,18 +72,22 @@ class piControl:
                 for i in range(self.H):
                     index = self.H-i-1
                     if not methods.sanityCheck(self.xPathRollOut[index, k]*np.eye(1), self.yPathRollOut[index, k]*np.eye(1), gmrf):
-                        stateCost += 1e20
+                        stateCost += 10*np.amax(1/gmrf.covCond.diagonal())
                     else:
                         Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
-                        stateCost += np.dot(Phi,1/np.linalg.inv(gmrf.covCond).diagonal())
+                        stateCost += np.dot(Phi,1/gmrf.covCond.diagonal())
                     uHead = self.u[index:self.H,0] + np.dot(M[index:self.H,index:self.H],noise[index:self.H,k])
                     S[index, k] = S[index+1, k] + stateCost + 0.5*np.dot(uHead.T, np.dot(self.R[index:self.H,index:self.H],uHead))
+            test = 1/gmrf.covCond.diagonal().reshape(10,10)
+
+            # Normalize state costs
+            S = S/np.amax(S)
 
             # Compute probability of path segments
             P = np.zeros((self.H, self.K))
             for k in range(self.K):
                 for i in range(self.H):
-                    probSum = 1e-1000
+                    probSum = 1e-100
                     for indexSum in range(self.K):
                         probSum += math.exp(-S[i, indexSum]/self.lambd)
                     P[i, k] = math.exp(-S[i, k]/self.lambd)/probSum

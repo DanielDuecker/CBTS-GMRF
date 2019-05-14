@@ -44,14 +44,14 @@ lambd = 1
 sigma2 = 0.01
 
 # PI2 controller
-H = 10 # control horizon steps
-controlCost = 5*1e11 # needs to be large in order to cancel out effect of lambd in noise variance
+H = 15 # control horizon steps
+controlCost = 1e1 # 1e1
 R = controlCost*np.eye(H)
 g = np.ones((H,1))
-lambd = 1e10 # needs to be large in order to decrease state costs
-K = 10
+lambd = 1e-1 # 1e-1
+K = 20
 ctrSamplingTime = 0.01
-nUpdated = 3
+nUpdated = 10
 
 if not truncation:
     nMeas = nIter
