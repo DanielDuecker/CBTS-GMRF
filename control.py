@@ -72,13 +72,12 @@ class piControl:
                 for i in range(self.H):
                     index = self.H-i-1
                     if not methods.sanityCheck(self.xPathRollOut[index, k]*np.eye(1), self.yPathRollOut[index, k]*np.eye(1), gmrf):
-                        stateCost += 10*np.amax(1/gmrf.covCond.diagonal())
+                        stateCost += np.amax(1/gmrf.covCond.diagonal())
                     else:
                         Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
                         stateCost += np.dot(Phi,1/gmrf.covCond.diagonal())
                     uHead = self.u[index:self.H,0] + np.dot(M[index:self.H,index:self.H],noise[index:self.H,k])
                     S[index, k] = S[index+1, k] + stateCost + 0.5*np.dot(uHead.T, np.dot(self.R[index:self.H,index:self.H],uHead))
-            test = 1/gmrf.covCond.diagonal().reshape(10,10)
 
             # Normalize state costs
             S = S/np.amax(S)
@@ -119,6 +118,18 @@ class piControl:
             self.u += weigthedDeltaU
 
         (self.xTraj, self.yTraj, self.alphaTraj) = agent.trajectoryFromControl(self.u)
+
+        for x in self.xTraj:
+            if x < gmrf.xMin:
+                agent.x = gmrf.xMin
+            elif x > gmrf.xMax:
+                agent.x = gmrf.xMax
+
+        for y in self.yTraj:
+            if y < gmrf.yMin:
+                agent.y = gmrf.yMin
+            elif y > gmrf.yMax:
+                agent.y = gmrf.yMax
 
         # repelling if border is hit
         #if not methods.sanityCheck(self.xTraj[1], self.yTraj[1], gmrf):
