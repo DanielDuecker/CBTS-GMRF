@@ -31,8 +31,7 @@ class piControl:
         self.R = R
         self.g = g
         self.lambd = lambd
-        #self.varNoise = self.lambd*np.linalg.inv(self.R)
-        self.varNoise = 0.01 * np.linalg.inv(self.R)
+        self.varNoise = self.lambd*np.linalg.inv(self.R)
         self.H = H
         self.K = K
         self.dt = dt
@@ -73,7 +72,7 @@ class piControl:
                 for i in range(self.H):
                     index = self.H-i-1
                     Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
-                    stateCost += np.dot(Phi, np.dot(np.linalg.inv(gmrf.covCond), Phi.T))
+                    stateCost += np.dot(Phi,1/np.linalg.inv(gmrf.covCond).diagonal())
                     uHead = self.u[index:self.H,0] + np.dot(M[index:self.H,index:self.H],noise[index:self.H,k])
                     S[index, k] = S[index+1, k] + stateCost + 0.5*np.dot(uHead.T, np.dot(self.R[index:self.H,index:self.H],uHead))
 
