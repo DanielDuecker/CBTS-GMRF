@@ -44,12 +44,12 @@ lambd = 1   # influences time kernel value
 sigma2 = 0.01
 
 # PI2 controller
-H = 15  # control horizon steps
-controlCost = 1e1   # affects noise of path roll-outs (negatively)
-R = controlCost*np.eye(H) # input cost matrix
+H = 10  # control horizon steps
+controlCost = 1e0   # affects noise of path roll-outs (negatively)
+R = controlCost*np.eye(H)   # input cost matrix
 g = np.ones((H,1))
-lambd = 1e-1    # rescales state costs, affects noise of path roll-outs (positively)
-K = 30  # number of path roll outs
+lambd = 1e-2    # rescales state costs, affects noise of path roll-outs (positively)
+K = 15  # number of path roll outs
 ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
 

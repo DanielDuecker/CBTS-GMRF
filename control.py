@@ -53,19 +53,13 @@ class piControl:
             noise = np.zeros((self.H, self.K))
             self.xPathRollOut = np.zeros((self.H, self.K))
             self.yPathRollOut = np.zeros((self.H, self.K))
-
             S = np.zeros((self.H + 1, self.K))
+
             for k in range(self.K):
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
                     noise[j, k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
                     (xTrVec, yTrVec, alphaNew) = agent.trajectoryFromControl(self.u[:, 0] + noise[:, k])
-
-                    # Todo: remove this
-                    # repeat if states are out of bound
-                    #while not methods.sanityCheck(xTrVec[:, 0], yTrVec[:, 0], gmrf):
-                    #    noise[j, k] = np.random.normal(math.pi/4, 2*math.sqrt(self.varNoise[j, j]))
-                    #    (xTrVec, yTrVec, alphaNew) = agent.trajectoryFromControl(self.u[:, 0] + noise[:, k])
 
                     self.xPathRollOut[:, k] = xTrVec[:, 0]
                     self.yPathRollOut[:, k] = yTrVec[:, 0]
@@ -85,12 +79,14 @@ class piControl:
             # Normalize state costs
             S = S/np.amax(S)
 
-            # Compute probability of path segments
-            P = np.zeros((self.H, self.K))
+            # Compute cost of path segments
             expS = np.zeros((self.H, self.K))
             for k in range(self.K):
                 for i in range(self.H):
                     expS[i,k] = math.exp(-S[i, k]/self.lambd)
+
+            P = np.zeros((self.H, self.K))
+            for k in range(self.K):
                 for i in range(self.H):
                     P[i, k] = expS[i, k] / sum(expS[i,:])
 

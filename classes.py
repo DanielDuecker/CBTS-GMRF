@@ -200,8 +200,8 @@ class stkf:
 
         #self.gmrf.covCond = 20*np.eye(self.gmrf.nP+self.gmrf.nBeta)
         #for i in range(self.gmrf.nP+self.gmrf.nBeta):
-        #    if i%5 == 0:
+         #   if i%5 == 0:
         #        self.gmrf.covCond[i, i+1] = 10
-        #        self.gmrf.covCond[i, i] = 10
-        #        self.gmrf.covCond[i+1, i] = 10
+       #         self.gmrf.covCond[i, i] = 10
+       #         self.gmrf.covCond[i+1, i] = 10
         #self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
