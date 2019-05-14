@@ -62,7 +62,7 @@ class piControl:
                     # repeat if states are out of bound
                     #while not methods.sanityCheck(xTrVec[:, 0], yTrVec[:, 0], gmrf):
                     #    noise[j, k] = np.random.normal(math.pi/4, 2*math.sqrt(self.varNoise[j, j]))
-                    #    (xTrVec, yTrVec) = self.trajectoryFromControl(x, y, self.u[:, 0] + noise[:, k])
+                    #    (xTrVec, yTrVec, alphaNew) = agent.trajectoryFromControl(self.u[:, 0] + noise[:, k])
 
                     self.xPathRollOut[:, k] = xTrVec[:, 0]
                     self.yPathRollOut[:, k] = yTrVec[:, 0]
@@ -71,8 +71,11 @@ class piControl:
                 stateCost = 0
                 for i in range(self.H):
                     index = self.H-i-1
-                    Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
-                    stateCost += np.dot(Phi,1/np.linalg.inv(gmrf.covCond).diagonal())
+                    if not methods.sanityCheck(self.xPathRollOut[index, k]*np.eye(1), self.yPathRollOut[index, k]*np.eye(1), gmrf):
+                        stateCost += 1e20
+                    else:
+                        Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
+                        stateCost += np.dot(Phi,1/np.linalg.inv(gmrf.covCond).diagonal())
                     uHead = self.u[index:self.H,0] + np.dot(M[index:self.H,index:self.H],noise[index:self.H,k])
                     S[index, k] = S[index+1, k] + stateCost + 0.5*np.dot(uHead.T, np.dot(self.R[index:self.H,index:self.H],uHead))
 
