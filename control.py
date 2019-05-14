@@ -28,14 +28,14 @@ class agent:
 
 class piControl:
     def __init__(self, R, g, lambd, H, K, dt, nUpdated):
-        self.R = R
-        self.g = g
-        self.lambd = lambd
+        self.R = R  # input cost matrix
+        self.g = g  # mapping from u to states
+        self.lambd = lambd  # influences state costs and noise variance
         self.varNoise = self.lambd*np.linalg.inv(self.R)
-        self.H = H
-        self.K = K
-        self.dt = dt
-        self.nUpdated = nUpdated
+        self.H = H  # control horizon steps
+        self.K = K  # number of path roll outs
+        self.dt = dt    # time discretization
+        self.nUpdated = nUpdated    # number of iterations
         self.u = np.zeros((self.H, 1))
 
         self.xTraj = np.zeros((1, self.K))

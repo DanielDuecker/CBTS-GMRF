@@ -39,19 +39,19 @@ nBeta = 1  # regression coefficients
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 # stkf class
-sigmaT = 1e5
-lambd = 1
+sigmaT = 1e5    # determines exponential decay of time kernel
+lambd = 1   # influences time kernel value
 sigma2 = 0.01
 
 # PI2 controller
-H = 15 # control horizon steps
-controlCost = 1e1 # 1e-1
-R = controlCost*np.eye(H)
+H = 15  # control horizon steps
+controlCost = 1e1   # affects noise of path roll-outs (negatively)
+R = controlCost*np.eye(H) # input cost matrix
 g = np.ones((H,1))
-lambd = 1e-1 #1e-2
-K = 30
-ctrSamplingTime = 0.01
-nUpdated = 10
+lambd = 1e-1    # rescales state costs, affects noise of path roll-outs (positively)
+K = 30  # number of path roll outs
+ctrSamplingTime = 0.01  # time discretization
+nUpdated = 10   # number of iterations
 
 if not truncation:
     nMeas = nIter
