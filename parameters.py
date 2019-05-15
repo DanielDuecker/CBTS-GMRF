@@ -12,6 +12,7 @@ temporal = False  # True: time varying field
 PIControl = True
 
 exploitingRate = 0
+
 nIter = 1000  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
