@@ -40,7 +40,7 @@ trueField = trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
 
 """STKF"""
 stkf1 = stkf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta, trueField, par.dt, par.sigmaT,
-             par.lambd, par.sigma2)
+             par.lambdSTKF, par.sigma2)
 
 """GMRF"""
 # Initialize Plot

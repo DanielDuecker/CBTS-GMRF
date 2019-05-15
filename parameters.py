@@ -40,8 +40,8 @@ nBeta = 1  # regression coefficients
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 # stkf class
-sigmaT = 1e5    # determines exponential decay of time kernel
-lambd = 1   # influences time kernel value
+sigmaT = 1e20    # determines exponential decay of time kernel
+lambdSTKF = 1   # influences time kernel value
 sigma2 = 0.01
 
 # PI2 controller

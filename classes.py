@@ -140,23 +140,23 @@ class trueField:
 
 
 class stkf:
-    def __init__(self, xMin, xMax, nX, yMin, yMax, nY, nBeta, trueF, dt, sigmaT, lambd, sigma2):
+    def __init__(self, xMin, xMax, nX, yMin, yMax, nY, nBeta, trueF, dt, sigmaT, lambdSTKF, sigma2):
         self.gmrf = gmrf(xMin, xMax, nX, yMin, yMax, nY, nBeta)
         self.trueField = trueF
         self.dt = dt
         self.sigmaT = sigmaT
-        self.lambd = lambd
+        self.lambdSTKF = lambdSTKF
 
         # State representation of Sr
         self.F = -1 / sigmaT * np.eye(1)
-        self.H = math.sqrt(2 * lambd / sigmaT) * np.eye(1)
+        self.H = math.sqrt(2 * lambdSTKF / sigmaT) * np.eye(1)
         self.G = np.eye(1)
         self.sigma2 = sigma2
 
         # Kernels
         self.Ks = methods.getPrecisionMatrix(self.gmrf)
         self.KsChol = np.linalg.cholesky(self.Ks)
-        # h = lambda tau: lambd * math.exp(-abs(tau) / sigmaT)
+        # h = lambda tau: lambdSTKF * math.exp(-abs(tau) / sigmaT)
 
         self.sigmaZero = scipy.linalg.solve_continuous_lyapunov(self.F, -self.G * self.G.T)
 
