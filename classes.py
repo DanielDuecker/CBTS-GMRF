@@ -191,8 +191,8 @@ class stkf:
             st = sUpdated
             covt = covUpdated
 
-        self.gmrf.meanCond = np.dot(Cs, st)
-        self.gmrf.covCond = np.dot(Cs, np.dot(covt, Cs.T))
+        self.gmrf.meanCond = np.dot(self.Cs, st)
+        self.gmrf.covCond = np.dot(self.Cs, np.dot(covt, self.Cs.T))
         self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
 
         #self.gmrf.covCond = 20*np.eye(self.gmrf.nP+self.gmrf.nBeta)
