@@ -112,7 +112,7 @@ class trueField:
         else:
             xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
             yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
-            #zGT = np.array([[1, 2, 2, 1, 1],
+            # zGT = np.array([[1, 2, 2, 1, 1],
             # [2, 4, 2, 1, 1],
             # [1, 2, 3, 3, 2],
             # [1, 1, 2, 3, 3],
@@ -154,15 +154,16 @@ class stkf:
         self.sigma2 = sigma2
 
         # Kernels
-        self.Ks = methods.getPrecisionMatrix(self.gmrf)
+        self.Ks = np.linalg.inv(methods.getPrecisionMatrix(self.gmrf))
         self.KsChol = np.linalg.cholesky(self.Ks)
-        # h = lambda tau: lambdSTKF * math.exp(-abs(tau) / sigmaT)
+        # h = lambda tau: lambdSTKF * math.exp(-abs(tau) / sigmaT) # used time kernel
 
         self.sigmaZero = scipy.linalg.solve_continuous_lyapunov(self.F, -self.G * self.G.T)
 
         self.A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * par.dt)
         self.Cs = np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H))
-        QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(self.F, tau)), np.dot(self.G,np.dot(self.G.T,scipy.linalg.expm(np.dot(self.F,tau)).T))),0, par.dt)[0]
+        QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(self.F, tau)), np.dot(self.G,
+                                                np.dot(self.G.T,scipy.linalg.expm(np.dot(self.F,tau)).T))),0, par.dt)[0]
         self.Q = np.kron(np.eye(self.gmrf.nP), QBar)
         self.R = self.sigma2 * np.eye(1)
 
@@ -195,10 +196,10 @@ class stkf:
         self.gmrf.covCond = np.dot(self.Cs, np.dot(covt, self.Cs.T))
         self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
 
-        #self.gmrf.covCond = 20*np.eye(self.gmrf.nP+self.gmrf.nBeta)
-        #for i in range(self.gmrf.nP+self.gmrf.nBeta):
-         #   if i%5 == 0:
+        # self.gmrf.covCond = 20*np.eye(self.gmrf.nP+self.gmrf.nBeta)
+        # for i in range(self.gmrf.nP+self.gmrf.nBeta):
+        #   if i%5 == 0:
         #        self.gmrf.covCond[i, i+1] = 10
-       #         self.gmrf.covCond[i, i] = 10
-       #         self.gmrf.covCond[i+1, i] = 10
-        #self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
+    #         self.gmrf.covCond[i, i] = 10
+    #         self.gmrf.covCond[i+1, i] = 10
+    # self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()

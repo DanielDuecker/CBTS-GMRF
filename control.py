@@ -1,15 +1,14 @@
 import numpy as np
 import math
-import matplotlib.pyplot as plt
 import parameters as par
 import methods
-import time
+
 
 class agent:
     def __init__(self,x0,y0,alpha0):
         self.x = x0
         self.y = y0
-        self.alpha = alpha0 # angle of direction of movement
+        self.alpha = alpha0  # angle of direction of movement
 
     def stateDynamics(self, x, y, alpha, u):
         alpha += u
@@ -25,6 +24,7 @@ class agent:
         for i in range(len(u)-1):
             (xTraj[i+1], yTraj[i+1], alphaTraj[i+1]) = self.stateDynamics(xTraj[i], yTraj[i], alphaTraj[i], u[i])
         return xTraj, yTraj, alphaTraj
+
 
 class piControl:
     def __init__(self, R, g, lambd, H, K, dt, nUpdated):
@@ -92,7 +92,7 @@ class piControl:
 
             # Compute next control action
             deltaU = np.zeros((self.H, self.H))
-            weigthedDeltaU = np.zeros((self.H, 1))
+            weightedDeltaU = np.zeros((self.H, 1))
             for i in range(self.H):
                 deltaU[i:self.H, i] = np.dot(np.dot(M[i:self.H, i:self.H], noise[i:self.H,:]),P[i,:].T)
                 sumNum = 0
@@ -100,15 +100,11 @@ class piControl:
                 for h in range(self.H):
                     sumNum += (self.H - h)*deltaU[:, i][i]
                     sumDen += (self.H - h)
-                weigthedDeltaU[i, 0] = sumNum/sumDen
+                weightedDeltaU[i, 0] = sumNum/sumDen
 
-            self.u += weigthedDeltaU
+            self.u += weightedDeltaU
 
         (self.xTraj, self.yTraj, self.alphaTraj) = agent.trajectoryFromControl(self.u)
-
-        # repelling if border is hit
-        #if not methods.sanityCheck(self.xTraj[1], self.yTraj[1], gmrf):
-        #    self.u[0] += math.pi
 
         (agent.x, agent.y, agent.alpha) = (self.xTraj[1], self.yTraj[1], self.alphaTraj[1])
 
@@ -122,4 +118,4 @@ class piControl:
         elif agent.y > gmrf.yMax:
             agent.y = gmrf.yMax
 
-        return (agent.x, agent.y)
+        return agent.x, agent.y

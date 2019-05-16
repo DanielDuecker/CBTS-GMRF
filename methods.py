@@ -93,7 +93,8 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
     elif yNext > gmrf.yMax:
         yNext = y - par.yVel
 
-    return (xNext, yNext)
+    return xNext, yNext
+
 
 def plotFields(fig, x, y, trueField, gmrf, controller, iterVec, timeVec, xHist, yHist):
     plt.clf()
@@ -118,7 +119,8 @@ def plotFields(fig, x, y, trueField, gmrf, controller, iterVec, timeVec, xHist, 
     if par.PIControl:
         ax3.plot(controller.xTraj,controller.yTraj,'blue')
         for k in range(par.K):
-           ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
+            ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
+
         #TODO: Delete
         #ax3.plot(controller.xPathRollOut[:, 0], controller.yPathRollOut[:, 0], 'red')
         #ax3.plot(controller.xPathRollOut[:, 1], controller.yPathRollOut[:, 1], 'orange')
@@ -135,6 +137,7 @@ def plotFields(fig, x, y, trueField, gmrf, controller, iterVec, timeVec, xHist, 
     plt.title("Update calculation time over iteration index")
 
     fig.canvas.draw()
+
 
 def sanityCheck(xVec,yVec,gmrf):
     for x in xVec:
