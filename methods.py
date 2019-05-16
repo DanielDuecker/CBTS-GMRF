@@ -102,19 +102,19 @@ def plotFields(fig, x, y, trueField, gmrf, controller, iterVec, timeVec, xHist, 
 
     # Plotting ground truth
     ax1 = fig.add_subplot(221)
-    ax1.contourf(x, y, trueField.field(x, y))
+    ax1.contourf(x, y, trueField.field(x, y),levels=trueField.fieldLevels)
     plt.title("True field")
 
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
-    ax2.contourf(gmrf.x, gmrf.y, gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
+    ax2.contourf(gmrf.x, gmrf.y, gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),levels=trueField.fieldLevels)
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Mean of belief")
 
     # Plotting covariance matrix
     ax3 = fig.add_subplot(223)
-    ax3.contourf(gmrf.x, gmrf.y, gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
+    ax3.contourf(gmrf.x, gmrf.y, gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),levels=gmrf.covLevels)
     ax3.plot(xHist, yHist, 'black')
     if par.PIControl:
         ax3.plot(controller.xTraj,controller.yTraj,'blue')

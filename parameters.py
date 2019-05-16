@@ -30,22 +30,22 @@ pulseTime = nIter / 2  # Duration of sinusodial pulsation
 
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 15
+nX = 10
 yMin = 0
 yMax = 10
-nY = 15
+nY = 10
 nBeta = 1  # regression coefficients
 
 # gmrf class
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 # stkf class
-sigmaT = 1e2    # determines exponential decay of time kernel
+sigmaT = 1e5 #1e2    # determines exponential decay of time kernel
 lambdSTKF = 1  # influences time kernel value
 sigma2 = 0.01
 
 # PI2 controller
-H = 10  # control horizon steps
+H = 15  # control horizon steps
 controlCost = 1e0   # affects noise of path roll-outs (negatively)
 R = controlCost*np.eye(H)   # input cost matrix
 g = np.ones((H,1))
