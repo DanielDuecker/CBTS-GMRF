@@ -54,7 +54,7 @@ class gmrf:
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
         self.precCond = np.linalg.inv(self.covCond)
 
-        self.covLevels = np.linspace(0,np.amax(self.diagCovCond),30)
+        self.covLevels = np.linspace(0,np.amax(self.diagCovCond),20)
 
         "Sequential bayesian regression"
         self.bSeq = np.zeros((self.nP + self.nBeta, 1))
@@ -128,7 +128,7 @@ class trueField:
 
         self.fieldMin = np.min([0,np.amin(zGT)])
         self.fieldMax = np.amax(zGT)
-        self.fieldLevels = np.linspace(self.fieldMin,self.fieldMax,30)
+        self.fieldLevels = np.linspace(self.fieldMin,self.fieldMax,20)
 
         self.fInit = interpolate.interp2d(xGT, yGT, zGT)
 
@@ -201,11 +201,3 @@ class stkf:
         self.gmrf.meanCond = np.dot(self.Cs, st)
         self.gmrf.covCond = np.dot(self.Cs, np.dot(covt, self.Cs.T))
         self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
-
-        # self.gmrf.covCond = 20*np.eye(self.gmrf.nP+self.gmrf.nBeta)
-        # for i in range(self.gmrf.nP+self.gmrf.nBeta):
-        #   if i%5 == 0:
-        #        self.gmrf.covCond[i, i+1] = 10
-    #         self.gmrf.covCond[i, i] = 10
-    #         self.gmrf.covCond[i+1, i] = 10
-    # self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
