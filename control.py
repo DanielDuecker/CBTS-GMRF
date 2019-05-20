@@ -44,7 +44,7 @@ class piControl:
         self.xPathRollOut = np.zeros((1, self.K))
         self.yPathRollOut = np.zeros((1, self.K))
 
-    def getNewState(self, agent, gmrf):
+    def getNewState(self, auv, gmrf):
         self.u[0:-2,0] = self.u[1:-1,0]
         self.u[-1,0] = 0
 
@@ -59,7 +59,7 @@ class piControl:
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
                     noise[j, k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
-                    (xTrVec, yTrVec, alphaNew) = agent.trajectoryFromControl(self.u[:, 0] + noise[:, k])
+                    (xTrVec, yTrVec, alphaNew) = auv.trajectoryFromControl(self.u[:, 0] + noise[:, k])
 
                     self.xPathRollOut[:, k] = xTrVec[:, 0]
                     self.yPathRollOut[:, k] = yTrVec[:, 0]
