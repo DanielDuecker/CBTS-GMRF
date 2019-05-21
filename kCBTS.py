@@ -10,31 +10,35 @@ class node:
         self.visits = 0
 
 class kcBTS:
-    def __init__(self,nIterations, maxDepth, aMax, kappa):
+    def __init__(self,nIterations, nAnchorPoints, maxDepth, aMax, kappa):
         self.nIterations = nIterations
+        self.nAnchorPoints = nAnchorPoints
         self.maxDepth = maxDepth
         self.aMax = aMax # maximum number of generated actions per node
         self.kappa = kappa
 
-    def kCBTS(self,b)
+    def kCBTS(self,pos,b)
         v0 = node(b,0) # create node with belief b and total reward 0
         for i in range(self.nIterations):
-         g    vl = self.treePolicy(v0) # get next node
+            vl = self.treePolicy(v0,pos) # get next node
             r = self.getActions(vl,self.maxDepth)
             self.backUp(v0,vl,r)
         return self.argmax(v0)
 
-    def treePolicy(self,v):
+    def treePolicy(self,v,pos):
         Dv = []
         while v.depth < maxDepth:
             if len(Dv) < self.aMax:
-                bestTheta = getBestTheta
-                tau = generateTrajectory(bestTheta)
-                r,o = evalTrajectory(tau)
+                bestTheta = self.getBestTheta
+                tau = self.generateTrajectory(bestTheta,pos)
+                r,o = self.evalTrajectory(tau)
                 Dv.append(bestTheta,r)
                 return node(b,r)
             else:
                 return self.bestChild(v)
+
+    def generateTrajectory(theta,pos):
+        # create anchor points
 
     def backUp(self,v0,v,r):
         while v != v0:
