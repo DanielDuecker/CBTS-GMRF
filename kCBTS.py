@@ -43,12 +43,16 @@ class kcBTS:
 
     def generateTrajectory(self,theta,pos):
         # create anchor points
-        l = 2
+        lMax = 10
+        eps = 1
+        delta = 1
+        Traj = np.zeros((2,self.nAnchorPoints))
 
         anchorPoints = np.zeros((2,self.nAnchorPoints))
         anchorPoints[:,0] = pos
         y = np.zeros((1,self.nAnchorPoints))
         y[0,0] = 0
+
         for i in range(self.nAnchorPoints-1):
             alpha = 2*pi*np.random.normal(self.trajectoryNoise)
             anchorPoints[0,i+1] = anchorPoints[0,i] + par.maxStepsize/self.nAnchorPoints * math.cos(alpha))
@@ -63,8 +67,14 @@ class kcBTS:
             for j in range(self.nAnchorPoints):
                 GX[i,j] = self.RBFkernel(anchorPoints[:,i],anchorPoints[:,j])
                 GY[i,j] = self.RBFkernel(y[0,i],y[0,j])
-            mPi[i,0] =
+            mPi[i,0] = sum(np.random.choice(GX),lMax)/lMax
 
+        w = np.zeros((self.nAnchorPoints,1))
+        Lambd = np.dot(np.linalg.inv(GX + eps*np.eye(self.nAnchorPoints)),mPi)
+        LambdGY = np.dot(Lambd.T,GY)
+        for y in range(self.nAnchorPoints):
+            w[y] = np.dot(LambdGY,np.dot(np.linalg.inv(np.dot(LambdGY,LambdGY.T)+eps),np.dot(Lambd,GY[:,y])))
+            Traj[y] = sum(np.dot(anchorPoints,w))
 
     def RBFkernel(self,vec1,vec2):
         return math.exp(-(np.linalg.norm(vec1-vec2)**2)/(2*self.sigmaKernel**2))
