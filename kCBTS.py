@@ -1,4 +1,6 @@
 import math
+import numpy as np
+import parameters as par
 
 class node:
     def __index__(self,b,r):
@@ -10,12 +12,14 @@ class node:
         self.visits = 0
 
 class kcBTS:
-    def __init__(self,nIterations, nAnchorPoints, maxDepth, aMax, kappa):
+    def __init__(self,nIterations, nAnchorPoints,trajectoryNoise, maxDepth, aMax, kappa, sigmaKernel):
         self.nIterations = nIterations
         self.nAnchorPoints = nAnchorPoints
+        self.trajectoryNoise = trajectoryNoise
         self.maxDepth = maxDepth
         self.aMax = aMax # maximum number of generated actions per node
         self.kappa = kappa
+        self.sigmaKernel = sigmaKernel
 
     def kCBTS(self,pos,b)
         v0 = node(b,0) # create node with belief b and total reward 0
@@ -37,8 +41,35 @@ class kcBTS:
             else:
                 return self.bestChild(v)
 
-    def generateTrajectory(theta,pos):
+    def generateTrajectory(self,theta,pos):
         # create anchor points
+        l = 2
+
+        anchorPoints = np.zeros((2,self.nAnchorPoints))
+        anchorPoints[:,0] = pos
+        y = np.zeros((1,self.nAnchorPoints))
+        y[0,0] = 0
+        for i in range(self.nAnchorPoints-1):
+            alpha = 2*pi*np.random.normal(self.trajectoryNoise)
+            anchorPoints[0,i+1] = anchorPoints[0,i] + par.maxStepsize/self.nAnchorPoints * math.cos(alpha))
+            anchorPoints[1,i+1] = anchorPoints[1,i] + par.maxStepsize/self.nAnchorPoints * math.sin(alpha))
+            y[0,i+1] = par.dt/self.nAnchorPoints
+        # calculate weight vector
+        GX = np.zeros((self.nAnchorPoints,self.nAnchorPoints))
+        GY = np.zeros((self.nAnchorPoints,self.nAnchorPoints))
+        mPi = np.zeros((self.nAnchorPoints,1))
+
+        for i in range(self.nAnchorPoints):
+            for j in range(self.nAnchorPoints):
+                GX[i,j] = self.RBFkernel(anchorPoints[:,i],anchorPoints[:,j])
+                GY[i,j] = self.RBFkernel(y[0,i],y[0,j])
+            mPi[i,0] =
+
+
+    def RBFkernel(self,vec1,vec2):
+        return math.exp(-(np.linalg.norm(vec1-vec2)**2)/(2*self.sigmaKernel**2))
+
+
 
     def backUp(self,v0,v,r):
         while v != v0:
