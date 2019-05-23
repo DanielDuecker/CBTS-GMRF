@@ -15,7 +15,7 @@ class node:
 
 class kCBTS:
     def __init__(self,gmrf1, nIterations, nAnchorPoints,trajectoryNoise, maxParamExploration, maxDepth, aMax, kappa):
-        self.gmrf = classes.gmrf(gmrf1.xMin,gmrf1.xMax,gmrf1.nX,gmrf1.yMin,gmrf1.nY,gmrf1.nBeta)
+        self.gmrf = classes.gmrf(gmrf1.xMin,gmrf1.xMax,gmrf1.nX,gmrf1.yMin,gmrf1.yMax,gmrf1.nY,gmrf1.nBeta)
         self.gmrf.meanCond = gmrf1.meanCond
         self.gmrf.covCond = gmrf1.covCond
         self.gmrf.bSeq = gmrf1.bSeq
@@ -29,7 +29,7 @@ class kCBTS:
         self.aMax = aMax # maximum number of generated actions per node
         self.kappa = kappa
 
-    def getNewState(self,pos,alpha,b,cov)
+    def getNewState(self,pos,alpha,b,cov):
         # Copy belief and covariance
         self.gmrf.meanCond = b
         self.gmrf.covCond = cov
@@ -80,7 +80,7 @@ class kCBTS:
         bestTraj = self.generateTrajectory(bestAction,pos,alpha)
         alpha = math.atan((3 * bestAction[1] + 2 * bestAction[3] + bestAction[4] * math.tan(alpha)) / (
                     3 * bestAction[0] + 2 * bestAction[2] + bestAction[4]))
-        return bestTraj[:,1],alpha
+        return bestTraj[0,1],bestTraj[1,1],alpha
 
 
     def generateTrajectory(self,theta,pos,alpha):
