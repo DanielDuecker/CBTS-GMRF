@@ -104,18 +104,18 @@ class piControl:
 
             self.u += weightedDeltaU
 
-        (self.xTraj, self.yTraj, self.alphaTraj) = agent.trajectoryFromControl(self.u)
+        (self.xTraj, self.yTraj, self.alphaTraj) = auv.trajectoryFromControl(self.u)
 
-        (agent.x, agent.y, agent.alpha) = (self.xTraj[1], self.yTraj[1], self.alphaTraj[1])
+        (auv.x, auv.y, auv.alpha) = (self.xTraj[1], self.yTraj[1], self.alphaTraj[1])
 
-        if agent.x < gmrf.xMin:
-            agent.x = gmrf.xMin
-        elif agent.x > gmrf.xMax:
-            agent.x = gmrf.xMax
+        if auv.x < gmrf.xMin:
+            auv.x = gmrf.xMin
+        elif auv.x > gmrf.xMax:
+            auv.x = gmrf.xMax
 
-        if agent.y < gmrf.yMin:
-            agent.y = gmrf.yMin
-        elif agent.y > gmrf.yMax:
-            agent.y = gmrf.yMax
+        if auv.y < gmrf.yMin:
+            auv.y = gmrf.yMin
+        elif auv.y > gmrf.yMax:
+            auv.y = gmrf.yMax
 
-        return agent.x, agent.y
+        return auv.x, auv.y

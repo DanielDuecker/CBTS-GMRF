@@ -9,7 +9,8 @@ fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Liv
 truncation = False
 sinusoidal = False  # True: Use sinusoidal ground truth
 temporal = False  # True: time varying field
-PIControl = True
+PIControl = False
+kCBTS = True
 
 exploitingRate = 0
 
@@ -54,6 +55,15 @@ lambd = 1e-1 # 1e-2 #
 K = 15  # number of path roll outs
 ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
+
+# kCBTS controller
+kCBTSIterations = 5
+nAnchorPoints = 10
+trajectoryNoise = 0.01
+maxParamExploration = 0.05
+maxDepth = 3
+aMax = 5
+kappa = 1
 
 if not truncation:
     nMeas = nIter

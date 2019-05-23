@@ -13,8 +13,8 @@ class node:
         self.visits = 0
         self.actionToNode = []
 
-class kcBTS:
-    def __init__(self,gmrf1, nIterations, nAnchorPoints,trajectoryNoise, maxParamExploration, maxDepth, aMax, kappa, sigmaKernel):
+class kCBTS:
+    def __init__(self,gmrf1, nIterations, nAnchorPoints,trajectoryNoise, maxParamExploration, maxDepth, aMax, kappa):
         self.gmrf = classes.gmrf(gmrf1.xMin,gmrf1.xMax,gmrf1.nX,gmrf1.yMin,gmrf1.nY,gmrf1.nBeta)
         self.gmrf.meanCond = gmrf1.meanCond
         self.gmrf.covCond = gmrf1.covCond
@@ -28,9 +28,8 @@ class kcBTS:
         self.maxDepth = maxDepth
         self.aMax = aMax # maximum number of generated actions per node
         self.kappa = kappa
-        self.sigmaKernel = sigmaKernel
 
-    def kCBTS(self,pos,alpha,b,cov)
+    def getNewState(self,pos,alpha,b,cov)
         # Copy belief and covariance
         self.gmrf.meanCond = b
         self.gmrf.covCond = cov
@@ -40,7 +39,7 @@ class kcBTS:
             vl = self.treePolicy(v0,pos,alpha) # get next node
             r = self.exploreNode(vl,pos,alpha)
             self.backUp(v0,vl,r)
-        return self.argmax(v0)
+        return self.argmax(v0,pos,alpha)
 
     def treePolicy(self,v,pos,alpha):
         Dv = []
@@ -73,12 +72,15 @@ class kcBTS:
             alpha = math.atan((3*nextTheta[1]+2*nextTheta[3]+nextTheta[4]*math.tan(alpha))/(3*nextTheta[0]+2*nextTheta[2]+nextTheta[4]))
         return r
 
-    def argmax(self,v0):
+    def argmax(self,v0,pos,alpha):
         R = 0
         for child in v0.children:
             if child.totalR > R:
                 bestAction = child.actionToNode
-        return bestAction
+        bestTraj = self.generateTrajectory(bestAction,pos,alpha)
+        alpha = math.atan((3 * bestAction[1] + 2 * bestAction[3] + bestAction[4] * math.tan(alpha)) / (
+                    3 * bestAction[0] + 2 * bestAction[2] + bestAction[4]))
+        return bestTraj[:,1],alpha
 
 
     def generateTrajectory(self,theta,pos,alpha):
@@ -95,7 +97,7 @@ class kcBTS:
         return tau
 
     def evaluateTrajectory(self,tau):
-        # TODO: maybe use r = sum(grad(mue) + kappa*sigma) from Seq.BO paper (Ramos)
+        # TODO: maybe use r = sum(grad(mue) + parameter*sigma) from Seq.BO paper (Ramos)
         r = 0
         for i in range(self.nAnchorPoints):
             Phi = methods.mapConDis(self.gmrf, tau[0,i], tau[1,i])
