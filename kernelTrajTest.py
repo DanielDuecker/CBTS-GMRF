@@ -38,17 +38,17 @@ def generateTrajectory(theta, pos):
     for iy in range(nAnchorPoints):
         Lambd = np.dot(np.linalg.inv(GX + eps * np.eye(nAnchorPoints)), mPi[:,iy])
         LambdGY = np.dot(Lambd.T, GY)
-        factor1 = np.linalg.inv(np.dot(LambdGY, LambdGY.T) + eps)[0,0]
-        factor2 = np.dot(LambdGY,Lambd[:,0])[0]
+        factor1 = 1/(np.dot(LambdGY, LambdGY.T) + eps)
+        factor2 = 1/np.dot(LambdGY,Lambd)
         wy = factor1*factor2*GY[:, iy].reshape(nAnchorPoints,1)
-        Traj[:,iy] = sum(np.dot(anchorPoints, wy))
+        Traj[:,iy] = np.dot(anchorPoints, wy)[:,0]
     return Traj
 
 
 def RBFkernel(vec1, vec2):
     return math.exp(-(np.linalg.norm(vec1 - vec2) ** 2) / (2 * sigmaKernel ** 2))
 
-sigmaKernel = 0.1
+sigmaKernel = 0.4
 pos = np.array([[0],[0]])
 Traj = generateTrajectory(0,pos)
 
