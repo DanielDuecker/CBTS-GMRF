@@ -1,6 +1,5 @@
 import math
 import numpy as np
-import parameters as par
 import classes
 import methods
 
@@ -12,6 +11,7 @@ class node:
         self.parent  = []
         self.children = []
         self.visits = 0
+        self.actionToNode = []
 
 class kcBTS:
     def __init__(self,gmrf1, nIterations, nAnchorPoints,trajectoryNoise, maxParamExploration, maxDepth, aMax, kappa, sigmaKernel):
@@ -57,6 +57,7 @@ class kcBTS:
 
                 Dv.append(bestTheta,r)
                 vNew = node(self.gmrf.meanCond,r)
+                vNew.actionToNode = bestTheta
                 v.children = vNew
                 return vNew
             else:
@@ -71,6 +72,13 @@ class kcBTS:
             pos = nextTau[:,-1]
             alpha = math.atan((3*nextTheta[1]+2*nextTheta[3]+nextTheta[4]*math.tan(alpha))/(3*nextTheta[0]+2*nextTheta[2]+nextTheta[4]))
         return r
+
+    def argmax(self,v0):
+        R = 0
+        for child in v0.children:
+            if child.totalR > R:
+                bestAction = child.actionToNode
+        return bestAction
 
 
     def generateTrajectory(self,theta,pos,alpha):
