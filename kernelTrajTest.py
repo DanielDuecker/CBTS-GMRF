@@ -22,22 +22,21 @@ def generateTrajectory(theta, pos):
         alpha = alpha + 2*math.pi * np.random.normal(0,trajectoryNoise)
         anchorPoints[0, i + 1] = anchorPoints[0, i] + par.maxStepsize / nAnchorPoints * math.cos(alpha)
         anchorPoints[1, i + 1] = anchorPoints[1, i] + par.maxStepsize / nAnchorPoints * math.sin(alpha)
-        y[0, i + 1] = par.dt / nAnchorPoints
+        y[0, i + 1] = y[0, i] + par.dt / nAnchorPoints
         # calculate weight vector
         GX = np.zeros((nAnchorPoints, nAnchorPoints))
         GY = np.zeros((nAnchorPoints, nAnchorPoints))
-        mPi = np.zeros((nAnchorPoints, 1))
 
+    mPi = np.zeros((nAnchorPoints, nAnchorPoints))
     for i in range(nAnchorPoints):
         for j in range(nAnchorPoints):
             GX[i, j] = RBFkernel(anchorPoints[:, i], anchorPoints[:, j])
             GY[i, j] = RBFkernel(y[0, i], y[0, j])
+            mPi[i, j] = sum(np.random.choice(GX.flatten(), lMax)) / lMax
 
     Traj = np.zeros((2,nAnchorPoints))
     for iy in range(nAnchorPoints):
-        for i in range(nAnchorPoints):
-            mPi[i, 0] = sum(np.random.choice(GX.flatten(), lMax)) / lMax
-        Lambd = np.dot(np.linalg.inv(GX + eps * np.eye(nAnchorPoints)), mPi)
+        Lambd = np.dot(np.linalg.inv(GX + eps * np.eye(nAnchorPoints)), mPi[:,iy])
         LambdGY = np.dot(Lambd.T, GY)
         factor1 = np.linalg.inv(np.dot(LambdGY, LambdGY.T) + eps)[0,0]
         factor2 = np.dot(LambdGY,Lambd[:,0])[0]
