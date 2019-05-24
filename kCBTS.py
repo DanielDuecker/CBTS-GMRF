@@ -12,9 +12,10 @@ class node:
         self.children = []
         self.visits = 0
         self.actionToNode = []
+        self.D
 
 class kCBTS:
-    def __init__(self,gmrf, nIterations, nAnchorPoints,trajectoryNoise, maxParamExploration, maxDepth, aMax, kappa):
+    def __init__(self, nIterations, nAnchorPoints,trajectoryNoise, maxParamExploration, maxDepth, aMax, kappa):
         self.nIterations = nIterations
         self.nAnchorPoints = nAnchorPoints
         self.trajectoryNoise = trajectoryNoise
@@ -32,19 +33,20 @@ class kCBTS:
         return self.argmax(v0,pos,alpha)
 
     def treePolicy(self,gmrf,v,pos,alpha):
-        Dv = []
+        gmrfCopy = gmrf
+        v.D = []
         while v.depth < self.maxDepth:
-            if len(Dv) < self.aMax:
+            if len(v.D) < self.aMax:
                 bestTheta = self.getBestTheta
                 tau = self.generateTrajectory(bestTheta,pos,alpha)
                 r,o = self.evalTrajectory(gmrf,tau)
 
                 # simulate GP update
                 Phi = methods.mapConDis(gmrf,tau[0,1],tau[1,1])
-                gmrf.seqBayesianUpdate(o,Phi)
+                gmrfCopy.seqBayesianUpdate(o,Phi)
 
-                Dv.append(bestTheta,r)
-                vNew = node(gmrf,r)
+                v.D.append(bestTheta,r)
+                vNew = node(gmrfCopy,r)
                 vNew.actionToNode = bestTheta
                 v.children = vNew
                 return vNew
