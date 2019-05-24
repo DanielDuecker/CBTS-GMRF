@@ -4,8 +4,8 @@ import classes
 import methods
 
 class node:
-    def __index__(self,b,r):
-        self.belief = b
+    def __init__(self,gmrf,r):
+        self.gmrf = gmrf
         self.totalR = r
         self.depth = 0
         self.parent  = []
@@ -14,13 +14,7 @@ class node:
         self.actionToNode = []
 
 class kCBTS:
-    def __init__(self,gmrf1, nIterations, nAnchorPoints,trajectoryNoise, maxParamExploration, maxDepth, aMax, kappa):
-        self.gmrf = classes.gmrf(gmrf1.xMin,gmrf1.xMax,gmrf1.nX,gmrf1.yMin,gmrf1.yMax,gmrf1.nY,gmrf1.nBeta)
-        self.gmrf.meanCond = gmrf1.meanCond
-        self.gmrf.covCond = gmrf1.covCond
-        self.gmrf.bSeq = gmrf1.bSeq
-        self.gmrf.precCond = gmrf1.precCond
-
+    def __init__(self,gmrf, nIterations, nAnchorPoints,trajectoryNoise, maxParamExploration, maxDepth, aMax, kappa):
         self.nIterations = nIterations
         self.nAnchorPoints = nAnchorPoints
         self.trajectoryNoise = trajectoryNoise
@@ -29,38 +23,36 @@ class kCBTS:
         self.aMax = aMax # maximum number of generated actions per node
         self.kappa = kappa
 
-    def getNewState(self,pos,alpha,b,cov):
-        # Copy belief and covariance
-        self.gmrf.meanCond = b
-        self.gmrf.covCond = cov
-
-        v0 = node(b,0) # create node with belief b and total reward 0
+    def getNewState(self,gmrf,pos,alpha):
+        v0 = node(gmrf,0) # create node with belief b and total reward 0
         for i in range(self.nIterations):
             vl = self.treePolicy(v0,pos,alpha) # get next node
             r = self.exploreNode(vl,pos,alpha)
             self.backUp(v0,vl,r)
         return self.argmax(v0,pos,alpha)
 
-    def treePolicy(self,v,pos,alpha):
+    def treePolicy(self,gmrf,v,pos,alpha):
         Dv = []
-        while v.depth < maxDepth:
+        while v.depth < self.maxDepth:
             if len(Dv) < self.aMax:
                 bestTheta = self.getBestTheta
                 tau = self.generateTrajectory(bestTheta,pos,alpha)
-                r,o = self.evalTrajectory(self.gmrf,tau)
+                r,o = self.evalTrajectory(gmrf,tau)
 
                 # simulate GP update
-                Phi = methods.mapConDis(self.gmrf,tau[0,1],tau[1,1])
-                self.gmrf.seqBayesianUpdate(o,Phi)
-                self.gmrf.covCond = np.linalg.inv(self.gmrf.precCond)
+                Phi = methods.mapConDis(gmrf,tau[0,1],tau[1,1])
+                gmrf.seqBayesianUpdate(o,Phi)
 
                 Dv.append(bestTheta,r)
-                vNew = node(self.gmrf.meanCond,r)
+                vNew = node(gmrf,r)
                 vNew.actionToNode = bestTheta
                 v.children = vNew
                 return vNew
             else:
                 return self.bestChild(v)
+
+    def getBestTheta(self):
+        pass
 
     def exploreNode(self,vl,pos,alpha):
         r = 0
@@ -96,13 +88,15 @@ class kCBTS:
             tau[:,i] = np.dot(beta,np.array([[1],[u],[u**2],[u**3]]))
         return tau
 
-    def evaluateTrajectory(self,tau):
+    def evaluateTrajectory(self,gmrf,tau):
         # TODO: maybe use r = sum(grad(mue) + parameter*sigma) from Seq.BO paper (Ramos)
         r = 0
         for i in range(self.nAnchorPoints):
             Phi = methods.mapConDis(self.gmrf, tau[0,i], tau[1,i])
             r += np.dot(Phi,self.gmrf.covCond.diagonal())
-        return r
+        Phi = methods.mapConDis(gmrf, tau[0, 1], tau[1, 1])
+        o = np.dor(Phi,gmrf.meanCond)
+        return r,o
 
     def backUp(self,v0,v,r):
         while v != v0:
