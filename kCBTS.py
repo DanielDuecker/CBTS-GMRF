@@ -40,7 +40,6 @@ class kCBTS:
 
     def treePolicy(self,gmrf,v,pos,alpha):
         gmrfCopy = gmrf
-        v.D = []
         while v.depth < self.maxDepth:
             if len(v.D) < self.aMax:
                 bestTheta = self.getBestTheta()
