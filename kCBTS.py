@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import methods
+import parameters as par
 
 class node:
     def __init__(self,gmrf,r):
@@ -59,17 +60,17 @@ class kCBTS:
                 return self.bestChild(v)
 
     def getBestTheta(self):
-        return np.random.rand(5)*self.maxParamExploration
+        return np.random.rand(3)*self.maxParamExploration
 
     def exploreNode(self,gmrf,vl,pos,alpha):
         r = 0
         while vl.depth < self.maxDepth:
-            nextTheta = np.random.rand(5)*self.maxParamExploration
+            nextTheta = np.random.rand(3)*self.maxParamExploration
             nextTau = self.generateTrajectory(nextTheta,pos,alpha)
             dr,o = self.evaluateTrajectory(gmrf,nextTau)
             r += dr
             pos = nextTau[:,-1]
-            alpha = math.atan((3*nextTheta[1]+2*nextTheta[3]+nextTheta[4]*math.tan(alpha))/(3*nextTheta[0]+2*nextTheta[2]+nextTheta[4]))
+            alpha = math.atan((nextTheta[1] + 2*par.trajStepSize - nextTheta[2]*math.tan(alpha)) / (nextTheta[0] + 2*par.trajStepSize - nextTheta[2]))
             vl.depth += 1
         return r
 
@@ -79,8 +80,8 @@ class kCBTS:
             if child.totalR > R:
                 bestAction = child.actionToNode
         bestTraj = self.generateTrajectory(bestAction,pos,alpha)
-        alpha = math.atan((3 * bestAction[1] + 2 * bestAction[3] + bestAction[4] * math.tan(alpha)) / (
-                    3 * bestAction[0] + 2 * bestAction[2] + bestAction[4]))
+        alpha = math.atan((bestAction[1] + 2 * par.trajStepSize - bestAction[2] * math.tan(alpha)) / (
+                    bestAction[0] + 2 * par.trajStepSize - bestAction[2]))
         return bestTraj,alpha
 
 
@@ -89,7 +90,16 @@ class kCBTS:
         # beta =    [dx cx bx ax]
         #           [dy cy by ay]
         # dx = posX, dy = posY, cy/cx = tan(alpha)
-        beta = np.array([[pos[0],theta[4],theta[2],theta[0]],[pos[1],theta[4]*math.tan(alpha),theta[3],theta[1]]])
+        dx = pos[0]
+        dy = pos[1]
+        cx = theta[2]
+        cy = cx * math.tan(alpha)
+        ax = theta[0]
+        ay = theta[1]
+        bx = par.trajStepSize - cx - ax
+        by = par.trajStepSize - cy - ay
+
+        beta = np.array([[dx,cx,bx,ax],[dy,cy,by,ay]])
 
         tau = np.zeros((2,self.nAnchorPoints))
         for i in range(self.nAnchorPoints):
