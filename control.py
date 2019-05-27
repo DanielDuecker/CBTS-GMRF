@@ -104,9 +104,9 @@ class piControl:
 
             self.u += weightedDeltaU
 
-        (self.xTraj, self.yTraj, self.alphaTraj) = auv.trajectoryFromControl(self.u)
+        self.xTraj, self.yTraj, self.alphaTraj = auv.trajectoryFromControl(self.u)
 
-        (auv.x, auv.y, auv.alpha) = (self.xTraj[1], self.yTraj[1], self.alphaTraj[1])
+        auv.x, auv.y, auv.alpha = (self.xTraj[1], self.yTraj[1], self.alphaTraj[1])
 
         if auv.x < gmrf.xMin:
             auv.x = gmrf.xMin

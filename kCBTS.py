@@ -1,6 +1,5 @@
 import math
 import numpy as np
-import classes
 import methods
 
 class node:
@@ -8,11 +7,11 @@ class node:
         self.gmrf = gmrf
         self.totalR = r
         self.depth = 0
-        self.parent  = []
+        self.parent = []
         self.children = []
         self.visits = 0
         self.actionToNode = []
-        self.D
+        self.D = []
 
 class kCBTS:
     def __init__(self, nIterations, nAnchorPoints,trajectoryNoise, maxParamExploration, maxDepth, aMax, kappa):
@@ -24,46 +23,64 @@ class kCBTS:
         self.aMax = aMax # maximum number of generated actions per node
         self.kappa = kappa
 
-    def getNewState(self,gmrf,pos,alpha):
+    def getNewState(self,auv,gmrf):
         v0 = node(gmrf,0) # create node with belief b and total reward 0
         for i in range(self.nIterations):
-            vl = self.treePolicy(v0,pos,alpha) # get next node
-            r = self.exploreNode(vl,pos,alpha)
+            pos = np.array([[auv.x],[auv.y]])
+            vl = self.treePolicy(gmrf,v0,pos,auv.alpha) # get next node
+            r = self.exploreNode(gmrf,vl,pos,auv.alpha)
             self.backUp(v0,vl,r)
-        return self.argmax(v0,pos,alpha)
+
+        auv.x,auv.y,auv.alpha = self.argmax(v0, pos, auv.alpha)
+
+        if auv.x < gmrf.xMin:
+            auv.x = gmrf.xMin
+        elif auv.x > gmrf.xMax:
+            auv.x = gmrf.xMax
+
+        if auv.y < gmrf.yMin:
+            auv.y = gmrf.yMin
+        elif auv.y > gmrf.yMax:
+            auv.y = gmrf.yMax
+
+        return auv.x, auv.y
 
     def treePolicy(self,gmrf,v,pos,alpha):
         gmrfCopy = gmrf
         v.D = []
         while v.depth < self.maxDepth:
             if len(v.D) < self.aMax:
-                bestTheta = self.getBestTheta
+                bestTheta = self.getBestTheta()
                 tau = self.generateTrajectory(bestTheta,pos,alpha)
-                r,o = self.evalTrajectory(gmrf,tau)
+                r,o = self.evaluateTrajectory(gmrf,tau)
 
                 # simulate GP update
                 Phi = methods.mapConDis(gmrf,tau[0,1],tau[1,1])
                 gmrfCopy.seqBayesianUpdate(o,Phi)
 
-                v.D.append(bestTheta,r)
+                v.D.append([bestTheta,r])
                 vNew = node(gmrfCopy,r)
+                vNew.parent = v
                 vNew.actionToNode = bestTheta
-                v.children = vNew
+                v.children.append(vNew)
+
                 return vNew
             else:
                 return self.bestChild(v)
 
     def getBestTheta(self):
-        pass
+        return np.random.rand(5)*self.maxParamExploration
 
-    def exploreNode(self,vl,pos,alpha):
+    def exploreNode(self,gmrf,vl,pos,alpha):
         r = 0
         while vl.depth < self.maxDepth:
-            nextTheta = np.random.rand(1,5)*self.maxParamExploration
+            nextTheta = np.random.rand(5)*self.maxParamExploration
             nextTau = self.generateTrajectory(nextTheta,pos,alpha)
-            r += self.evaluateTrajectory(nextTau)
+            dr,o = self.evaluateTrajectory(gmrf,nextTau)
+            r += dr
             pos = nextTau[:,-1]
             alpha = math.atan((3*nextTheta[1]+2*nextTheta[3]+nextTheta[4]*math.tan(alpha))/(3*nextTheta[0]+2*nextTheta[2]+nextTheta[4]))
+            vl.depth += 1
         return r
 
     def argmax(self,v0,pos,alpha):
@@ -87,17 +104,17 @@ class kCBTS:
         tau = np.zeros((2,self.nAnchorPoints))
         for i in range(self.nAnchorPoints):
             u = i/self.nAnchorPoints
-            tau[:,i] = np.dot(beta,np.array([[1],[u],[u**2],[u**3]]))
+            tau[:,i] = np.dot(beta,np.array([[1],[u],[u**2],[u**3]]))[:,0]
         return tau
 
     def evaluateTrajectory(self,gmrf,tau):
         # TODO: maybe use r = sum(grad(mue) + parameter*sigma) from Seq.BO paper (Ramos)
         r = 0
         for i in range(self.nAnchorPoints):
-            Phi = methods.mapConDis(self.gmrf, tau[0,i], tau[1,i])
-            r += np.dot(Phi,self.gmrf.covCond.diagonal())
+            Phi = methods.mapConDis(gmrf, tau[0,i], tau[1,i])
+            r += np.dot(Phi,gmrf.covCond.diagonal())
         Phi = methods.mapConDis(gmrf, tau[0, 1], tau[1, 1])
-        o = np.dor(Phi,gmrf.meanCond)
+        o = np.dot(Phi,gmrf.meanCond)
         return r,o
 
     def backUp(self,v0,v,r):

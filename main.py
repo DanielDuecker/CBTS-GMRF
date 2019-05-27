@@ -43,7 +43,7 @@ trueField = trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
 stkf1 = stkf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta, trueField, par.dt, par.sigmaT,
              par.lambdSTKF, par.sigma2)
 
-kCBTS1 = kCBTS(gmrf1, par.kCBTSIterations, par.nAnchorPoints, par.trajectoryNoise, par.maxParamExploration, par.maxDepth, par.aMax, par.kappa)
+kCBTS1 = kCBTS(par.kCBTSIterations, par.nAnchorPoints, par.trajectoryNoise, par.maxParamExploration, par.maxDepth, par.aMax, par.kappa)
 
 """GMRF"""
 # Initialize Plot
@@ -81,16 +81,15 @@ for i in range(par.nIter - 1):
         else:
             gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
 
+    # Information based controller
     if par.PIControl:
         # Get next state according to PI Controller
-        (xMeas, yMeas) = controller.getNewState(auv, gmrf1)
+        xMeas, yMeas = controller.getNewState(auv, gmrf1)
     elif par.kCBTS:
-        xMeas, yMeas, auv.alpha = kCBTS1.getNewState(np.array([[auv.x],[auv.y]]),auv.alpha,gmrf1.meanCond,gmrf1.covCond)
-        auv.x = xMeas
-        auv.y = yMeas
+        xMeas, yMeas = kCBTS1.getNewState(auv,gmrf1)
     else:
         # Get next measurement according to dynamics, stack under measurement vector
-        (xMeas, yMeas) = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
+        xMeas, yMeas = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
 
     xHist.append(xMeas)
     yHist.append(yMeas)
