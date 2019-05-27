@@ -31,19 +31,9 @@ class kCBTS:
             r = self.exploreNode(gmrf,vl,pos,auv.alpha)
             self.backUp(v0,vl,r)
 
-        auv.x,auv.y,auv.alpha = self.argmax(v0, pos, auv.alpha)
+        bestTraj,auv.alpha = self.argmax(v0, pos, auv.alpha)
 
-        if auv.x < gmrf.xMin:
-            auv.x = gmrf.xMin
-        elif auv.x > gmrf.xMax:
-            auv.x = gmrf.xMax
-
-        if auv.y < gmrf.yMin:
-            auv.y = gmrf.yMin
-        elif auv.y > gmrf.yMax:
-            auv.y = gmrf.yMax
-
-        return auv.x, auv.y
+        return bestTraj
 
     def treePolicy(self,gmrf,v,pos,alpha):
         gmrfCopy = gmrf
@@ -91,7 +81,7 @@ class kCBTS:
         bestTraj = self.generateTrajectory(bestAction,pos,alpha)
         alpha = math.atan((3 * bestAction[1] + 2 * bestAction[3] + bestAction[4] * math.tan(alpha)) / (
                     3 * bestAction[0] + 2 * bestAction[2] + bestAction[4]))
-        return bestTraj[0,1],bestTraj[1,1],alpha
+        return bestTraj,alpha
 
 
     def generateTrajectory(self,theta,pos,alpha):

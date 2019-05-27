@@ -10,7 +10,11 @@ truncation = False
 sinusoidal = False  # True: Use sinusoidal ground truth
 temporal = False  # True: time varying field
 PIControl = False
-kCBTS = True
+
+if not PIControl:
+    kCBTS = True
+else:
+    kCBTS = False
 
 exploitingRate = 0
 
@@ -59,7 +63,7 @@ nUpdated = 10   # number of iterations
 # kCBTS controller
 kCBTSIterations = 5
 nAnchorPoints = 10
-trajectoryNoise = 0.01
+trajectoryNoise = 0.1
 maxParamExploration = 0.05
 maxDepth = 3
 aMax = 5

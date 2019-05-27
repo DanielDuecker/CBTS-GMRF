@@ -44,6 +44,7 @@ stkf1 = stkf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta, 
              par.lambdSTKF, par.sigma2)
 
 kCBTS1 = kCBTS(par.kCBTSIterations, par.nAnchorPoints, par.trajectoryNoise, par.maxParamExploration, par.maxDepth, par.aMax, par.kappa)
+bestTraj = np.zeros((2,1))
 
 """GMRF"""
 # Initialize Plot
@@ -86,7 +87,13 @@ for i in range(par.nIter - 1):
         # Get next state according to PI Controller
         xMeas, yMeas = controller.getNewState(auv, gmrf1)
     elif par.kCBTS:
-        xMeas, yMeas = kCBTS1.getNewState(auv,gmrf1)
+        if i%par.nAnchorPoints == 0:
+            bestTraj = kCBTS1.getNewState(auv,gmrf1)
+            print("New trajectory generated")
+        auv.x = bestTraj[0,i%par.nAnchorPoints]
+        auv.y = bestTraj[1,i%par.nAnchorPoints]
+        xMeas = auv.x
+        yMeas = auv.y
     else:
         # Get next measurement according to dynamics, stack under measurement vector
         xMeas, yMeas = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
