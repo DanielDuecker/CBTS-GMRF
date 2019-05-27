@@ -2,6 +2,7 @@ import math
 import numpy as np
 import methods
 import parameters as par
+import matplotlib.pyplot as plt
 
 class node:
     def __init__(self,gmrf,r):
@@ -25,6 +26,7 @@ class kCBTS:
         self.kappa = kappa
 
     def getNewState(self,auv,gmrf):
+        #figTest = plt.figure()
         v0 = node(gmrf,0) # create node with belief b and total reward 0
         for i in range(self.nIterations):
             pos = np.array([[auv.x],[auv.y]])
@@ -33,7 +35,7 @@ class kCBTS:
             self.backUp(v0,vl,r)
 
         bestTraj,auv.alpha = self.argmax(v0, pos, auv.alpha)
-
+        #plt.show(block=True)
         return bestTraj
 
     def treePolicy(self,gmrf,v,pos,alpha):
@@ -42,7 +44,10 @@ class kCBTS:
         while v.depth < self.maxDepth:
             if len(v.D) < self.aMax:
                 bestTheta = self.getBestTheta()
-                tau = self.generateTrajectory(bestTheta,pos,alpha)
+                tau, bx, by, cy = self.generateTrajectory(bestTheta,pos,alpha)
+                #plt.plot(tau[0,:],tau[1,:])
+                #figTest.canvas.draw()
+
                 r,o = self.evaluateTrajectory(gmrf,tau)
 
                 # simulate GP update
@@ -66,11 +71,11 @@ class kCBTS:
         r = 0
         while vl.depth < self.maxDepth:
             nextTheta = np.random.rand(3)*self.maxParamExploration
-            nextTau = self.generateTrajectory(nextTheta,pos,alpha)
+            nextTau, bx, by, cy = self.generateTrajectory(nextTheta,pos,alpha)
             dr,o = self.evaluateTrajectory(gmrf,nextTau)
             r += dr
             pos = nextTau[:,-1]
-            alpha = math.atan((nextTheta[1] + 2*par.trajStepSize - nextTheta[2]*math.tan(alpha)) / (nextTheta[0] + 2*par.trajStepSize - nextTheta[2]))
+            alpha = math.atan((3 * nextTheta[1] + 2 * by + cy) / (3 * nextTheta[0] + 2 * bx + nextTheta[2]))
             vl.depth += 1
         return r
 
@@ -79,9 +84,8 @@ class kCBTS:
         for child in v0.children:
             if child.totalR > R:
                 bestAction = child.actionToNode
-        bestTraj = self.generateTrajectory(bestAction,pos,alpha)
-        alpha = math.atan((bestAction[1] + 2 * par.trajStepSize - bestAction[2] * math.tan(alpha)) / (
-                    bestAction[0] + 2 * par.trajStepSize - bestAction[2]))
+        bestTraj, bx, by, cy = self.generateTrajectory(bestAction,pos,alpha)
+        alpha = math.atan((3 * bestAction[1] + 2 * by + cy) / (3 * bestAction[0] + 2 * bx + bestAction[2]))
         return bestTraj,alpha
 
 
@@ -96,8 +100,9 @@ class kCBTS:
         cy = cx * math.tan(alpha)
         ax = theta[0]
         ay = theta[1]
-        bx = par.trajStepSize - cx - ax
-        by = par.trajStepSize - cy - ay
+        angle = np.random.normal(alpha,par.trajectoryNoise)
+        bx = par.trajStepSize*math.cos(angle) - cx - ax
+        by = par.trajStepSize*math.sin(angle) - cy - ay
 
         beta = np.array([[dx,cx,bx,ax],[dy,cy,by,ay]])
 
@@ -105,7 +110,7 @@ class kCBTS:
         for i in range(self.nAnchorPoints):
             u = i/self.nAnchorPoints
             tau[:,i] = np.dot(beta,np.array([[1],[u],[u**2],[u**3]]))[:,0]
-        return tau
+        return tau, bx, by, cy
 
     def evaluateTrajectory(self,gmrf,tau):
         # TODO: maybe use r = sum(grad(mue) + parameter*sigma) from Seq.BO paper (Ramos)

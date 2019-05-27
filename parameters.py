@@ -61,11 +61,11 @@ ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
 
 # kCBTS controller
-trajStepSize = 5
-kCBTSIterations = 5
+trajStepSize = 3
+kCBTSIterations = 15
 nAnchorPoints = int(trajStepSize/maxStepsize)
-trajectoryNoise = 0.1
-maxParamExploration = 0.05
+trajectoryNoise = 0.3
+maxParamExploration = 10
 maxDepth = 3
 aMax = 5
 kappa = 1
