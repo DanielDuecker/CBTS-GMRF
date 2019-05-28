@@ -2,6 +2,7 @@ import math
 import numpy as np
 import methods
 import copy
+import matplotlib.pyplot as plt
 import classes
 
 class node:
@@ -32,9 +33,12 @@ class kCBTS:
 
     def getNewState(self, auv, gmrf):
         v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
+        #figTest = plt.figure()
+        #plt.show()
         for i in range(self.nIterations):
             # print("kCBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
+            #vl = self.treePolicy(figTest,v0) # get next node
             if vl == None:
                 continue # no more children
             r = self.exploreNode(vl)
@@ -44,12 +48,15 @@ class kCBTS:
         return bestTraj
 
     def treePolicy(self,v):
+    #def treePolicy(self, figTest, v):
         print(" call tree policy:")
         while v.depth < self.maxDepth:
             if len(v.D) < self.branchingFactor:
                 print("     generate new node at depth ",v.depth)
                 theta = self.getNextTheta(v.D)
                 traj, alphaEnd = self.generateTrajectory(v, theta)
+                #plt.plot(traj[0, :], traj[1, :])
+                #figTest.canvas.draw()
                 print("generated trajectory: ",traj)
                 print("with theta = ",theta)
                 #print("data set is now: ",v.D)
@@ -83,12 +90,12 @@ class kCBTS:
 
     def getNextTheta(self,Dv):
         # Todo: Use Uppder Confidence Bound (Ramos 2019)
-        maxR = -math.inf
+        #maxR = -math.inf
         bestTheta = np.random.normal(1,self.maxParamExploration,self.trajOrder)
-        for theta,r in Dv:
-            if r > maxR:
-                bestTheta = theta
-                maxR = r
+        #for theta,r in Dv:
+        #    if r > maxR:
+        #        bestTheta = theta
+        #        maxR = r
         return bestTheta
 
     def exploreNode(self,vl):
