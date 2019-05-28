@@ -62,7 +62,7 @@ nUpdated = 10   # number of iterations
 
 # kCBTS controller
 trajStepSize = 1
-kCBTSIterations = 8
+kCBTSIterations = 20
 nTrajPoints = int(trajStepSize/maxStepsize)
 maxParamExploration = 1
 maxDepth = 2

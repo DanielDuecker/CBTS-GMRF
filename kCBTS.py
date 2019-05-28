@@ -37,8 +37,10 @@ class kCBTS:
     def treePolicy(self,v):
         print(" call tree policy:")
         while v.depth < self.maxDepth:
+            print("New len(v.D)")
+            print(len(v.D))
             if len(v.D) < self.branchingFactor:
-                print("     generate new node at depth ",v.depth," and action number ",len(v.D))
+                print("     generate new node at depth ",v.depth)
                 theta = self.getNextTheta(v.D)
                 traj, alphaEnd = self.generateTrajectory(v, theta)
                 print("generated trajectory: ",traj)
@@ -48,11 +50,10 @@ class kCBTS:
                 r,o = self.evaluateTrajectory(v,traj)
                 v.D.append((theta,r))
 
-                vNew = copy.copy(v)
+                vNew = node(v.gmrf,v.auv,v.totalR)
                 vNew.totalR += r
                 vNew.parent = v
                 v.children.append(vNew)
-                print("Current children of node:",v.children)
                 vNew.depth = v.depth + 1
 
                 # simulate GP update
@@ -65,10 +66,10 @@ class kCBTS:
 
                 return vNew
             else:
-                print(v)
+                print("No more actions. Switching from node",v)
                 v = self.bestChild(v)
-                print(v)
-                print("No more actions, go to best child and check available actions")
+                print("to node ",v)
+                test = 1
 
     def getNextTheta(self,Dv):
         # Todo: Use Uppder Confidence Bound (Ramos 2019)
@@ -152,5 +153,4 @@ class kCBTS:
         g = []
         for child in v.children:
             g.append(child.totalR/child.visits + self.kappa*math.sqrt(2*math.log(v.visits)/child.visits))
-        print("Trying to find best children:")
         return v.children[np.argmax(g)]
