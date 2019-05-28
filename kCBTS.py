@@ -11,7 +11,7 @@ class node:
         self.depth = 0
         self.parent = []
         self.children = []
-        self.visits = 0
+        self.visits = 1
         self.D = []
 
 class kCBTS:
@@ -41,22 +41,18 @@ class kCBTS:
                 r,o = self.evaluateTrajectory(v,traj)
                 v.D.append((theta,r))
 
-                # New Node:
-                auvNew = copy.copy(v.auv)
-                auvNew.x = traj[0,-1]
-                auvNew.y = traj[1,-1]
-                auvNew.alpha = alphaEnd
-
-                vNew = node(v.gmrf,auvNew,v.totalR + r)
+                vNew = node(v.gmrf,v.auv,v.totalR + r)
                 vNew.parent = v
                 v.children.append(vNew)
 
                 # simulate GP update
                 for i in range(len(o)):
+                    vNew.auv.x = traj[0,i+1]
+                    vNew.auv.y = traj[1,i+1]
                     Phi = methods.mapConDis(vNew.gmrf,vNew.auv.x,vNew.auv.y)
                     vNew.gmrf.seqBayesianUpdate(o[i],Phi)
-                    vNew.auv.x = traj[0,i+1]
-                    vNew.auv.y = traj[0,i+1]
+                vNew.auv.alpha = alphaEnd
+
                 return vNew
             else:
                 return self.bestChild(v)
@@ -126,8 +122,8 @@ class kCBTS:
         # TODO: maybe use r = sum(grad(mue) + parameter*sigma) from Seq.BO paper (Ramos)
         r = 0
         o = []
-        for i in range(self.nTrajPoints):
-            Phi = methods.mapConDis(v.gmrf, tau[0,i], tau[1,i])
+        for i in range(self.nTrajPoints-1):
+            Phi = methods.mapConDis(v.gmrf, tau[0,i+1], tau[1,i+1])
             r += np.dot(Phi,v.gmrf.covCond.diagonal())
             o.append(np.dot(Phi,v.gmrf.meanCond))
         return r,o
