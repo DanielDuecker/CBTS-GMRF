@@ -25,7 +25,7 @@ ov2 = 0.04  # measurement variance
 dX = dY = 0.01  # discretizaton in x and y for Plotting
 
 (x0, y0, alpha0) = (0, 0, math.pi/4)  # initial state
-maxStepsize = 0.3  # maximum change in every state per iteration
+maxStepsize = 0.2  # maximum change in every state per iteration
 xVel = maxStepsize
 yVel = maxStepsize
 
@@ -61,13 +61,12 @@ ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
 
 # kCBTS controller
-trajStepSize = 3
-kCBTSIterations = 15
-nAnchorPoints = int(trajStepSize/maxStepsize)
-trajectoryNoise = 0.3
-maxParamExploration = 10
-maxDepth = 3
-aMax = 5
+trajStepSize = 1
+kCBTSIterations = 8
+nTrajPoints = int(trajStepSize/maxStepsize)
+maxParamExploration = 1
+maxDepth = 2
+branchingFactor = 5
 kappa = 1
 
 if not truncation:
