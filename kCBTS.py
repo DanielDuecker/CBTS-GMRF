@@ -15,10 +15,11 @@ class node:
         self.D = []
 
 class kCBTS:
-    def __init__(self, nIterations, nTrajPoints, maxParamExploration, maxDepth, branchingFactor, kappa):
+    def __init__(self, nIterations, nTrajPoints, maxParamExploration, trajOrder, maxDepth, branchingFactor, kappa):
         self.nIterations = nIterations
         self.nTrajPoints = nTrajPoints
         self.maxParamExploration = maxParamExploration
+        self.trajOrder = trajOrder
         self.maxDepth = maxDepth
         self.branchingFactor = branchingFactor # maximum number of generated actions per node
         self.kappa = kappa
@@ -74,7 +75,7 @@ class kCBTS:
     def getNextTheta(self,Dv):
         # Todo: Use Uppder Confidence Bound (Ramos 2019)
         maxR = -math.inf
-        bestTheta = np.random.rand(3)*self.maxParamExploration
+        bestTheta = np.random.normal(1,self.maxParamExploration,self.trajOrder)
         for theta,r in Dv:
             if r > maxR:
                 bestTheta = theta
@@ -85,7 +86,7 @@ class kCBTS:
         r = 0
         v = copy.deepcopy(vl)
         while v.depth < self.maxDepth:
-            nextTheta = np.random.rand(3)*self.maxParamExploration
+            nextTheta = np.random.normal(0,self.maxParamExploration,self.trajOrder)
             nextTraj, alphaEnd = self.generateTrajectory(v,nextTheta)
             dr,do = self.evaluateTrajectory(v,nextTraj)
             r += dr
@@ -97,7 +98,8 @@ class kCBTS:
 
     def getBestTheta(self,v0):
         maxR = -math.inf
-        bestTheta = np.random.rand(3)*self.maxParamExploration
+        bestTheta = np.random.normal(0,self.maxParamExploration,self.trajOrder)
+
         for theta,r in v0.D:
             if r > maxR:
                 bestTheta = theta

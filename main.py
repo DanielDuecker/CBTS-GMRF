@@ -43,7 +43,7 @@ trueField = trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
 stkf1 = stkf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta, trueField, par.dt, par.sigmaT,
              par.lambdSTKF, par.sigma2)
 
-kCBTS1 = kCBTS(par.kCBTSIterations, par.nTrajPoints, par.maxParamExploration, par.maxDepth, par.branchingFactor, par.kappa)
+kCBTS1 = kCBTS(par.kCBTSIterations, par.nTrajPoints, par.maxParamExploration, par.trajOrder, par.maxDepth, par.branchingFactor, par.kappa)
 bestTraj = np.zeros((2,1))
 
 """GMRF"""

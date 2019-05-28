@@ -65,6 +65,7 @@ trajStepSize = 0.5
 kCBTSIterations = 20
 nTrajPoints = int(trajStepSize/maxStepsize)
 maxParamExploration = 1
+trajOrder = 3
 maxDepth = 3
 branchingFactor = 5
 kappa = 1
