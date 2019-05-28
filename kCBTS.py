@@ -26,6 +26,8 @@ class kCBTS:
     def getNewState(self, auv, gmrf):
         v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
         for i in range(self.nIterations):
+            print("____")
+            print("kCBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
             r = self.exploreNode(vl)
             self.backUp(v0,vl,r)
@@ -33,17 +35,25 @@ class kCBTS:
         return bestTraj
 
     def treePolicy(self,v):
+        print(" call tree policy:")
         while v.depth < self.maxDepth:
             if len(v.D) < self.branchingFactor:
+                print("     generate new node at depth ",v.depth," and action number ",len(v.D))
                 theta = self.getNextTheta(v.D)
                 traj, alphaEnd = self.generateTrajectory(v, theta)
+                print("generated trajectory: ",traj)
+                print("with theta = ",theta)
+                print("data set is now: ",v.D)
 
                 r,o = self.evaluateTrajectory(v,traj)
                 v.D.append((theta,r))
 
-                vNew = node(v.gmrf,v.auv,v.totalR + r)
+                vNew = copy.copy(v)
+                vNew.totalR += r
                 vNew.parent = v
                 v.children.append(vNew)
+                print("Current children of node:",v.children)
+                vNew.depth = v.depth + 1
 
                 # simulate GP update
                 for i in range(len(o)):
@@ -55,7 +65,10 @@ class kCBTS:
 
                 return vNew
             else:
-                return self.bestChild(v)
+                print(v)
+                v = self.bestChild(v)
+                print(v)
+                print("No more actions, go to best child and check available actions")
 
     def getNextTheta(self,Dv):
         # Todo: Use Uppder Confidence Bound (Ramos 2019)
@@ -129,13 +142,15 @@ class kCBTS:
         return r,o
 
     def backUp(self,v0,v,r):
-        while v != v0:
-            v.visits += 1
-            v.totalR += r
-            v = v.parent
+        nodePointer = v
+        while nodePointer != v0:
+            nodePointer.visits += 1
+            nodePointer.totalR += r
+            nodePointer = nodePointer.parent
 
     def bestChild(self,v):
         g = []
         for child in v.children:
             g.append(child.totalR/child.visits + self.kappa*math.sqrt(2*math.log(v.visits)/child.visits))
+        print("Trying to find best children:")
         return v.children[np.argmax(g)]

@@ -89,7 +89,7 @@ for i in range(par.nIter - 1):
     elif par.kCBTS:
         if i%par.nTrajPoints == 0:
             bestTraj = kCBTS1.getNewState(auv,gmrf1)
-            print("New trajectory generated")
+            print("New trajectory generated:", bestTraj)
         auv.x = bestTraj[0,i%par.nTrajPoints]
         auv.y = bestTraj[1,i%par.nTrajPoints]
         xMeas = auv.x
