@@ -27,13 +27,13 @@ class kCBTS:
     def getNewState(self, auv, gmrf):
         v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
         for i in range(self.nIterations):
-            print("____")
-            print("kCBTS-Iteration",i,"of",self.nIterations)
+            # print("kCBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
-            print(vl)
-
+            if vl == None:
+                continue # no more children
             r = self.exploreNode(vl)
             self.backUp(v0,vl,r)
+            
         bestTraj, auv.alpha = self.getBestTheta(v0)
         return bestTraj
 
