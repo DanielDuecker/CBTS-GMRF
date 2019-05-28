@@ -30,6 +30,8 @@ class kCBTS:
             print("____")
             print("kCBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
+            print(vl)
+
             r = self.exploreNode(vl)
             self.backUp(v0,vl,r)
         bestTraj, auv.alpha = self.getBestTheta(v0)
@@ -38,8 +40,6 @@ class kCBTS:
     def treePolicy(self,v):
         #print(" call tree policy:")
         while v.depth < self.maxDepth:
-            #print("New len(v.D)")
-            #print(len(v.D))
             if len(v.D) < self.branchingFactor:
                 #print("     generate new node at depth ",v.depth)
                 theta = self.getNextTheta(v.D)
@@ -140,6 +140,9 @@ class kCBTS:
             Phi = methods.mapConDis(v.gmrf, tau[0,i+1], tau[1,i+1])
             r += np.dot(Phi,v.gmrf.covCond.diagonal())
             o.append(np.dot(Phi,v.gmrf.meanCond))
+
+        if not methods.sanityCheck(tau[0,:],tau[1,:],v.gmrf):
+            r -= 100
         return r,o
 
     def backUp(self,v0,v,r):
