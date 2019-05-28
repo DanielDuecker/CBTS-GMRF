@@ -74,7 +74,7 @@ class kCBTS:
     def getNextTheta(self,Dv):
         # Todo: Use Uppder Confidence Bound (Ramos 2019)
         maxR = -math.inf
-        bestTheta = np.random.rand(5)*self.maxParamExploration
+        bestTheta = np.random.rand(3)*self.maxParamExploration
         for theta,r in Dv:
             if r > maxR:
                 bestTheta = theta
@@ -85,7 +85,7 @@ class kCBTS:
         r = 0
         v = copy.deepcopy(vl)
         while v.depth < self.maxDepth:
-            nextTheta = np.random.rand(5)*self.maxParamExploration
+            nextTheta = np.random.rand(3)*self.maxParamExploration
             nextTraj, alphaEnd = self.generateTrajectory(v,nextTheta)
             dr,do = self.evaluateTrajectory(v,nextTraj)
             r += dr
@@ -97,7 +97,7 @@ class kCBTS:
 
     def getBestTheta(self,v0):
         maxR = -math.inf
-        bestTheta = np.random.rand(5)*self.maxParamExploration
+        bestTheta = np.random.rand(3)*self.maxParamExploration
         for theta,r in v0.D:
             if r > maxR:
                 bestTheta = theta
@@ -111,11 +111,11 @@ class kCBTS:
         # beta =    [dx cx bx ax]
         #           [dy cy by ay]
         # dx = posX, dy = posY, cy/cx = tan(alpha)
-        ax = theta[0]
-        ay = theta[1]
-        bx = theta[2]
-        by = theta[3]
-        cx = theta[4]
+        ax = 0
+        ay = 0
+        bx = theta[0]
+        by = theta[1]
+        cx = theta[2]
         cy = cx * math.tan(v.auv.alpha)
         dx = v.auv.x
         dy = v.auv.y
