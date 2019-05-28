@@ -11,6 +11,7 @@ from scipy import integrate
 import scipy
 
 
+#todo: create generic GMRF class and use if for thetaR mapping in kCBTS.py too
 class gmrf:
     def __init__(self, xMin, xMax, nX, yMin, yMax, nY, nBeta):
         """GMRF properties"""
