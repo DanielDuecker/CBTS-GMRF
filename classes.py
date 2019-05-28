@@ -84,7 +84,8 @@ class gmrf:
 
         self.bSeq = self.bSeq + 1 / par.ov2 * Phi_k.T * zMeas_k  # sequential update canonical mean
         self.precCond = self.precCond + 1 / par.ov2 * np.dot(Phi_k.T, Phi_k)  # sequential update of precision matrix
-        self.diagCovCond = np.linalg.inv(self.precCond).diagonal().reshape(self.nP + self.nBeta, 1)  # works too
+        self.covCond = np.linalg.inv(self.precCond)
+        self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)  # works too
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
 
         # TODO: Fix calculation of covariance diagonal

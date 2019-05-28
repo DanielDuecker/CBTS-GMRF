@@ -1,124 +1,135 @@
 import math
 import numpy as np
 import methods
-import parameters as par
-import matplotlib.pyplot as plt
+import copy
 
 class node:
-    def __init__(self,gmrf,r):
-        self.gmrf = gmrf
-        self.totalR = r
+    def __init__(self,gmrf,auv,r):
+        self.gmrf = copy.copy(gmrf)
+        self.auv = copy.copy(auv)
+        self.totalR = copy.copy(r)
         self.depth = 0
         self.parent = []
         self.children = []
         self.visits = 0
-        self.actionToNode = []
         self.D = []
 
 class kCBTS:
-    def __init__(self, nIterations, nAnchorPoints,trajectoryNoise, maxParamExploration, maxDepth, aMax, kappa):
+    def __init__(self, nIterations, nTrajPoints, maxParamExploration, maxDepth, branchingFactor, kappa):
         self.nIterations = nIterations
-        self.nAnchorPoints = nAnchorPoints
-        self.trajectoryNoise = trajectoryNoise
+        self.nTrajPoints = nTrajPoints
         self.maxParamExploration = maxParamExploration
         self.maxDepth = maxDepth
-        self.aMax = aMax # maximum number of generated actions per node
+        self.branchingFactor = branchingFactor # maximum number of generated actions per node
         self.kappa = kappa
 
-    def getNewState(self,auv,gmrf):
-        #figTest = plt.figure()
-        v0 = node(gmrf,0) # create node with belief b and total reward 0
+    def getNewState(self, auv, gmrf):
+        v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
         for i in range(self.nIterations):
-            pos = np.array([[auv.x],[auv.y]])
-            vl = self.treePolicy(gmrf,v0,pos,auv.alpha) # get next node
-            r = self.exploreNode(gmrf,vl,pos,auv.alpha)
+            vl = self.treePolicy(v0) # get next node
+            r = self.exploreNode(vl)
             self.backUp(v0,vl,r)
-
-        bestTraj,auv.alpha = self.argmax(v0, pos, auv.alpha)
-        #plt.show(block=True)
+        bestTraj, auv.alpha = self.getBestTheta(v0)
         return bestTraj
 
-    def treePolicy(self,gmrf,v,pos,alpha):
-        gmrfCopy = gmrf
+    def treePolicy(self,v):
         while v.depth < self.maxDepth:
-            if len(v.D) < self.aMax:
-                bestTheta = self.getBestTheta()
-                tau, bx, by, cy = self.generateTrajectory(bestTheta,pos,alpha)
-                #plt.plot(tau[0,:],tau[1,:])
-                #figTest.canvas.draw()
+            if len(v.D) < self.branchingFactor:
+                theta = self.getNextTheta(v.D)
+                traj, alphaEnd = self.generateTrajectory(v, theta)
 
-                r,o = self.evaluateTrajectory(gmrf,tau)
+                r,o = self.evaluateTrajectory(v,traj)
+                v.D.append((theta,r))
 
-                # simulate GP update
-                Phi = methods.mapConDis(gmrf,tau[0,1],tau[1,1])
-                gmrfCopy.seqBayesianUpdate(o,Phi)
+                # New Node:
+                auvNew = copy.copy(v.auv)
+                auvNew.x = traj[0,-1]
+                auvNew.y = traj[1,-1]
+                auvNew.alpha = alphaEnd
 
-                v.D.append([bestTheta,r])
-                vNew = node(gmrfCopy,r)
+                vNew = node(v.gmrf,auvNew,v.totalR + r)
                 vNew.parent = v
-                vNew.actionToNode = bestTheta
                 v.children.append(vNew)
 
+                # simulate GP update
+                for i in range(len(o)):
+                    Phi = methods.mapConDis(vNew.gmrf,vNew.auv.x,vNew.auv.y)
+                    vNew.gmrf.seqBayesianUpdate(o[i],Phi)
+                    vNew.auv.x = traj[0,i+1]
+                    vNew.auv.y = traj[0,i+1]
                 return vNew
             else:
                 return self.bestChild(v)
 
-    def getBestTheta(self):
-        return np.random.rand(3)*self.maxParamExploration
+    def getNextTheta(self,Dv):
+        # Todo: Use Uppder Confidence Bound (Ramos 2019)
+        maxR = -math.inf
+        bestTheta = np.random.rand(5)*self.maxParamExploration
+        for theta,r in Dv:
+            if r > maxR:
+                bestTheta = theta
+                maxR = r
+        return bestTheta
 
-    def exploreNode(self,gmrf,vl,pos,alpha):
+    def exploreNode(self,vl):
         r = 0
-        while vl.depth < self.maxDepth:
-            nextTheta = np.random.rand(3)*self.maxParamExploration
-            nextTau, bx, by, cy = self.generateTrajectory(nextTheta,pos,alpha)
-            dr,o = self.evaluateTrajectory(gmrf,nextTau)
+        v = copy.copy(vl)
+        while v.depth < self.maxDepth:
+            nextTheta = np.random.rand(5)*self.maxParamExploration
+            nextTraj, alphaEnd = self.generateTrajectory(v,nextTheta)
+
+            dr,do = self.evaluateTrajectory(v,nextTraj)
             r += dr
-            pos = nextTau[:,-1]
-            alpha = math.atan((3 * nextTheta[1] + 2 * by + cy) / (3 * nextTheta[0] + 2 * bx + nextTheta[2]))
-            vl.depth += 1
+
+            v.auv.x = nextTraj[0,-1]
+            v.auv.y = nextTraj[1,-1]
+            v.auv.alpha = alphaEnd
+            v.depth += 1
         return r
 
-    def argmax(self,v0,pos,alpha):
-        R = 0
-        for child in v0.children:
-            if child.totalR > R:
-                bestAction = child.actionToNode
-        bestTraj, bx, by, cy = self.generateTrajectory(bestAction,pos,alpha)
-        alpha = math.atan((3 * bestAction[1] + 2 * by + cy) / (3 * bestAction[0] + 2 * bx + bestAction[2]))
-        return bestTraj,alpha
+    def getBestTheta(self,v0):
+        maxR = -math.inf
+        bestTheta = np.random.rand(5)*self.maxParamExploration
+        for theta,r in v0.D:
+            if r > maxR:
+                bestTheta = theta
+                maxR = r
+        bestTraj, alphaEnd = self.generateTrajectory(v0,bestTheta)
+        return bestTraj, alphaEnd
 
 
-    def generateTrajectory(self,theta,pos,alpha):
+    def generateTrajectory(self,v,theta):
         # theta = [ax ay bx by cx]
         # beta =    [dx cx bx ax]
         #           [dy cy by ay]
         # dx = posX, dy = posY, cy/cx = tan(alpha)
-        dx = pos[0]
-        dy = pos[1]
-        cx = theta[2]
-        cy = cx * math.tan(alpha)
         ax = theta[0]
         ay = theta[1]
-        angle = np.random.normal(alpha,par.trajectoryNoise)
-        bx = par.trajStepSize*math.cos(angle) - cx - ax
-        by = par.trajStepSize*math.sin(angle) - cy - ay
+        bx = theta[2]
+        by = theta[3]
+        cx = theta[4]
+        cy = cx * math.tan(v.auv.alpha)
+        dx = v.auv.x
+        dy = v.auv.y
 
         beta = np.array([[dx,cx,bx,ax],[dy,cy,by,ay]])
 
-        tau = np.zeros((2,self.nAnchorPoints))
-        for i in range(self.nAnchorPoints):
-            u = i/self.nAnchorPoints
-            tau[:,i] = np.dot(beta,np.array([[1],[u],[u**2],[u**3]]))[:,0]
-        return tau, bx, by, cy
+        alphaEnd = math.tanh((3*ay+2*by+cy)/(3*ax+2*bx+cx))
 
-    def evaluateTrajectory(self,gmrf,tau):
+        tau = np.zeros((2,self.nTrajPoints))
+        for i in range(self.nTrajPoints):
+            u = i/self.nTrajPoints
+            tau[:,i] = np.dot(beta,np.array([[1],[u],[u**2],[u**3]]))[:,0]
+        return tau, alphaEnd
+
+    def evaluateTrajectory(self,v,tau):
         # TODO: maybe use r = sum(grad(mue) + parameter*sigma) from Seq.BO paper (Ramos)
         r = 0
-        for i in range(self.nAnchorPoints):
-            Phi = methods.mapConDis(gmrf, tau[0,i], tau[1,i])
-            r += np.dot(Phi,gmrf.covCond.diagonal())
-        Phi = methods.mapConDis(gmrf, tau[0, 1], tau[1, 1])
-        o = np.dot(Phi,gmrf.meanCond)
+        o = []
+        for i in range(self.nTrajPoints):
+            Phi = methods.mapConDis(v.gmrf, tau[0,i], tau[1,i])
+            r += np.dot(Phi,v.gmrf.covCond.diagonal())
+            o.append(np.dot(Phi,v.gmrf.meanCond))
         return r,o
 
     def backUp(self,v0,v,r):
@@ -128,7 +139,7 @@ class kCBTS:
             v = v.parent
 
     def bestChild(self,v):
-        g=[]
+        g = []
         for child in v.children:
             g.append(child.totalR/child.visits + self.kappa*math.sqrt(2*math.log(v.visits)/child.visits))
         return v.children[np.argmax(g)]
