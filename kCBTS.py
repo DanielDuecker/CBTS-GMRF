@@ -2,6 +2,7 @@ import math
 import numpy as np
 import methods
 import copy
+import classes
 
 class node:
     def __init__(self,gmrf,auv,r):
@@ -13,6 +14,11 @@ class node:
         self.children = []
         self.visits = 1
         self.D = []
+
+class mapThetaR:
+    def __init__(self):
+        #todo: Implement GP class for mapping 3-dim theta to 1-dim R
+        test=1
 
 class kCBTS:
     def __init__(self, nIterations, nTrajPoints, maxParamExploration, trajOrder, maxDepth, branchingFactor, kappa):
@@ -33,23 +39,26 @@ class kCBTS:
                 continue # no more children
             r = self.exploreNode(vl)
             self.backUp(v0,vl,r)
-            
+
         bestTraj, auv.alpha = self.getBestTheta(v0)
         return bestTraj
 
     def treePolicy(self,v):
-        #print(" call tree policy:")
+        print(" call tree policy:")
         while v.depth < self.maxDepth:
             if len(v.D) < self.branchingFactor:
-                #print("     generate new node at depth ",v.depth)
+                print("     generate new node at depth ",v.depth)
                 theta = self.getNextTheta(v.D)
                 traj, alphaEnd = self.generateTrajectory(v, theta)
-                #print("generated trajectory: ",traj)
-                #print("with theta = ",theta)
+                print("generated trajectory: ",traj)
+                print("with theta = ",theta)
                 #print("data set is now: ",v.D)
 
                 r,o = self.evaluateTrajectory(v,traj)
                 v.D.append((theta,r))
+
+                # Update GP mapping from theta to r:
+                # todo
 
                 # Create new node:
                 vNew = node(v.gmrf,v.auv,v.totalR)
@@ -59,7 +68,7 @@ class kCBTS:
 
                 v.children.append(vNew)
 
-                # simulate GP update
+                # simulate GP update of belief
                 for i in range(len(o)):
                     vNew.auv.x = traj[0,i+1]
                     vNew.auv.y = traj[1,i+1]
@@ -99,7 +108,6 @@ class kCBTS:
     def getBestTheta(self,v0):
         maxR = -math.inf
         bestTheta = np.random.normal(0,self.maxParamExploration,self.trajOrder)
-
         for theta,r in v0.D:
             if r > maxR:
                 bestTheta = theta
