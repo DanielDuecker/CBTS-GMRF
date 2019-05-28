@@ -25,7 +25,7 @@ ov2 = 0.04  # measurement variance
 dX = dY = 0.01  # discretizaton in x and y for Plotting
 
 (x0, y0, alpha0) = (0, 0, math.pi/4)  # initial state
-maxStepsize = 0.2  # maximum change in every state per iteration
+maxStepsize = 0.1  # maximum change in every state per iteration
 xVel = maxStepsize
 yVel = maxStepsize
 
@@ -35,10 +35,10 @@ pulseTime = nIter / 2  # Duration of sinusodial pulsation
 
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 50
+nX = 10
 yMin = 0
 yMax = 10
-nY = 25
+nY = 10
 nBeta = 1  # regression coefficients
 
 # gmrf class
@@ -61,11 +61,11 @@ ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
 
 # kCBTS controller
-trajStepSize = 1
+trajStepSize = 0.5
 kCBTSIterations = 20
 nTrajPoints = int(trajStepSize/maxStepsize)
 maxParamExploration = 1
-maxDepth = 2
+maxDepth = 3
 branchingFactor = 5
 kappa = 1
 
