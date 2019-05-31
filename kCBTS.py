@@ -156,6 +156,7 @@ class kCBTS:
             r += np.dot(Phi,v.gmrf.covCond.diagonal())
             o.append(np.dot(Phi,v.gmrf.meanCond))
 
+        # lower reward if agent is out of bound
         if not methods.sanityCheck(tau[0,:],tau[1,:],v.gmrf):
             r -= 100
         return r,o

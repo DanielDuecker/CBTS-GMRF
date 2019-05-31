@@ -50,7 +50,7 @@ lambdSTKF = 1  # influences time kernel value
 sigma2 = 0.01
 
 # PI2 controller
-H = 10  # control horizon steps
+H = 20  # control horizon steps
 controlCost = 5# 5e-1   # affects noise of path roll-outs (negatively)
 R = controlCost*np.eye(H)   # input cost matrix
 g = np.ones((H,1))
@@ -64,10 +64,10 @@ nUpdated = 10   # number of iterations
 trajStepSize = 0.5
 kCBTSIterations = 20
 nTrajPoints = int(trajStepSize/maxStepsize)
-maxParamExploration = 1
+maxParamExploration = 3
 trajOrder = 3
 maxDepth = 5
-branchingFactor = 10
+branchingFactor = 100
 kappa = 1
 
 if not truncation:
