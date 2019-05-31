@@ -2,6 +2,7 @@ import math
 import numpy as np
 import methods
 import copy
+import parameters as par
 import matplotlib.pyplot as plt
 import classes
 
@@ -17,9 +18,31 @@ class node:
         self.D = []
 
 class mapThetaR:
-    def __init__(self):
-        #todo: Implement GP class for mapping 3-dim theta to 1-dim R
-        test=1
+    def __init__(self,thetaMin,thetaMax,nMapping,trajOrder):
+        self.nMapping = nMapping
+        self.nGridPoints = nMapping*trajOrder
+        self.trajOrder = trajOrder
+        self.mean = np.zeros((self.nGridPoints,1))
+        self.cov = 0.2*np.ones((self.nGridPoints,self.nGridPoints))+0.8*np.eye(self.nGridPoints)
+        self.prec = np.linalg.inv(cov)
+        self.bSeq = np.zeros((self.nGridPoints,1))
+
+        self.theta = np.zeros((self.nMapping, trajOrder))
+        for i in range(trajOrder):
+            self.theta[:, i] = np.linspace(thetaMin, thetaMax, self.nMapping)
+        self.gridSize = self.theta[1,0]-self.theta[0,0]
+
+    def updateMapThetaR(self,theta,z):
+        Phi = np.zeros((1,self.gridSize))
+        for i in range(self.trajOrder):
+            index = int(theta[i]/self.gridSize)
+            Phi[index] = 1
+        # todo continue here
+        self.bSeq = self.bSeq + 1 / par.ov2 * Phi_k.T * zMeas_k  # sequential update canonical mean
+        self.precCond = self.precCond + 1 / par.ov2 * np.dot(Phi_k.T, Phi_k)  # sequential update of precision matrix
+        self.covCond = np.linalg.inv(self.precCond)
+        self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)  # works too
+        self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
 
 class kCBTS:
     def __init__(self, nIterations, nTrajPoints, maxParamExploration, trajOrder, maxDepth, branchingFactor, kappa):
@@ -31,18 +54,24 @@ class kCBTS:
         self.branchingFactor = branchingFactor # maximum number of generated actions per node
         self.kappa = kappa
 
-    def getNewState(self, auv, gmrf):
+    def getNewTraj(self, auv, gmrf):
         v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
         #figTest = plt.figure()
         #plt.show()
         for i in range(self.nIterations):
-            # print("kCBTS-Iteration",i,"of",self.nIterations)
+            print("kCBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
             #vl = self.treePolicy(figTest,v0) # get next node
             if vl == None:
-                continue # no more children
+                continue # max depth and branching reached
             r = self.exploreNode(vl)
-            self.backUp(v0,vl,r)
+            print("exploring node ",vl," at position",vl.auv.x,vl.auv.y, " yields reward of",r)
+            self.backUp(v0,vl,vl.totalR+r)
+            print("Level 1 nodes after backing up:")
+            for Eachnode in v0.children:
+                print("Node:",Eachnode,"/Reward: ",Eachnode.totalR,"/Counter: ",Eachnode.visits)
+            print("Best trajectory is now returned")
+            print("_______________________________")
 
         bestTraj, auv.alpha = self.getBestTheta(v0)
         return bestTraj
@@ -57,12 +86,14 @@ class kCBTS:
                 traj, alphaEnd = self.generateTrajectory(v, theta)
                 #plt.plot(traj[0, :], traj[1, :])
                 #figTest.canvas.draw()
-                print("generated trajectory: ",traj)
-                print("with theta = ",theta)
-                #print("data set is now: ",v.D)
 
                 r,o = self.evaluateTrajectory(v,traj)
                 v.D.append((theta,r))
+
+                print("     generated trajectory: ",traj)
+                print("     with theta = ",theta)
+                print("     data set is now: ",v.D)
+                print("     reward is: ",r)
 
                 # Update GP mapping from theta to r:
                 # todo
@@ -84,8 +115,9 @@ class kCBTS:
                 vNew.auv.alpha = alphaEnd
                 return vNew
             else:
-                #print("No more actions. Switching from node",v)
+                print("No more actions. Switching from node",v)
                 v = self.bestChild(v)
+                print("to node",v)
                 #print("to node ",v)
 
     def getNextTheta(self,Dv):
@@ -102,7 +134,7 @@ class kCBTS:
         r = 0
         v = copy.deepcopy(vl)
         while v.depth < self.maxDepth:
-            nextTheta = np.random.normal(0,self.maxParamExploration,self.trajOrder)
+            nextTheta = np.random.normal(1,self.maxParamExploration,self.trajOrder)
             nextTraj, alphaEnd = self.generateTrajectory(v,nextTheta)
             dr,do = self.evaluateTrajectory(v,nextTraj)
             r += dr
@@ -171,5 +203,5 @@ class kCBTS:
     def bestChild(self,v):
         g = []
         for child in v.children:
-            g.append(child.totalR/child.visits + self.kappa*math.sqrt(2*math.log(v.visits)/child.visits))
+            g.append(child.totalR/(child.visits-1) + self.kappa*math.sqrt(2*math.log(v.visits)/child.visits))
         return v.children[np.argmax(g)]
