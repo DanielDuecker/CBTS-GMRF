@@ -24,23 +24,34 @@ class mapActionReward:
         self.trajOrder = trajOrder
         self.meanCond = np.zeros((self.nGridPoints,1))
         self.cov = 0.2*np.ones((self.nGridPoints,self.nGridPoints))+0.8*np.eye(self.nGridPoints)
-        self.prec = np.linalg.inv(cov)
+        self.prec = np.linalg.inv(self.cov)
         self.precCond = self.prec
+        self.covCond = self.cov
         self.bSeq = np.zeros((self.nGridPoints,1))
         self.thetaRange = np.linspace(thetaMin, thetaMax, self.nMapping)
-        self.gridSize = self.theta[1,0]-self.theta[0,0]
+        self.gridSize = self.thetaRange[1]-self.thetaRange[0]
+
+    def getIntervalIndex(self,thetaValue):
+        for i in range(self.nMapping-1):
+            if self.thetaRange[i] <= thetaValue < self.thetaRange[i+1]:
+                print(self.thetaRange[i])
+                print(self.thetaRange[i+1])
+                print(thetaValue)
+                #todo check index (still not correct)
+                return i
+        return "not in interval"
 
     def mapConDisAction(self,theta):
         # Phi = [[theta_n_0],[theta_n_1],[theta_n_2],...]
         # with theta_n_i = [[theta_n-1_0],[theta_n-1_1],[theta_n-1_2],...] and so on
-        Phi = np.zeros((1,self.gridSize))
+        Phi = np.zeros((1,self.nGridPoints))
         index = np.zeros((self.trajOrder,1))
         for i in range(self.trajOrder):
-            index[i] = int(theta[i]/self.gridSize)*self.nMapping**i
-        Phi[sum(index)] = 1
+            index[i] = self.getIntervalIndex(theta[i]) * self.nMapping**i
+        Phi[int(sum(index))] = 1
         print("***Called mapConDisAction***")
         print("theta:",theta)
-        print("index:",sum(index))
+        print("index:",index)
         return Phi
 
     def updateMapActionReward(self,theta,z):
