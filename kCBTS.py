@@ -17,32 +17,52 @@ class node:
         self.visits = 1
         self.D = []
 
-class mapThetaR:
+class mapActionReward:
     def __init__(self,thetaMin,thetaMax,nMapping,trajOrder):
         self.nMapping = nMapping
         self.nGridPoints = nMapping*trajOrder
         self.trajOrder = trajOrder
-        self.mean = np.zeros((self.nGridPoints,1))
+        self.meanCond = np.zeros((self.nGridPoints,1))
         self.cov = 0.2*np.ones((self.nGridPoints,self.nGridPoints))+0.8*np.eye(self.nGridPoints)
         self.prec = np.linalg.inv(cov)
+        self.precCond = self.prec
         self.bSeq = np.zeros((self.nGridPoints,1))
-
-        self.theta = np.zeros((self.nMapping, trajOrder))
-        for i in range(trajOrder):
-            self.theta[:, i] = np.linspace(thetaMin, thetaMax, self.nMapping)
+        self.thetaRange = np.linspace(thetaMin, thetaMax, self.nMapping)
         self.gridSize = self.theta[1,0]-self.theta[0,0]
 
-    def updateMapThetaR(self,theta,z):
+    def mapConDisAction(self,theta):
+        # Phi = [[theta_n_0],[theta_n_1],[theta_n_2],...]
+        # with theta_n_i = [[theta_n-1_0],[theta_n-1_1],[theta_n-1_2],...] and so on
         Phi = np.zeros((1,self.gridSize))
+        index = np.zeros((self.trajOrder,1))
         for i in range(self.trajOrder):
-            index = int(theta[i]/self.gridSize)
-            Phi[index] = 1
-        # todo continue here
-        self.bSeq = self.bSeq + 1 / par.ov2 * Phi_k.T * zMeas_k  # sequential update canonical mean
-        self.precCond = self.precCond + 1 / par.ov2 * np.dot(Phi_k.T, Phi_k)  # sequential update of precision matrix
-        self.covCond = np.linalg.inv(self.precCond)
-        self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)  # works too
+            index[i] = int(theta[i]/self.gridSize)*self.nMapping**i
+        Phi[sum(index)] = 1
+        print("***Called mapConDisAction***")
+        print("theta:",theta)
+        print("index:",sum(index))
+        return Phi
+
+    def updateMapActionReward(self,theta,z):
+        Phi = self.mapConDisAction(theta)
+        self.bSeq = self.bSeq + 1 / par.ovMap2 * Phi * z  # sequential update canonical mean
+        self.precCond = self.precCond + 1 / par.ovMap2 * np.dot(Phi.T, Phi)  # sequential update of precision matrix
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
+        self.covCond = np.linalg.inv(self.precCond)
+
+    def getCovarianceFromAction(self,theta):
+        Phi = self.mapConDisAction(theta)
+        return np.dot(Phi,np.dot(self.covCond,Phi.T))
+
+    def getBestTheta(self):
+        index = np.argmax(self.meanCond)
+        theta = np.zeros((1,self.trajOrder))
+        for i in range(self.trajOrder):
+            theta[i] = self.thetaRange[index % (self.nMapping**i)]
+        print("Best Theta called. Best theta at index",index)
+        print("That's theta = ",theta)
+        return theta
+
 
 class kCBTS:
     def __init__(self, nIterations, nTrajPoints, maxParamExploration, trajOrder, maxDepth, branchingFactor, kappa):

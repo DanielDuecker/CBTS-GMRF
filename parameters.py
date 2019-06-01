@@ -70,6 +70,9 @@ maxDepth = 3
 branchingFactor = 4
 kappa = 1
 
+# action reward map
+ovMap2 = 0.01
+
 if not truncation:
     nMeas = nIter
 
