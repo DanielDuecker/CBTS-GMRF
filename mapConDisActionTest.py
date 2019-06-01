@@ -12,7 +12,7 @@ print(map.meanCond)
 print(map.covCond)
 
 print("Second update:")
-map.updateMapActionReward(np.array([[1],[0.9],[0.8]]),-200)
+map.updateMapActionReward(np.array([[0],[0.9],[0.8]]),-200)
 
 print("Test on theta=[0.5 0.5 0.5]")
 thetaTest = np.array([[0.5],[0.5],[0.5]])

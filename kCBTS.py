@@ -20,7 +20,7 @@ class node:
 class mapActionReward:
     def __init__(self,thetaMin,thetaMax,nMapping,trajOrder):
         self.nMapping = nMapping
-        self.nGridPoints = nMapping*trajOrder
+        self.nGridPoints = nMapping**trajOrder
         self.trajOrder = trajOrder
         self.meanCond = np.zeros((self.nGridPoints,1))
         self.cov = 0.2*np.ones((self.nGridPoints,self.nGridPoints))+0.8*np.eye(self.nGridPoints)
@@ -28,16 +28,12 @@ class mapActionReward:
         self.precCond = self.prec
         self.covCond = self.cov
         self.bSeq = np.zeros((self.nGridPoints,1))
-        self.thetaRange = np.linspace(thetaMin, thetaMax, self.nMapping)
+        self.thetaRange = np.linspace(thetaMin, thetaMax, self.nMapping+1)
         self.gridSize = self.thetaRange[1]-self.thetaRange[0]
 
     def getIntervalIndex(self,thetaValue):
-        for i in range(self.nMapping-1):
-            if self.thetaRange[i] <= thetaValue < self.thetaRange[i+1]:
-                print(self.thetaRange[i])
-                print(self.thetaRange[i+1])
-                print(thetaValue)
-                #todo check index (still not correct)
+        for i in range(self.nMapping):
+            if self.thetaRange[i] <= thetaValue[0] < self.thetaRange[i+1]:
                 return i
         return "not in interval"
 
@@ -48,15 +44,15 @@ class mapActionReward:
         index = np.zeros((self.trajOrder,1))
         for i in range(self.trajOrder):
             index[i] = self.getIntervalIndex(theta[i]) * self.nMapping**i
-        Phi[int(sum(index))] = 1
+        Phi[0,int(sum(index))] = 1
         print("***Called mapConDisAction***")
         print("theta:",theta)
-        print("index:",index)
+        print("index:",int(sum(index)))
         return Phi
 
     def updateMapActionReward(self,theta,z):
         Phi = self.mapConDisAction(theta)
-        self.bSeq = self.bSeq + 1 / par.ovMap2 * Phi * z  # sequential update canonical mean
+        self.bSeq = self.bSeq + 1 / par.ovMap2 * Phi.T * z  # sequential update canonical mean
         self.precCond = self.precCond + 1 / par.ovMap2 * np.dot(Phi.T, Phi)  # sequential update of precision matrix
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
         self.covCond = np.linalg.inv(self.precCond)
@@ -69,8 +65,13 @@ class mapActionReward:
         index = np.argmax(self.meanCond)
         theta = np.zeros((1,self.trajOrder))
         for i in range(self.trajOrder):
-            theta[i] = self.thetaRange[index % (self.nMapping**i)]
-        print("Best Theta called. Best theta at index",index)
+            position = int(index/(self.nMapping**(self.trajOrder-i-1)))
+            print("divide by ",(self.nMapping**(self.trajOrder-i-1)))
+            print("index:",index)
+            print("position:",position)
+            theta[0,i] = self.thetaRange[position]
+            index = index % (self.nMapping**(self.trajOrder-i-1))
+        print("Best Theta called. Best theta at index",np.argmax(self.meanCond))
         print("That's theta = ",theta)
         return theta
 
