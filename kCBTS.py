@@ -83,7 +83,7 @@ class kCBTS:
         self.branchingFactor = branchingFactor # maximum number of generated actions per node
         self.kappa = kappa
 
-        self.map = mapActionReward(-5,5,100,3)
+        self.map = mapActionReward(-5,5,10,3)
 
 
     def getNewTraj(self, auv, gmrf):
