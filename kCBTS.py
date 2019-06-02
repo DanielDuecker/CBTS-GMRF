@@ -45,9 +45,6 @@ class mapActionReward:
         for i in range(self.trajOrder):
             index[i] = self.getIntervalIndex(theta[i]) * self.nMapping**i
         Phi[0,int(sum(index))] = 1
-        print("***Called mapConDisAction***")
-        print("theta:",theta)
-        print("index:",int(sum(index)))
         return Phi
 
     def updateMapActionReward(self,theta,z):
@@ -85,6 +82,9 @@ class kCBTS:
         self.maxDepth = maxDepth
         self.branchingFactor = branchingFactor # maximum number of generated actions per node
         self.kappa = kappa
+
+        self.map = mapActionReward(-5,5,100,3)
+
 
     def getNewTraj(self, auv, gmrf):
         v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
@@ -128,7 +128,7 @@ class kCBTS:
                 print("     reward is: ",r)
 
                 # Update GP mapping from theta to r:
-                # todo
+                self.map.updateMapActionReward(r)
 
                 # Create new node:
                 vNew = node(v.gmrf,v.auv,v.totalR)
@@ -152,15 +152,10 @@ class kCBTS:
                 print("to node",v)
                 #print("to node ",v)
 
-    def getNextTheta(self,Dv):
+    def getNextTheta(self,v):
         # Todo: Use Uppder Confidence Bound (Ramos 2019)
-        #maxR = -math.inf
-        bestTheta = np.random.normal(1,self.maxParamExploration,self.trajOrder)
-        #for theta,r in Dv:
-        #    if r > maxR:
-        #        bestTheta = theta
-        #        maxR = r
-        return bestTheta
+        bestTheta = self.map.getBestTheta()
+        return bestTheta + self.kappa*self.map.getCovarianceFromAction(bestTheta)
 
     def exploreNode(self,vl):
         r = 0
