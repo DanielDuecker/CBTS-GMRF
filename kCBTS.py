@@ -41,7 +41,6 @@ class mapActionReward:
             return self.thetaMax
         elif thetaValue <= self.thetaMin:
             return self.thetaMin
-
         return "not in interval"
 
     def mapConDisAction(self,theta):
@@ -61,23 +60,20 @@ class mapActionReward:
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
         self.covCond = np.linalg.inv(self.precCond)
 
-    def getCovarianceFromAction(self,theta):
-        Phi = self.mapConDisAction(theta)
-        return np.dot(Phi,np.dot(self.covCond,Phi.T))
+    def convertIndextoTheta(self,index):
+        theta = np.zeros((1, self.trajOrder))
+        for i in range(self.trajOrder):
+            position = int(index / (self.nMapping ** (self.trajOrder - i - 1)))
+            # print("divide by ",(self.nMapping**(self.trajOrder-i-1)))
+            # print("index:",index)
+            # print("position:",position)
+            theta[0, i] = self.thetaRange[position]
+            index = index % (self.nMapping ** (self.trajOrder - i - 1))
+        return theta
 
     def getBestTheta(self):
         index = np.argmax(self.meanCond)
-        theta = np.zeros((1,self.trajOrder))
-        for i in range(self.trajOrder):
-            position = int(index/(self.nMapping**(self.trajOrder-i-1)))
-            #print("divide by ",(self.nMapping**(self.trajOrder-i-1)))
-            #print("index:",index)
-            #print("position:",position)
-            theta[0,i] = self.thetaRange[position]
-            index = index % (self.nMapping**(self.trajOrder-i-1))
-        #print("Best Theta called. Best theta at index",np.argmax(self.meanCond))
-        #print("That's theta = ",theta)
-        return theta
+        return self.convertIndextoTheta(index)
 
 
 class kCBTS:
@@ -90,14 +86,14 @@ class kCBTS:
         self.branchingFactor = branchingFactor # maximum number of generated actions per node
         self.kappa = kappa
 
-        self.map = mapActionReward(-5,5,10,3)
+        self.map = mapActionReward(-1,1,5,3)
 
 
     def getNewTraj(self, auv, gmrf):
         v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
         #figTest = plt.figure()
         #plt.show()
-        self.map.meanCond = self.map.mapConDisAction(np.array([[.8,.9,.7]])).T
+        self.map.meanCond = self.map.mapConDisAction(np.array([[1,1,1,1,1]])).T
         for i in range(self.nIterations):
             print("kCBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
@@ -112,7 +108,6 @@ class kCBTS:
                 #print("Node:",Eachnode,"/Reward: ",Eachnode.totalR,"/Counter: ",Eachnode.visits)
             #print("Best trajectory is now returned")
             #print("_______________________________")
-
         bestTraj, auv.alpha = self.getBestTheta(v0)
         return bestTraj
 
@@ -141,7 +136,7 @@ class kCBTS:
                 print("Update GP mapping:")
                 print("Theta:",theta)
                 print("Reward:",r)
-                print(self.map.meanCond)
+                print(np.max(self.map.meanCond))
                 print("___")
 
                 # Create new node:
@@ -167,8 +162,9 @@ class kCBTS:
 
     def getNextTheta(self,v):
         # Todo: Use Uppder Confidence Bound (Ramos 2019)
-        bestTheta = self.map.getBestTheta()
-        return bestTheta + self.kappa*self.map.getCovarianceFromAction(bestTheta)
+        index = np.argmax(self.map.meanCond + self.kappa*self.map.covCond.diagonal().reshape(self.map.nGridPoints,1))
+        bestTheta = self.map.convertIndextoTheta(index)
+        return bestTheta
 
     def exploreNode(self,vl):
         r = 0
@@ -229,7 +225,6 @@ class kCBTS:
             Phi = methods.mapConDis(v.gmrf, tau[0,i+1], tau[1,i+1])
             r += np.dot(Phi,v.gmrf.covCond.diagonal())
             o.append(np.dot(Phi,v.gmrf.meanCond))
-
         # lower reward if agent is out of bound
         if not methods.sanityCheck(tau[0,:],tau[1,:],v.gmrf):
             r -= 100

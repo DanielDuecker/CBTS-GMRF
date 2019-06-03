@@ -61,14 +61,14 @@ ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
 
 # kCBTS controller
-trajStepSize = 0.5
-kCBTSIterations = 10
+trajStepSize = 0.4
+kCBTSIterations = 5
 nTrajPoints = int(trajStepSize/maxStepsize)
 maxParamExploration = 3
 trajOrder = 3
-maxDepth = 3
-branchingFactor = 4
-kappa = 1
+maxDepth = 2
+branchingFactor = 5
+kappa = 10
 
 # action reward map
 ovMap2 = 0.01
