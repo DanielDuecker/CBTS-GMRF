@@ -33,7 +33,7 @@ class mapActionReward:
 
     def getIntervalIndex(self,thetaValue):
         for i in range(self.nMapping):
-            if self.thetaRange[i] <= thetaValue[0] < self.thetaRange[i+1]:
+            if self.thetaRange[i] <= thetaValue < self.thetaRange[i+1]:
                 return i
         return "not in interval"
 
@@ -43,7 +43,7 @@ class mapActionReward:
         Phi = np.zeros((1,self.nGridPoints))
         index = np.zeros((self.trajOrder,1))
         for i in range(self.trajOrder):
-            index[i] = self.getIntervalIndex(theta[i]) * self.nMapping**i
+            index[i] = self.getIntervalIndex(theta[0,i]) * self.nMapping**i
         Phi[0,int(sum(index))] = 1
         return Phi
 
@@ -90,6 +90,7 @@ class kCBTS:
         v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
         #figTest = plt.figure()
         #plt.show()
+        self.map.meanCond = self.map.mapConDisAction(np.array([[1,1,1]])).T
         for i in range(self.nIterations):
             print("kCBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
@@ -128,7 +129,7 @@ class kCBTS:
                 print("     reward is: ",r)
 
                 # Update GP mapping from theta to r:
-                self.map.updateMapActionReward(r)
+                self.map.updateMapActionReward(theta,r)
 
                 # Create new node:
                 vNew = node(v.gmrf,v.auv,v.totalR)
@@ -162,6 +163,7 @@ class kCBTS:
         v = copy.deepcopy(vl)
         while v.depth < self.maxDepth:
             nextTheta = np.random.normal(1,self.maxParamExploration,self.trajOrder)
+            nextTheta = np.expand_dims(nextTheta, axis=0)
             nextTraj, alphaEnd = self.generateTrajectory(v,nextTheta)
             dr,do = self.evaluateTrajectory(v,nextTraj)
             r += dr
@@ -174,6 +176,7 @@ class kCBTS:
     def getBestTheta(self,v0):
         maxR = -math.inf
         bestTheta = np.random.normal(0,self.maxParamExploration,self.trajOrder)
+        bestTheta = np.expand_dims(bestTheta, axis=0)
         for theta,r in v0.D:
             if r > maxR:
                 bestTheta = theta
@@ -189,9 +192,9 @@ class kCBTS:
         # dx = posX, dy = posY, cy/cx = tan(alpha)
         ax = 0
         ay = 0
-        bx = theta[0]
-        by = theta[1]
-        cx = theta[2]
+        bx = theta[0,0]
+        by = theta[0,1]
+        cx = theta[0,2]
         cy = cx * math.tan(v.auv.alpha)
         dx = v.auv.x
         dy = v.auv.y
