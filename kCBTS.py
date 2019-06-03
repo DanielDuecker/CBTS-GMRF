@@ -25,7 +25,7 @@ class mapActionReward:
         self.nGridPoints = nMapping**trajOrder
         self.trajOrder = trajOrder
         self.meanCond = np.zeros((self.nGridPoints,1))
-        self.cov = 0.1*np.ones((self.nGridPoints,self.nGridPoints))+0.9*np.eye(self.nGridPoints)
+        self.cov = np.eye(self.nGridPoints)
         self.prec = np.linalg.inv(self.cov)
         self.precCond = self.prec
         self.covCond = self.cov
@@ -71,10 +71,6 @@ class mapActionReward:
             index = index % (self.nMapping ** (self.trajOrder - i - 1))
         return theta
 
-    def getBestTheta(self):
-        index = np.argmax(self.meanCond)
-        return self.convertIndextoTheta(index)
-
 
 class kCBTS:
     def __init__(self, nIterations, nTrajPoints, maxParamExploration, trajOrder, maxDepth, branchingFactor, kappa):
@@ -86,14 +82,15 @@ class kCBTS:
         self.branchingFactor = branchingFactor # maximum number of generated actions per node
         self.kappa = kappa
 
-        self.map = mapActionReward(-1,1,5,3)
+        self.map = mapActionReward(-2,2,5,3)
 
 
     def getNewTraj(self, auv, gmrf):
         v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
         #figTest = plt.figure()
         #plt.show()
-        self.map.meanCond = self.map.mapConDisAction(np.array([[1,1,1,1,1]])).T
+        self.map.meanCond = self.map.mapConDisAction(np.array([[1,1,1]])).T
+        print(self.map.meanCond)
         for i in range(self.nIterations):
             print("kCBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
@@ -161,7 +158,6 @@ class kCBTS:
                 #print("to node",v)
 
     def getNextTheta(self,v):
-        # Todo: Use Uppder Confidence Bound (Ramos 2019)
         index = np.argmax(self.map.meanCond + self.kappa*self.map.covCond.diagonal().reshape(self.map.nGridPoints,1))
         bestTheta = self.map.convertIndextoTheta(index)
         return bestTheta
