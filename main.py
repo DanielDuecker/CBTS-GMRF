@@ -13,7 +13,7 @@ from classes import trueField
 import control
 from kCBTS import kCBTS
 
-np.set_printoptions(threshold=np.inf)
+#np.set_printoptions(threshold=np.inf)
 
 xHist = [par.x0]  # x-state history vector
 yHist = [par.y0]  # y-state history vector
