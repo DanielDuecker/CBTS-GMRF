@@ -115,7 +115,6 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
     # Plotting covariance matrix
     ax3 = fig.add_subplot(223)
     ax3.contourf(gmrf.x, gmrf.y, gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),levels=gmrf.covLevels)
-    ax3.plot(xHist, yHist, 'black')
     if par.PIControl:
         ax3.plot(controller.xTraj,controller.yTraj,'blue')
         for k in range(par.K):
@@ -125,6 +124,7 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
         print(CBTS1.xTraj,CBTS1.yTraj)
         for k in range(CBTS1.xTraj.shape[1]-1):
             ax3.plot(CBTS1.xTraj[:, k+1], CBTS1.yTraj[:, k+1], 'grey')
+    ax3.plot(xHist, yHist, 'black')
 
     plt.xlabel("x in m")
     plt.ylabel("y in m")

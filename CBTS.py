@@ -16,13 +16,15 @@ class CBTS:
         self.xTraj = np.zeros((self.nTrajPoints,1))
         self.yTraj = np.zeros((self.nTrajPoints,1))
 
-        self.map = mapActionReward(-1,1,10,3)
+        self.map = mapActionReward(-0.5,0.5,10,3)
 
 
     def getNewTraj(self, auv, gmrf):
         v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
         #figTest = plt.figure()
         #plt.show()
+        self.xTraj = np.zeros((self.nTrajPoints, 1))
+        self.yTraj = np.zeros((self.nTrajPoints, 1))
         self.map.meanCond = self.map.mapConDisAction(np.array([[1,1,1]])).T
         for i in range(self.nIterations):
             print("CBTS-Iteration",i,"of",self.nIterations)
@@ -39,21 +41,21 @@ class CBTS:
             #print("Best trajectory is now returned")
             #print("_______________________________")
         bestTraj, auv.alpha = self.getBestTheta(v0)
+        print(self.xTraj)
         return bestTraj
 
     def treePolicy(self,v):
     #def treePolicy(self, figTest, v):
         #print(" call tree policy:")
-        self.xTraj = np.zeros((self.nTrajPoints, 1))
-        self.yTraj = np.zeros((self.nTrajPoints, 1))
         while v.depth < self.maxDepth:
             if len(v.D) < self.branchingFactor:
                 #print("     generate new node at depth ",v.depth)
                 theta = self.getNextTheta(v.D)
                 #print(theta)
                 traj, alphaEnd = self.generateTrajectory(v, theta)
-                self.xTraj = np.array([self.xTraj,traj[0,:].reshape(self.nTrajPoints,1)])
-                self.yTraj = np.array([self.yTraj,traj[1,:].reshape(self.nTrajPoints,1)])
+                self.xTraj = np.hstack((self.xTraj,traj[0,:].reshape(self.nTrajPoints,1)))
+                self.yTraj = np.hstack((self.yTraj,traj[1,:].reshape(self.nTrajPoints,1)))
+                print(self.xTraj)
                 #plt.plot(traj[0, :], traj[1, :])
                 #figTest.canvas.draw()
 
