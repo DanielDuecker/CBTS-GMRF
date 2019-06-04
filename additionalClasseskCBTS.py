@@ -34,9 +34,9 @@ class mapActionReward:
             if self.thetaRange[i] <= thetaValue < self.thetaRange[i+1]:
                 return i
         if self.thetaMax <= thetaValue:
-            return self.thetaMax
+            return self.nMapping-1
         elif thetaValue <= self.thetaMin:
-            return self.thetaMin
+            return 0
         return "not in interval"
 
     def mapConDisAction(self,theta):
@@ -45,9 +45,12 @@ class mapActionReward:
         Phi = np.zeros((1,self.nGridPoints))
         index = np.zeros((self.trajOrder,1))
         print("mapConDis:")
+        print(theta)
         for i in range(self.trajOrder):
+            print(self.getIntervalIndex(theta[0, i]))
             index[i] = self.getIntervalIndex(theta[0,i]) * self.nMapping**i
         Phi[0,int(sum(index))] = 1
+        print(int(sum(index)))
         return Phi
 
     def updateMapActionReward(self,theta,z):
@@ -56,6 +59,7 @@ class mapActionReward:
         self.precCond = self.precCond + 1 / par.ovMap2 * np.dot(Phi.T, Phi)  # sequential update of precision matrix
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
         self.covCond = np.linalg.inv(self.precCond)
+        print("updated at",np.argmax(Phi))
         self.diagCovCond = self.covCond.diagonal()
 
     def convertIndextoTheta(self,index):
