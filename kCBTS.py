@@ -14,7 +14,7 @@ class kCBTS:
         self.branchingFactor = branchingFactor # maximum number of generated actions per node
         self.kappa = kappa
 
-        self.map = mapActionReward(-2,2,5,3)
+        self.map = mapActionReward(-1,1,10,3)
 
 
     def getNewTraj(self, auv, gmrf):
@@ -62,11 +62,11 @@ class kCBTS:
 
                 # Update GP mapping from theta to r:
                 self.map.updateMapActionReward(theta,r)
-                print("Update GP mapping:")
-                print("Theta:",theta)
-                print("Reward:",r)
-                print(np.max(self.map.meanCond))
-                print("___")
+                #print("Update GP mapping:")
+                #print("Theta:",theta)
+                #print("Reward:",r)
+                #print(np.max(self.map.meanCond))
+                #print("___")
 
                 # Create new node:
                 vNew = node(v.gmrf,v.auv,v.totalR)
@@ -90,8 +90,12 @@ class kCBTS:
                 #print("to node",v)
 
     def getNextTheta(self,v):
+        toMaximize = self.map.meanCond + self.kappa*self.map.covCond.diagonal().reshape(self.map.nGridPoints,1)
         index = np.argmax(self.map.meanCond + self.kappa*self.map.covCond.diagonal().reshape(self.map.nGridPoints,1))
         bestTheta = self.map.convertIndextoTheta(index)
+        print("getNextTheta:")
+        print(bestTheta)
+        print("Index of best theta:", index)
         return bestTheta
 
     def exploreNode(self,vl):
