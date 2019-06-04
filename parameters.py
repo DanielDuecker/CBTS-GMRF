@@ -12,9 +12,9 @@ temporal = False  # True: time varying field
 PIControl = False
 
 if not PIControl:
-    kCBTS = True
+    CBTS = True
 else:
-    kCBTS = False
+    CBTS = False
 
 exploitingRate = 0
 
@@ -60,9 +60,9 @@ K = 15  # number of path roll outs
 ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
 
-# kCBTS controller
+# CBTS controller
 trajStepSize = 0.5
-kCBTSIterations = 40
+CBTSIterations = 40
 nTrajPoints = int(trajStepSize/maxStepsize)
 maxParamExploration = 3
 trajOrder = 3

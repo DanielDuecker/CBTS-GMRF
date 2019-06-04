@@ -11,45 +11,43 @@ from classes import gmrf
 from classes import stkf
 from classes import trueField
 import control
-from kCBTS import kCBTS
+from CBTS import CBTS
 
 #np.set_printoptions(threshold=np.inf)
 
+"""Agent"""
+auv = control.agent(par.x0, par.y0, par.alpha0)
 xHist = [par.x0]  # x-state history vector
 yHist = [par.y0]  # y-state history vector
 
-# Time measurement vectors
+"""Plotting grid"""
+x = np.arange(par.xMin, par.xMax, par.dX)
+y = np.arange(par.yMin, par.yMax, par.dY)
+X, Y = np.meshgrid(x, y)
+
+"""Time"""
 timeVec = []
 iterVec = []
 
-# Initialize GMRF
+"""GMRF representation"""
 gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta)
 
-# Initialize controller
+"""PI2 Controller"""
 controller = control.piControl(par.R, par.g, par.lambd, par.H, par.K, par.ctrSamplingTime, par.nUpdated)
-
-# Initialize agent
-auv = control.agent(par.x0, par.y0, par.alpha0)
-
-# Plotting grid
-x = np.arange(gmrf1.xMin, gmrf1.xMax, par.dX)
-y = np.arange(gmrf1.yMin, gmrf1.yMax, par.dY)
-X, Y = np.meshgrid(x, y)
 
 """Ground Truth"""
 trueField = trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
 
-"""STKF"""
-stkf1 = stkf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta, trueField, par.dt, par.sigmaT,
-             par.lambdSTKF, par.sigma2)
+"""STKF extension of gmrf"""
+stkf1 = stkf(gmrf1, trueField, par.dt, par.sigmaT, par.lambdSTKF, par.sigma2)
 
-kCBTS1 = kCBTS(par.kCBTSIterations, par.nTrajPoints, par.maxParamExploration, par.trajOrder, par.maxDepth, par.branchingFactor, par.kappa)
+""""Continuous Belief Tree Search"""
+CBTS1 = CBTS(par.CBTSIterations, par.nTrajPoints, par.maxParamExploration, par.trajOrder, par.maxDepth, par.branchingFactor, par.kappa)
 bestTraj = np.zeros((2,1))
 
-"""GMRF"""
-# Initialize Plot
+"""Initialize plot"""
 fig = plt.figure()
-methods.plotFields(fig, x, y, trueField, gmrf1, controller,kCBTS1, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, trueField, gmrf1, controller,CBTS1, iterVec, timeVec, xHist, yHist)
 plt.show()
 
 # Get first measurement:
@@ -70,7 +68,7 @@ for i in range(par.nIter - 1):
 
     timeBefore = time.time()
 
-    # Bayesian update
+    """Update belief"""
     if par.stkf:
         stkf1.kalmanFilter(t, xMeas, yMeas, zMeas[i])
         gmrf1.meanCond = stkf1.gmrf.meanCond
@@ -82,13 +80,13 @@ for i in range(par.nIter - 1):
         else:
             gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
 
-    # Information based controller
+    """Controller"""
     if par.PIControl:
         # Get next state according to PI Controller
         xMeas, yMeas = controller.getNewState(auv, gmrf1)
-    elif par.kCBTS:
+    elif par.CBTS:
         if i%par.nTrajPoints == 0:
-            bestTraj = kCBTS1.getNewTraj(auv,gmrf1)
+            bestTraj = CBTS1.getNewTraj(auv,gmrf1)
             print("New trajectory generated:", bestTraj)
         print(bestTraj)
         auv.x = bestTraj[0,i%par.nTrajPoints]
@@ -119,13 +117,13 @@ for i in range(par.nIter - 1):
 
     # Plotting:
     if not par.fastCalc:
-        methods.plotFields(fig, x, y, trueField, gmrf1, controller,kCBTS1, iterVec, timeVec, xHist, yHist)
+        methods.plotFields(fig, x, y, trueField, gmrf1, controller,CBTS1, iterVec, timeVec, xHist, yHist)
 
     # Update ground truth:
     if par.temporal:
         trueField.updateField(i)
 
-methods.plotFields(fig, x, y, trueField, gmrf1, controller,kCBTS1, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, trueField, gmrf1, controller,CBTS1, iterVec, timeVec, xHist, yHist)
 plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")

@@ -96,7 +96,7 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
     return xNext, yNext
 
 
-def plotFields(fig, x, y, trueField, gmrf, controller,kCBTS1, iterVec, timeVec, xHist, yHist):
+def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, xHist, yHist):
     plt.clf()
     plt.ion()
 
@@ -121,10 +121,10 @@ def plotFields(fig, x, y, trueField, gmrf, controller,kCBTS1, iterVec, timeVec, 
         for k in range(par.K):
             ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
 
-    elif par.kCBTS:
-        print(kCBTS1.xTraj,kCBTS1.yTraj)
-        for k in range(kCBTS1.xTraj.shape[1]-1):
-            ax3.plot(kCBTS1.xTraj[:, k+1], kCBTS1.yTraj[:, k+1], 'grey')
+    elif par.CBTS:
+        print(CBTS1.xTraj,CBTS1.yTraj)
+        for k in range(CBTS1.xTraj.shape[1]-1):
+            ax3.plot(CBTS1.xTraj[:, k+1], CBTS1.yTraj[:, k+1], 'grey')
 
     plt.xlabel("x in m")
     plt.ylabel("y in m")

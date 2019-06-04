@@ -2,9 +2,9 @@ import math
 import numpy as np
 import methods
 import copy
-from additionalClasseskCBTS import node, mapActionReward
+from additionalClassesCBTS import node, mapActionReward
 
-class kCBTS:
+class CBTS:
     def __init__(self, nIterations, nTrajPoints, maxParamExploration, trajOrder, maxDepth, branchingFactor, kappa):
         self.nIterations = nIterations
         self.nTrajPoints = nTrajPoints
@@ -25,7 +25,7 @@ class kCBTS:
         #plt.show()
         self.map.meanCond = self.map.mapConDisAction(np.array([[1,1,1]])).T
         for i in range(self.nIterations):
-            print("kCBTS-Iteration",i,"of",self.nIterations)
+            print("CBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
             #vl = self.treePolicy(figTest,v0) # get next node
             if vl == None:

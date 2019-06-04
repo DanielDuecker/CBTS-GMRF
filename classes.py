@@ -148,8 +148,8 @@ class trueField:
 
 
 class stkf:
-    def __init__(self, xMin, xMax, nX, yMin, yMax, nY, nBeta, trueF, dt, sigmaT, lambdSTKF, sigma2):
-        self.gmrf = gmrf(xMin, xMax, nX, yMin, yMax, nY, nBeta)
+    def __init__(self, gmrf, trueF, dt, sigmaT, lambdSTKF, sigma2):
+        self.gmrf = gmrf
         self.trueField = trueF
         self.dt = dt
         self.sigmaT = sigmaT
