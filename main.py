@@ -49,7 +49,7 @@ bestTraj = np.zeros((2,1))
 """GMRF"""
 # Initialize Plot
 fig = plt.figure()
-methods.plotFields(fig, x, y, trueField, gmrf1, controller, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, trueField, gmrf1, controller,kCBTS1, iterVec, timeVec, xHist, yHist)
 plt.show()
 
 # Get first measurement:
@@ -90,6 +90,7 @@ for i in range(par.nIter - 1):
         if i%par.nTrajPoints == 0:
             bestTraj = kCBTS1.getNewTraj(auv,gmrf1)
             print("New trajectory generated:", bestTraj)
+        print(bestTraj)
         auv.x = bestTraj[0,i%par.nTrajPoints]
         auv.y = bestTraj[1,i%par.nTrajPoints]
         xMeas = auv.x
@@ -118,13 +119,13 @@ for i in range(par.nIter - 1):
 
     # Plotting:
     if not par.fastCalc:
-        methods.plotFields(fig, x, y, trueField, gmrf1, controller, iterVec, timeVec, xHist, yHist)
+        methods.plotFields(fig, x, y, trueField, gmrf1, controller,kCBTS1, iterVec, timeVec, xHist, yHist)
 
     # Update ground truth:
     if par.temporal:
         trueField.updateField(i)
 
-methods.plotFields(fig, x, y, trueField, gmrf1, controller, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, trueField, gmrf1, controller,kCBTS1, iterVec, timeVec, xHist, yHist)
 plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")

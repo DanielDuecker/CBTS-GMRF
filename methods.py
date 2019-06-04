@@ -96,7 +96,7 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
     return xNext, yNext
 
 
-def plotFields(fig, x, y, trueField, gmrf, controller, iterVec, timeVec, xHist, yHist):
+def plotFields(fig, x, y, trueField, gmrf, controller,kCBTS1, iterVec, timeVec, xHist, yHist):
     plt.clf()
     plt.ion()
 
@@ -121,10 +121,11 @@ def plotFields(fig, x, y, trueField, gmrf, controller, iterVec, timeVec, xHist, 
         for k in range(par.K):
             ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
 
-        #TODO: Delete
-        #ax3.plot(controller.xPathRollOut[:, 0], controller.yPathRollOut[:, 0], 'red')
-        #ax3.plot(controller.xPathRollOut[:, 1], controller.yPathRollOut[:, 1], 'orange')
-        #ax3.plot(controller.xPathRollOut[:, 2], controller.yPathRollOut[:, 2], 'green')
+    elif par.kCBTS:
+        print(kCBTS1.xTraj,kCBTS1.yTraj)
+        for k in range(kCBTS1.xTraj.shape[1]-1):
+            ax3.plot(kCBTS1.xTraj[:, k+1], kCBTS1.yTraj[:, k+1], 'grey')
+
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Uncertainty belief")

@@ -13,6 +13,8 @@ class kCBTS:
         self.maxDepth = maxDepth
         self.branchingFactor = branchingFactor # maximum number of generated actions per node
         self.kappa = kappa
+        self.xTraj = np.zeros((self.nTrajPoints,1))
+        self.yTraj = np.zeros((self.nTrajPoints,1))
 
         self.map = mapActionReward(-1,1,10,3)
 
@@ -42,12 +44,16 @@ class kCBTS:
     def treePolicy(self,v):
     #def treePolicy(self, figTest, v):
         #print(" call tree policy:")
+        self.xTraj = np.zeros((self.nTrajPoints, 1))
+        self.yTraj = np.zeros((self.nTrajPoints, 1))
         while v.depth < self.maxDepth:
             if len(v.D) < self.branchingFactor:
                 #print("     generate new node at depth ",v.depth)
                 theta = self.getNextTheta(v.D)
                 #print(theta)
                 traj, alphaEnd = self.generateTrajectory(v, theta)
+                self.xTraj = np.array([self.xTraj,traj[0,:].reshape(self.nTrajPoints,1)])
+                self.yTraj = np.array([self.yTraj,traj[1,:].reshape(self.nTrajPoints,1)])
                 #plt.plot(traj[0, :], traj[1, :])
                 #figTest.canvas.draw()
 
@@ -140,11 +146,11 @@ class kCBTS:
 
         beta = np.array([[dx,cx,bx,ax],[dy,cy,by,ay]])
 
-        alphaEnd = math.tanh((3*ay+2*by+cy)/(3*ax+2*bx+cx))
+        alphaEnd = math.atan((3*ay+2*by+cy)/(3*ax+2*bx+cx))
 
         tau = np.zeros((2,self.nTrajPoints))
         for i in range(self.nTrajPoints):
-            u = i/self.nTrajPoints
+            u = i/(self.nTrajPoints-1)
             tau[:,i] = np.dot(beta,np.array([[1],[u],[u**2],[u**3]]))[:,0]
         return tau, alphaEnd
 

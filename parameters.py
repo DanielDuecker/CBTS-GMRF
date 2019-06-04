@@ -62,12 +62,12 @@ nUpdated = 10   # number of iterations
 
 # kCBTS controller
 trajStepSize = 0.5
-kCBTSIterations = 30
+kCBTSIterations = 40
 nTrajPoints = int(trajStepSize/maxStepsize)
 maxParamExploration = 3
 trajOrder = 3
 maxDepth = 4
-branchingFactor = 10
+branchingFactor = 15
 kappa = 1
 
 # action reward map
