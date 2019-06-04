@@ -44,13 +44,9 @@ class mapActionReward:
         # with theta_n_i = [[theta_n-1_0],[theta_n-1_1],[theta_n-1_2],...] and so on
         Phi = np.zeros((1,self.nGridPoints))
         index = np.zeros((self.trajOrder,1))
-        print("mapConDis:")
-        print(theta)
         for i in range(self.trajOrder):
-            print(self.getIntervalIndex(theta[0, i]))
             index[i] = self.getIntervalIndex(theta[0,i]) * self.nMapping**i
         Phi[0,int(sum(index))] = 1
-        print(int(sum(index)))
         return Phi
 
     def updateMapActionReward(self,theta,z):
@@ -59,16 +55,12 @@ class mapActionReward:
         self.precCond = self.precCond + 1 / par.ovMap2 * np.dot(Phi.T, Phi)  # sequential update of precision matrix
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
         self.covCond = np.linalg.inv(self.precCond)
-        print("updated at",np.argmax(Phi))
         self.diagCovCond = self.covCond.diagonal()
 
     def convertIndextoTheta(self,index):
         theta = np.zeros((1, self.trajOrder))
         for i in range(self.trajOrder):
             position = int(index / (self.nMapping ** (self.trajOrder - i - 1)))
-            # print("divide by ",(self.nMapping**(self.trajOrder-i-1)))
-            # print("index:",index)
-            # print("position:",position)
             positionIndex = self.trajOrder - i - 1
             theta[0, positionIndex] = self.thetaRange[position]
             index = index % (self.nMapping ** (self.trajOrder - i - 1))

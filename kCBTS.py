@@ -22,7 +22,6 @@ class kCBTS:
         #figTest = plt.figure()
         #plt.show()
         self.map.meanCond = self.map.mapConDisAction(np.array([[1,1,1]])).T
-        print(self.map.meanCond)
         for i in range(self.nIterations):
             print("kCBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
