@@ -61,12 +61,12 @@ ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
 
 # CBTS controller
-trajStepSize = 0.5
-CBTSIterations = 30
+trajStepSize = 1
+CBTSIterations = 20
 nTrajPoints = int(trajStepSize/maxStepsize)
 maxParamExploration = 3
 trajOrder = 3
-maxDepth = 3
+maxDepth = 2
 branchingFactor = 5
 kappa = 1
 
