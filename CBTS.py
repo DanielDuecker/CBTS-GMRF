@@ -16,7 +16,7 @@ class CBTS:
         self.xTraj = np.zeros((self.nTrajPoints,1))
         self.yTraj = np.zeros((self.nTrajPoints,1))
 
-        self.map = mapActionReward(-0.5,0.5,10,3)
+        self.map = mapActionReward(0,1,10,3)
 
 
     def getNewTraj(self, auv, gmrf):
