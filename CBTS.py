@@ -16,20 +16,17 @@ class CBTS:
         self.xTraj = np.zeros((self.nTrajPoints,1))
         self.yTraj = np.zeros((self.nTrajPoints,1))
 
-        self.map = mapActionReward(0,1,10,3)
+        self.map = mapActionReward(-1,1,10,2)
 
 
     def getNewTraj(self, auv, gmrf):
         v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
-        #figTest = plt.figure()
-        #plt.show()
         self.xTraj = np.zeros((self.nTrajPoints, 1))
         self.yTraj = np.zeros((self.nTrajPoints, 1))
-        self.map.meanCond = self.map.mapConDisAction(np.array([[1,1,1]])).T
+        self.map.meanCond = self.map.mapConDisAction(np.array([[1,1]])).T # theta=[1,1] will be the best option in getBestTheta
         for i in range(self.nIterations):
             print("CBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
-            #vl = self.treePolicy(figTest,v0) # get next node
             if vl == None:
                 continue # max depth and branching reached
             r = self.exploreNode(vl)
@@ -40,24 +37,19 @@ class CBTS:
                 #print("Node:",Eachnode,"/Reward: ",Eachnode.totalR,"/Counter: ",Eachnode.visits)
             #print("Best trajectory is now returned")
             #print("_______________________________")
-        bestTraj, auv.alpha = self.getBestTheta(v0)
-        print(self.xTraj)
-        return bestTraj
+        bestTraj, derivX, derivY = self.getBestTheta(v0)
+        return bestTraj, derivX, derivY
 
     def treePolicy(self,v):
-    #def treePolicy(self, figTest, v):
         #print(" call tree policy:")
         while v.depth < self.maxDepth:
             if len(v.D) < self.branchingFactor:
                 #print("     generate new node at depth ",v.depth)
                 theta = self.getNextTheta(v.D)
                 #print(theta)
-                traj, alphaEnd = self.generateTrajectory(v, theta)
+                traj, derivX, derivY = self.generateTrajectory(v, theta)
                 self.xTraj = np.hstack((self.xTraj,traj[0,:].reshape(self.nTrajPoints,1)))
                 self.yTraj = np.hstack((self.yTraj,traj[1,:].reshape(self.nTrajPoints,1)))
-                print(self.xTraj)
-                #plt.plot(traj[0, :], traj[1, :])
-                #figTest.canvas.draw()
 
                 r,o = self.evaluateTrajectory(v,traj)
                 v.D.append((theta,r))
@@ -89,7 +81,8 @@ class CBTS:
                     vNew.auv.y = traj[1,i+1]
                     Phi = methods.mapConDis(vNew.gmrf,vNew.auv.x,vNew.auv.y)
                     vNew.gmrf.seqBayesianUpdate(o[i],Phi)
-                vNew.auv.alpha = alphaEnd
+                vNew.auv.dx = derivX
+                vNew.auv.dy = derivY
                 return vNew
             else:
                 #print("No more actions. Switching from node",v)
@@ -97,12 +90,12 @@ class CBTS:
                 #print("to node",v)
 
     def getNextTheta(self,v):
-        toMaximize = self.map.meanCond + self.kappa*self.map.covCond.diagonal().reshape(self.map.nGridPoints,1)
-        index = np.argmax(self.map.meanCond + self.kappa*self.map.covCond.diagonal().reshape(self.map.nGridPoints,1))
+        b = self.map.meanCond + self.kappa * self.map.covCond.diagonal().reshape(self.map.nGridPoints, 1)
+        index = np.random.choice(np.flatnonzero(b == b.max()))
         bestTheta = self.map.convertIndextoTheta(index)
-        print("getNextTheta:")
-        print(bestTheta)
-        print("Index of best theta:", index)
+        #print("getNextTheta:")
+        #print(bestTheta)
+        #print("Index of best theta:", index)
         return bestTheta
 
     def exploreNode(self,vl):
@@ -111,12 +104,13 @@ class CBTS:
         while v.depth < self.maxDepth:
             nextTheta = np.random.normal(1,self.maxParamExploration,self.trajOrder)
             nextTheta = np.expand_dims(nextTheta, axis=0)
-            nextTraj, alphaEnd = self.generateTrajectory(v,nextTheta)
+            nextTraj, derivX, derivY = self.generateTrajectory(v,nextTheta)
             dr,do = self.evaluateTrajectory(v,nextTraj)
             r += dr
             v.auv.x = nextTraj[0,-1]
             v.auv.y = nextTraj[1,-1]
-            v.auv.alpha = alphaEnd
+            v.auv.dx = derivX
+            v.auv.dy = derivY
             v.depth += 1
         return r
 
@@ -128,33 +122,34 @@ class CBTS:
             if r > maxR:
                 bestTheta = theta
                 maxR = r
-        bestTraj, alphaEnd = self.generateTrajectory(v0,bestTheta)
-        return bestTraj, alphaEnd
+        bestTraj, derivX, derivY = self.generateTrajectory(v0,bestTheta)
+        return bestTraj, derivX, derivY
 
-
-    def generateTrajectory(self,v,theta):
+    def generateTrajectory(self,v, theta):
         # theta = [ax ay bx by cx]
         # beta =    [dx cx bx ax]
         #           [dy cy by ay]
-        # dx = posX, dy = posY, cy/cx = tan(alpha)
+        # dx = posX, dy = posY, cx = dC1/du|u=0 = derivX, cy = dC2/du|u=0 = derivY
         ax = 0
         ay = 0
-        bx = theta[0,0]
-        by = theta[0,1]
-        cx = theta[0,2]
-        cy = cx * math.tan(v.auv.alpha)
+        bx = theta[0, 0]
+        by = theta[0, 1]
+        cx = v.auv.derivX
+        cy = v.auv.derivY
         dx = v.auv.x
         dy = v.auv.y
 
-        beta = np.array([[dx,cx,bx,ax],[dy,cy,by,ay]])
-
-        alphaEnd = math.atan((3*ay+2*by+cy)/(3*ax+2*bx+cx))
+        beta = np.array([[dx, cx, bx, ax], [dy, cy, by, ay]])
 
         tau = np.zeros((2,self.nTrajPoints))
         for i in range(self.nTrajPoints):
-            u = i/(self.nTrajPoints-1)
-            tau[:,i] = np.dot(beta,np.array([[1],[u],[u**2],[u**3]]))[:,0]
-        return tau, alphaEnd
+            u = i / (self.nTrajPoints - 1)
+            tau[:, i] = np.dot(beta, np.array([[1], [u], [u ** 2], [u ** 3]]))[:, 0]
+
+        derivX = 3 * ax + 2 * bx + cx
+        derivY = 3 * ay + 2 * by + cy
+
+        return tau, derivX, derivY
 
     def evaluateTrajectory(self,v,tau):
         # TODO: maybe use r = sum(grad(mue) + parameter*sigma) from Seq.BO paper (Ramos)

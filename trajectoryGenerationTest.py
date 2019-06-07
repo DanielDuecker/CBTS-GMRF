@@ -43,13 +43,13 @@ y = 0
 alpha = math.pi/4
 
 
-for i in range(20):
+for i in range(3):
     x = 0
     y = 0
     alpha = math.pi / 4
-    Nextcx = 1
-    Nextcy = 1
-    for j in range(20):
+    Nextcx = 0
+    Nextcy = 0
+    for j in range(3):
         theta = np.array([[0,0,-1+2*np.random.rand(),-1+2*np.random.rand()]])
         print(theta)
         tau,alphaEnd,Nextcx,Nextcy = generateTrajectory(alpha,x,y,Nextcx,Nextcy,theta,100)

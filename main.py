@@ -86,9 +86,10 @@ for i in range(par.nIter - 1):
         xMeas, yMeas = controller.getNewState(auv, gmrf1)
     elif par.CBTS:
         if i%par.nTrajPoints == 0:
-            bestTraj = CBTS1.getNewTraj(auv,gmrf1)
-            print("New trajectory generated:", bestTraj)
-        print(bestTraj)
+            bestTraj,auv.dx, auv.dy = CBTS1.getNewTraj(auv,gmrf1)
+            #print("auv:",auv.dx) #todo: Why does this work? There is no more auv.dx
+            #print("New trajectory generated:", bestTraj)
+        #print(bestTraj)
         auv.x = bestTraj[0,i%par.nTrajPoints]
         auv.y = bestTraj[1,i%par.nTrajPoints]
         xMeas = auv.x

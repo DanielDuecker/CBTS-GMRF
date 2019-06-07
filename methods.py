@@ -121,7 +121,6 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
             ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
 
     elif par.CBTS:
-        print(CBTS1.xTraj,CBTS1.yTraj)
         for k in range(CBTS1.xTraj.shape[1]-1):
             ax3.plot(CBTS1.xTraj[:, k+1], CBTS1.yTraj[:, k+1], 'grey')
     ax3.plot(xHist, yHist, 'black')
