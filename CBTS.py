@@ -16,7 +16,7 @@ class CBTS:
         self.xTraj = np.zeros((self.nTrajPoints,1))
         self.yTraj = np.zeros((self.nTrajPoints,1))
 
-        self.map = mapActionReward(-1,1,10,2)
+        self.map = mapActionReward(-0.5,0.5,30,2)
 
 
     def getNewTraj(self, auv, gmrf):
@@ -123,6 +123,7 @@ class CBTS:
                 bestTheta = theta
                 maxR = r
         bestTraj, derivX, derivY = self.generateTrajectory(v0,bestTheta)
+        print(v0.D)
         return bestTraj, derivX, derivY
 
     def generateTrajectory(self,v, theta):

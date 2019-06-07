@@ -68,7 +68,7 @@ maxParamExploration = 3
 trajOrder = 3
 maxDepth = 3
 branchingFactor = 20
-kappa = 10
+kappa = 5
 
 # action reward map
 ovMap2 = 0.01
