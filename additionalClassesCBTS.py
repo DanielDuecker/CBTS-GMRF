@@ -31,7 +31,7 @@ class mapActionReward:
 
     def resetMapping(self):
         self.meanCond = np.zeros((self.nGridPoints,1))
-        self.cov = np.eye(self.nGridPoints)
+        self.cov = np.eye(self.nGridPoints) #todo: use different covariance matrix
         self.prec = np.linalg.inv(self.cov)
         self.precCond = self.prec
         self.covCond = self.cov

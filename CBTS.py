@@ -16,7 +16,7 @@ class CBTS:
         self.xTraj = np.zeros((self.nTrajPoints,1))
         self.yTraj = np.zeros((self.nTrajPoints,1))
 
-        self.map = mapActionReward(-0.5,0.5,30,2)
+        self.map = mapActionReward(-0.5,0.5,10,2)
 
 
     def getNewTraj(self, auv, gmrf):
@@ -26,7 +26,7 @@ class CBTS:
         for i in range(self.nIterations):
             print("CBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
-            if vl == None:
+            if vl is None:
                 continue # max depth and branching reached
             r = self.exploreNode(vl)
             #print("exploring node ",vl," at position",vl.auv.x,vl.auv.y, " yields reward of",r)
@@ -56,9 +56,9 @@ class CBTS:
                 v.D.append((theta,r))
 
                 #print("     generated trajectory: ",traj)
-                #print("     with theta = ",theta)
+                print("     with theta = ",theta)
                 #print("     data set is now: ",v.D)
-                #print("     reward is: ",r)
+                print("     reward is: ",r)
 
                 # Update GP mapping from theta to r:
                 self.map.updateMapActionReward(theta,r)
@@ -96,7 +96,7 @@ class CBTS:
         bestTheta = self.map.convertIndextoTheta(index)
         #print("getNextTheta:")
         #print(bestTheta)
-        print("Index of best theta:", index)
+        #print("Index of best theta:", index)
         return bestTheta
 
     def exploreNode(self,vl):
