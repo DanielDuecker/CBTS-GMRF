@@ -29,6 +29,14 @@ class mapActionReward:
         self.thetaRange = np.linspace(thetaMin, thetaMax, self.nMapping+1)
         self.gridSize = self.thetaRange[1]-self.thetaRange[0]
 
+    def resetMapping(self):
+        self.meanCond = np.zeros((self.nGridPoints,1))
+        self.cov = np.eye(self.nGridPoints)
+        self.prec = np.linalg.inv(self.cov)
+        self.precCond = self.prec
+        self.covCond = self.cov
+        self.bSeq = np.zeros((self.nGridPoints,1))
+
     def getIntervalIndex(self,thetaValue):
         for i in range(self.nMapping):
             if self.thetaRange[i] <= thetaValue < self.thetaRange[i+1]:

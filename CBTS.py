@@ -42,9 +42,11 @@ class CBTS:
     def treePolicy(self,v):
         #print(" call tree policy:")
         while v.depth < self.maxDepth:
+            if len(v.D) == 0:
+                self.map.resetMapping()
             if len(v.D) < self.branchingFactor:
                 #print("     generate new node at depth ",v.depth)
-                theta = self.getNextTheta(v.D)
+                theta = self.getNextTheta()
                 #print(theta)
                 traj, derivX, derivY = self.generateTrajectory(v, theta)
                 self.xTraj = np.hstack((self.xTraj,traj[0,:].reshape(self.nTrajPoints,1)))
@@ -88,13 +90,13 @@ class CBTS:
                 v = self.bestChild(v)
                 #print("to node",v)
 
-    def getNextTheta(self,v):
+    def getNextTheta(self):
         b = self.map.meanCond + self.kappa * self.map.covCond.diagonal().reshape(self.map.nGridPoints, 1)
         index = np.random.choice(np.flatnonzero(b == b.max()))
         bestTheta = self.map.convertIndextoTheta(index)
-        print("getNextTheta:")
-        print(bestTheta)
-        #print("Index of best theta:", index)
+        #print("getNextTheta:")
+        #print(bestTheta)
+        print("Index of best theta:", index)
         return bestTheta
 
     def exploreNode(self,vl):
