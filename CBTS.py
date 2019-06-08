@@ -23,7 +23,6 @@ class CBTS:
         v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
         self.xTraj = np.zeros((self.nTrajPoints, 1))
         self.yTraj = np.zeros((self.nTrajPoints, 1))
-        self.map.meanCond = self.map.mapConDisAction(np.array([[1,1]])).T # theta=[1,1] will be the best option in getBestTheta
         for i in range(self.nIterations):
             print("CBTS-Iteration",i,"of",self.nIterations)
             vl = self.treePolicy(v0) # get next node
@@ -81,8 +80,8 @@ class CBTS:
                     vNew.auv.y = traj[1,i+1]
                     Phi = methods.mapConDis(vNew.gmrf,vNew.auv.x,vNew.auv.y)
                     vNew.gmrf.seqBayesianUpdate(o[i],Phi)
-                vNew.auv.dx = derivX
-                vNew.auv.dy = derivY
+                vNew.auv.derivX = derivX
+                vNew.auv.derivY = derivY
                 return vNew
             else:
                 #print("No more actions. Switching from node",v)
@@ -93,8 +92,8 @@ class CBTS:
         b = self.map.meanCond + self.kappa * self.map.covCond.diagonal().reshape(self.map.nGridPoints, 1)
         index = np.random.choice(np.flatnonzero(b == b.max()))
         bestTheta = self.map.convertIndextoTheta(index)
-        #print("getNextTheta:")
-        #print(bestTheta)
+        print("getNextTheta:")
+        print(bestTheta)
         #print("Index of best theta:", index)
         return bestTheta
 
@@ -109,8 +108,8 @@ class CBTS:
             r += dr
             v.auv.x = nextTraj[0,-1]
             v.auv.y = nextTraj[1,-1]
-            v.auv.dx = derivX
-            v.auv.dy = derivY
+            v.auv.derivX = derivX
+            v.auv.derivY = derivY
             v.depth += 1
         return r
 

@@ -62,13 +62,13 @@ nUpdated = 10   # number of iterations
 
 # CBTS controller
 trajStepSize = 1
-CBTSIterations = 50
+CBTSIterations = 30
 nTrajPoints = int(trajStepSize/maxStepsize)
 maxParamExploration = 3
 trajOrder = 3
 maxDepth = 3
 branchingFactor = 20
-kappa = 5
+kappa = 10
 
 # action reward map
 ovMap2 = 0.01
