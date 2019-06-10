@@ -29,25 +29,24 @@ class CBTS:
             if vl is None:
                 continue # max depth and branching reached
             r = self.exploreNode(vl)
-            #print("exploring node ",vl," at position",vl.auv.x,vl.auv.y, " yields reward of",r)
+            print("exploring node ",vl," at position",vl.auv.x,vl.auv.y, " yields reward of",r)
             self.backUp(v0,vl,vl.totalR+r)
-            #print("Level 1 nodes after backing up:")
-            #for Eachnode in v0.children:
-                #print("Node:",Eachnode,"/Reward: ",Eachnode.totalR,"/Counter: ",Eachnode.visits)
-            #print("Best trajectory is now returned")
-            #print("_______________________________")
+            print("Level 1 nodes after backing up:")
+            for Eachnode in v0.children:
+                print("Node:",Eachnode,"/Reward: ",Eachnode.totalR,"/Counter: ",Eachnode.visits)
+        print("Best trajectory is now returned")
+        print("_______________________________")
         bestTraj, derivX, derivY = self.getBestTheta(v0)
         return bestTraj, derivX, derivY
 
     def treePolicy(self,v):
-        #print(" call tree policy:")
+        print(" call tree policy:")
         while v.depth < self.maxDepth:
             if len(v.D) == 0:
                 self.map.resetMapping()
             if len(v.D) < self.branchingFactor:
-                #print("     generate new node at depth ",v.depth)
+                print("     generate new node at depth ",v.depth)
                 theta = self.getNextTheta()
-                #print(theta)
                 traj, derivX, derivY = self.generateTrajectory(v, theta)
                 self.xTraj = np.hstack((self.xTraj,traj[0,:].reshape(self.nTrajPoints,1)))
                 self.yTraj = np.hstack((self.yTraj,traj[1,:].reshape(self.nTrajPoints,1)))
@@ -55,9 +54,9 @@ class CBTS:
                 r,o = self.evaluateTrajectory(v,traj)
                 v.D.append((theta,r))
 
-                #print("     generated trajectory: ",traj)
+                print("     generated trajectory: ",traj)
                 print("     with theta = ",theta)
-                #print("     data set is now: ",v.D)
+                print("     data set is now: ",v.D)
                 print("     reward is: ",r)
 
                 # Update GP mapping from theta to r:
@@ -73,6 +72,7 @@ class CBTS:
                 vNew.totalR += r
                 vNew.parent = v
                 vNew.depth = v.depth + 1
+                vNew.actionToNode = theta
 
                 v.children.append(vNew)
 
@@ -86,24 +86,24 @@ class CBTS:
                 vNew.auv.derivY = derivY
                 return vNew
             else:
-                #print("No more actions. Switching from node",v)
+                print("No more actions. Switching from node",v)
                 v = self.bestChild(v)
-                #print("to node",v)
+                print("to node",v)
 
     def getNextTheta(self):
         b = self.map.meanCond + self.kappa * self.map.covCond.diagonal().reshape(self.map.nGridPoints, 1)
         index = np.random.choice(np.flatnonzero(b == b.max()))
         bestTheta = self.map.convertIndextoTheta(index)
-        #print("getNextTheta:")
-        #print(bestTheta)
-        #print("Index of best theta:", index)
+        print("getNextTheta:")
+        print(bestTheta)
+        print("Index of best theta:", index)
         return bestTheta
 
     def exploreNode(self,vl):
         r = 0
         v = copy.deepcopy(vl)
         while v.depth < self.maxDepth:
-            nextTheta = np.random.normal(1,self.maxParamExploration,self.trajOrder)
+            nextTheta = np.random.normal(0,self.maxParamExploration,self.trajOrder)
             nextTheta = np.expand_dims(nextTheta, axis=0)
             nextTraj, derivX, derivY = self.generateTrajectory(v,nextTheta)
             dr,do = self.evaluateTrajectory(v,nextTraj)
@@ -119,12 +119,12 @@ class CBTS:
         maxR = -math.inf
         bestTheta = np.random.normal(0,self.maxParamExploration,self.trajOrder)
         bestTheta = np.expand_dims(bestTheta, axis=0)
-        for theta,r in v0.D:
-            if r > maxR:
-                bestTheta = theta
-                maxR = r
+        for child in v0.children:
+            if child.totalR > maxR:
+                bestTheta = child.actionToNode
+                maxR = child.totalR
         bestTraj, derivX, derivY = self.generateTrajectory(v0,bestTheta)
-        print(v0.D)
+        print("chosen best theta: ",bestTheta," with trajectory ",bestTraj)
         return bestTraj, derivX, derivY
 
     def generateTrajectory(self,v, theta):
@@ -163,7 +163,7 @@ class CBTS:
             o.append(np.dot(Phi,v.gmrf.meanCond))
         # lower reward if agent is out of bound
         if not methods.sanityCheck(tau[0,:],tau[1,:],v.gmrf):
-            r -= 100
+            r -= 1000
         return r,o
 
     def backUp(self,v0,v,r):

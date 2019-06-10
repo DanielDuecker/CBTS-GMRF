@@ -87,7 +87,6 @@ for i in range(par.nIter - 1):
     elif par.CBTS:
         if i%par.nTrajPoints == 0:
             bestTraj,auv.derivX, auv.derivY = CBTS1.getNewTraj(auv,gmrf1)
-            auv.doestnotexist = 1
             #print("auv:",auv.dx) #todo: Why does this work? There is no more auv.dx
             #print("New trajectory generated:", bestTraj)
         #print(bestTraj)

@@ -7,6 +7,7 @@ class node:
         self.gmrf = copy.deepcopy(gmrf)
         self.auv = copy.deepcopy(auv)
         self.totalR = copy.deepcopy(r)
+        self.actionToNode = []
         self.depth = 0
         self.parent = []
         self.children = []
