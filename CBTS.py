@@ -16,7 +16,7 @@ class CBTS:
         self.xTraj = np.zeros((self.nTrajPoints,1))
         self.yTraj = np.zeros((self.nTrajPoints,1))
 
-        self.map = mapActionReward(-0.5,0.5,10,2)
+        self.map = mapActionReward(-1,1,10,2)
 
 
     def getNewTraj(self, auv, gmrf):
@@ -102,6 +102,7 @@ class CBTS:
     def exploreNode(self,vl):
         r = 0
         v = copy.deepcopy(vl)
+        counter = 0
         while v.depth < self.maxDepth:
             nextTheta = np.random.normal(0,self.maxParamExploration,self.trajOrder)
             nextTheta = np.expand_dims(nextTheta, axis=0)
@@ -113,7 +114,11 @@ class CBTS:
             v.auv.derivX = derivX
             v.auv.derivY = derivY
             v.depth += 1
-        return r
+            counter += 1
+        if counter > 0:
+            return r/counter
+        else:
+            return r
 
     def getBestTheta(self,v0):
         maxR = -math.inf
@@ -163,7 +168,7 @@ class CBTS:
             o.append(np.dot(Phi,v.gmrf.meanCond))
         # lower reward if agent is out of bound
         if not methods.sanityCheck(tau[0,:],tau[1,:],v.gmrf):
-            r -= 1000
+            r -= 100
         return r,o
 
     def backUp(self,v0,v,r):
