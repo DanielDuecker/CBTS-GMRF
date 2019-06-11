@@ -60,7 +60,7 @@ class piControl:
 
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
-                    noise[j, k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
+                    noise[:, k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
 
                 (xTrVec, yTrVec, alphaNew) = auv.trajectoryFromControl(self.u[:, 0] + noise[:, k])
                 self.xPathRollOut[:, k] = xTrVec[:, 0]
@@ -74,7 +74,7 @@ class piControl:
                         stateCost += par.outOfGridPenalty
                     else:
                         Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
-                        stateCost += 1/np.dot(Phi,gmrf.covCond.diagonal())
+                        stateCost += 1/np.dot(Phi,gmrf.diagCovCond)
                     uHead = self.u[index:self.H,0] + np.dot(M[index:self.H,index:self.H],noise[index:self.H,k])
                     S[index, k] = S[index+1, k] + stateCost + 0.5*np.dot(uHead.T, np.dot(self.R[index:self.H,index:self.H],uHead))
 
