@@ -35,10 +35,10 @@ pulseTime = nIter / 2  # Duration of sinusodial pulsation
 
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 10
+nX = 50
 yMin = 0
 yMax = 10
-nY = 10
+nY = 50
 nBeta = 1  # regression coefficients
 
 # gmrf class
@@ -54,14 +54,14 @@ H = 10  # control horizon steps
 controlCost = 5# 5e-1   # affects noise of path roll-outs (negatively)
 R = controlCost*np.eye(H)   # input cost matrix
 g = np.ones((H,1))
-lambd = 1e-1 # 1e-2 #
-# rescales state costs, affects noise of path roll-outs (positively)
+lambd = 1e-1 # 1e-2 # rescales state costs, affects noise of path roll-outs (positively)
 K = 15  # number of path roll outs
 ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
+outOfGridPenalty = 10
 
 # CBTS controller
-trajStepSize = 1
+trajStepSize = 0.4
 CBTSIterations = 50
 nTrajPoints = int(trajStepSize/maxStepsize)
 maxParamExploration = 0.3
