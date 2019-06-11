@@ -3,7 +3,6 @@ import math
 import parameters as par
 import methods
 
-
 class agent:
     def __init__(self,x0,y0,alpha0):
         self.x = x0
@@ -58,13 +57,14 @@ class piControl:
             S = np.zeros((self.H + 1, self.K))
 
             for k in range(self.K):
+
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
                     noise[j, k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
-                    (xTrVec, yTrVec, alphaNew) = auv.trajectoryFromControl(self.u[:, 0] + noise[:, k])
 
-                    self.xPathRollOut[:, k] = xTrVec[:, 0]
-                    self.yPathRollOut[:, k] = yTrVec[:, 0]
+                (xTrVec, yTrVec, alphaNew) = auv.trajectoryFromControl(self.u[:, 0] + noise[:, k])
+                self.xPathRollOut[:, k] = xTrVec[:, 0]
+                self.yPathRollOut[:, k] = yTrVec[:, 0]
 
                 # compute path costs
                 stateCost = 0
