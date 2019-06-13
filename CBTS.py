@@ -29,8 +29,9 @@ class CBTS:
             if vl is None:
                 continue # max depth and branching reached
             r = self.exploreNode(vl)
+            vl.totalR += r
             print("exploring node ",vl," at position",vl.auv.x,vl.auv.y, " yields reward of",r)
-            self.backUp(v0,vl,vl.totalR+r)
+            self.backUp(v0,vl,vl.totalR)
             print("Level 1 nodes after backing up:")
             for Eachnode in v0.children:
                 print("Node:",Eachnode,"/Reward: ",Eachnode.totalR,"/Counter: ",Eachnode.visits)
@@ -42,6 +43,7 @@ class CBTS:
     def treePolicy(self,v):
         print(" call tree policy:")
         while v.depth < self.maxDepth:
+            print(len(v.D)," nodes have been created at this depth.")
             if len(v.D) == 0:
                 self.map.resetMapping()
             if len(v.D) < self.branchingFactor:
@@ -86,8 +88,9 @@ class CBTS:
                 vNew.auv.derivY = derivY
                 return vNew
             else:
-                print("No more actions. Switching from node",v)
+                print("No more actions at node",v)
                 v = self.bestChild(v)
+                print("to node",v)
                 print("to node",v)
 
     def getNextTheta(self):
@@ -172,10 +175,9 @@ class CBTS:
         return r,o
 
     def backUp(self,v0,v,r):
-        v.totalR += r
         v = v.parent
         while v != v0:
-            v.visits += 1
+            v.visits += 2
             v.totalR += r
             v = v.parent
 
