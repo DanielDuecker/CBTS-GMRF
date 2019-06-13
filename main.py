@@ -130,6 +130,7 @@ plt.show(block=True)
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
 
+# TODO same kappa -> use different parameters
 # TODO still discrete theta
 # TODO maybe discount future rewards for exploration
 # TODO Try small thetas for less branching and deeper trees
