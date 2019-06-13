@@ -168,7 +168,7 @@ class stkf:
 
         self.sigmaZero = scipy.linalg.solve_continuous_lyapunov(self.F, -self.G * self.G.T)
 
-        self.A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), sel   f.F) * par.dt)
+        self.A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * par.dt)
         self.Cs = np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H))
         QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(self.F, tau)), np.dot(self.G,
                                                 np.dot(self.G.T,scipy.linalg.expm(np.dot(self.F,tau)).T))),0, par.dt)[0]

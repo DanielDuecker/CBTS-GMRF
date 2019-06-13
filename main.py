@@ -130,6 +130,8 @@ plt.show(block=True)
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
 
+# TODO still discrete theta
+# TODO Try small thetas for less branching and deeper trees
 # TODO Use generic gmrf implementation (also for action reward mapping)
 # TODO maybe use cubic splines or kernel trajs
 # TODO add outer grid

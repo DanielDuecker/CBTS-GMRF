@@ -3,6 +3,7 @@ import numpy as np
 import methods
 import copy
 from additionalClassesCBTS import node, mapActionReward
+import parameters as par
 
 class CBTS:
     def __init__(self, nIterations, nTrajPoints, maxParamExploration, trajOrder, maxDepth, branchingFactor, kappa):
@@ -16,7 +17,7 @@ class CBTS:
         self.xTraj = np.zeros((self.nTrajPoints,1))
         self.yTraj = np.zeros((self.nTrajPoints,1))
 
-        self.map = mapActionReward(-1,1,10,2)
+        self.map = mapActionReward(par.thetaMin,par.thetaMax,par.dTheta,par.trajOrder)
 
 
     def getNewTraj(self, auv, gmrf):
