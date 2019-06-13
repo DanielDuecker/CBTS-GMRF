@@ -123,10 +123,10 @@ class trueField:
             [1, 1, 2, 3, 3]])
 
             #zGT = np.array([[2, 4, 6, 7, 8],
-             #               [2.1, 5, 7, 11.25, 9.5],
-              #              [3, 5.6, 8.5, 17, 14.5],
-               #             [2.5, 5.4, 6.9, 9, 8],
-                #            [2, 2.3, 4, 6, 7.5]])
+            #                [2.1, 5, 7, 11.25, 9.5],
+            #                [3, 5.6, 8.5, 17, 14.5],
+            #                [2.5, 5.4, 6.9, 9, 8],
+            #                [2, 2.3, 4, 6, 7.5]])
 
         self.fieldMin = np.min([0,np.amin(zGT)])
         self.fieldMax = np.amax(zGT)
@@ -168,7 +168,7 @@ class stkf:
 
         self.sigmaZero = scipy.linalg.solve_continuous_lyapunov(self.F, -self.G * self.G.T)
 
-        self.A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * par.dt)
+        self.A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), sel   f.F) * par.dt)
         self.Cs = np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H))
         QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(self.F, tau)), np.dot(self.G,
                                                 np.dot(self.G.T,scipy.linalg.expm(np.dot(self.F,tau)).T))),0, par.dt)[0]
