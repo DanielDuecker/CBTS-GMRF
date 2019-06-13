@@ -175,6 +175,7 @@ class CBTS:
         return r,o
 
     def backUp(self,v0,v,r):
+        v.visits += 1
         v = v.parent
         while v != v0:
             v.visits += 2
