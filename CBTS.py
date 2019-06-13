@@ -16,7 +16,6 @@ class CBTS:
         self.kappa = kappa
         self.xTraj = np.zeros((self.nTrajPoints,1))
         self.yTraj = np.zeros((self.nTrajPoints,1))
-
         self.map = mapActionReward(par.thetaMin,par.thetaMax,par.dTheta,par.trajOrder)
 
 
@@ -173,11 +172,12 @@ class CBTS:
         return r,o
 
     def backUp(self,v0,v,r):
-        nodePointer = v
-        while nodePointer != v0:
-            nodePointer.visits += 1
-            nodePointer.totalR += r
-            nodePointer = nodePointer.parent
+        v.totalR += r
+        v = v.parent
+        while v != v0:
+            v.visits += 1
+            v.totalR += r
+            v = v.parent
 
     def bestChild(self,v):
         g = []
