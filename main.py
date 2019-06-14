@@ -129,12 +129,13 @@ plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
-
+# TODO Check visit counter
 # TODO same kappa -> use different parameters
 # TODO still discrete theta
 # TODO maybe discount future rewards for exploration
 # TODO Try small thetas for less branching and deeper trees
 # TODO Use generic gmrf implementation (also for action reward mapping)
+# TODO Use current belief mean in reward function -> more exploitation
 # TODO maybe use cubic splines or kernel trajs
 # TODO add outer grid
 # TODO boundary conditions

@@ -38,7 +38,7 @@ def generateTrajectory(alpha,posX,posY,derivX,derivY,theta,nTrajPoints):
 
 #bx, by, cx
 #theta = np.array([[1,1,1]])
-thetaRange = np.linspace(-0.5, 0.5, 11)
+thetaRange = np.linspace(-0.5, 0.5, 100)
 x = 0
 y = 0
 alpha = math.pi/4
@@ -50,11 +50,11 @@ for i in range(20):
     alpha = math.pi / 4
     Nextcx = 1
     Nextcy = 1
-    for j in range(30):
-        #theta = np.array([[0,0,-1+2*np.random.rand(),-1+2*np.random.rand()]])
+    for j in range(3):
+        #theta = np.array([[np.random.choice(thetaRange),np.random.choice(thetaRange),np.random.choice(thetaRange),np.random.choice(thetaRange)]])
         theta = np.array([[0,0,np.random.choice(thetaRange),np.random.choice(thetaRange)]])
         print(theta)
-        tau,alphaEnd,Nextcx,Nextcy = generateTrajectory(alpha,x,y,Nextcx,Nextcy,theta,100)
+        tau,alphaEnd,Nextcx,Nextcy = generateTrajectory(alpha,x,y,Nextcx,Nextcy,theta,10)
         plt.plot(tau[0,:],tau[1,:])
         x = tau[0,-1]
         y = tau[1,-1]

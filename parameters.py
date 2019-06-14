@@ -62,17 +62,17 @@ outOfGridPenalty = 10
 
 # CBTS controller
 trajStepSize = 1
-CBTSIterations = 20
+CBTSIterations = 40
 nTrajPoints = int(trajStepSize/maxStepsize)
-maxParamExploration = 0.3
+maxParamExploration = 0.1
 
 thetaMin = -1
 thetaMax = 1
 dTheta = 10
 trajOrder = 2
 maxDepth = 4
-branchingFactor = 3
-kappa = 50
+branchingFactor = 10
+kappa = 10
 
 # action reward map
 ovMap2 = 0.01

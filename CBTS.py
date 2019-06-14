@@ -171,7 +171,7 @@ class CBTS:
             o.append(np.dot(Phi,v.gmrf.meanCond))
         # lower reward if agent is out of bound
         if not methods.sanityCheck(tau[0,:],tau[1,:],v.gmrf):
-            r -= 10
+            r -= 100
         return r,o
 
     def backUp(self,v0,v,r):
