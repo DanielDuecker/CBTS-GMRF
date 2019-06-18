@@ -1,6 +1,9 @@
 import numpy as np
 import copy
 import parameters as par
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
 
 class node:
     def __init__(self,gmrf,auv,r):
@@ -28,8 +31,6 @@ class GP:
     def getKernelMatrix(self,vec1,vec2):
         n = vec1.shape[0]
         N = vec2.shape[0]
-        print(vec1)
-        print(vec2)
         K = np.zeros((n,N))
         for i in range(n):
             for j in range(N):
@@ -57,6 +58,15 @@ class GP:
         # Compute variance
         KStar = self.getKernelMatrix(input,input)
         var = KStar - np.dot(Lk.T,Lk)
+
+        if par.plotOptions.showActionRewardMapping:
+            if par.trajOrder != 2:
+                print("ActionRewardMapping can only be plotted in 2D case")
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection='3d')
+            ax.plot(self.trainInput[:, 0], self.trainInput[:, 1], self.trainOutput[:, 0], "g.")
+            ax.plot(input[:, 0], input[:, 1], mu[:, 0], "r.")
+            plt.show()
 
         return mu, var
 

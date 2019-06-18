@@ -42,7 +42,7 @@ trueField = trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
 stkf1 = stkf(gmrf1, trueField, par.dt, par.sigmaT, par.lambdSTKF, par.sigma2)
 
 """"Continuous Belief Tree Search"""
-CBTS1 = CBTS(par.CBTSIterations, par.nTrajPoints, par.maxParamExploration, par.trajOrder, par.maxDepth, par.branchingFactor, par.kappa)
+CBTS1 = CBTS(par.CBTSIterations, par.nTrajPoints, par.trajOrder, par.maxDepth, par.branchingFactor, par.kappa)
 bestTraj = np.zeros((2,1))
 
 """Initialize plot"""
@@ -87,9 +87,8 @@ for i in range(par.nIter - 1):
     elif par.CBTS:
         if i%par.nTrajPoints == 0:
             bestTraj,auv.derivX, auv.derivY = CBTS1.getNewTraj(auv,gmrf1)
-            #print("auv:",auv.dx) #todo: Why does this work? There is no more auv.dx
             #print("New trajectory generated:", bestTraj)
-        #print(bestTraj)
+            test=1
         auv.x = bestTraj[0,i%par.nTrajPoints]
         auv.y = bestTraj[1,i%par.nTrajPoints]
         xMeas = auv.x

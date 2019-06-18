@@ -6,10 +6,9 @@ from additionalClassesCBTS import node
 import parameters as par
 
 class CBTS:
-    def __init__(self, nIterations, nTrajPoints, maxParamExploration, trajOrder, maxDepth, branchingFactor, kappa):
+    def __init__(self, nIterations, nTrajPoints, trajOrder, maxDepth, branchingFactor, kappa):
         self.nIterations = nIterations
         self.nTrajPoints = nTrajPoints
-        self.maxParamExploration = maxParamExploration
         self.trajOrder = trajOrder
         self.maxDepth = maxDepth
         self.branchingFactor = branchingFactor # maximum number of generated actions per node
@@ -106,8 +105,14 @@ class CBTS:
         v = copy.deepcopy(vl)
         counter = 0
         while v.depth < self.maxDepth:
-            nextTheta = np.random.normal(0,self.maxParamExploration,self.trajOrder)
+            nextTheta = np.random.uniform(par.thetaMin,par.thetaMax,par.trajOrder)
             nextTraj, derivX, derivY = self.generateTrajectory(v,nextTheta)
+
+            # adds explored paths to collected trajectories for plotting:
+            if par.plotOptions.showExploredPaths:
+                self.xTraj = np.hstack((self.xTraj, nextTraj[0, :].reshape(self.nTrajPoints, 1)))
+                self.yTraj = np.hstack((self.yTraj, nextTraj[1, :].reshape(self.nTrajPoints, 1)))
+
             dr,do = self.evaluateTrajectory(v,nextTraj)
             r += dr
             v.auv.x = nextTraj[0,-1]
@@ -123,8 +128,7 @@ class CBTS:
 
     def getBestTheta(self,v0):
         maxR = -math.inf
-        bestTheta = np.random.normal(0,self.maxParamExploration,self.trajOrder)
-        bestTheta = np.expand_dims(bestTheta, axis=0)
+        bestTheta = np.zeros(2)
         for child in v0.children:
             if child.totalR > maxR:
                 bestTheta = child.actionToNode
