@@ -48,13 +48,13 @@ class GP:
 
 # Parameter
 kernelPar = 1
-varMeas = 0.0001
+varMeas = 0.001
 kappa = 100
 GP = GP(kernelPar,varMeas)
 
 # Ground Truth
 #f = lambda x,y: x**2 + 0.9*y**2
-f = lambda x,y: (np.sin(x) + np.sin(y))*np.exp(-np.abs(x+y))
+f = lambda x,y: (np.sin(x) + np.sin(y))*np.exp(-0.1*np.abs(x+y))
 xGT0, xGT1 = np.meshgrid(np.linspace(-5,5,100),np.linspace(-5,5,100))
 fGT = f(xGT0,xGT1)
 #print("fGT:",fGT)
