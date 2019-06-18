@@ -4,6 +4,7 @@ import methods
 import copy
 from additionalClassesCBTS import node
 import parameters as par
+import matplotlib.pyplot as plt
 
 class CBTS:
     def __init__(self, nIterations, nTrajPoints, trajOrder, maxDepth, branchingFactor, kappa):
@@ -98,6 +99,15 @@ class CBTS:
         print("getNextTheta:")
         print(bestTheta)
         print("Index of best theta:", index)
+
+        if par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor-1):
+            if par.trajOrder != 2:
+                print("ActionRewardMapping can only be plotted in 2D case")
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection='3d')
+            ax.plot(v.GP.trainInput[:, 0], v.GP.trainInput[:, 1], v.GP.trainOutput[:, 0], "g.")
+            ax.plot(thetaPredict[:, 0], thetaPredict[:, 1], mu[:, 0], "r.")
+            plt.show(block=True)
         return bestTheta
 
     def exploreNode(self,vl):
@@ -173,7 +183,7 @@ class CBTS:
             o.append(np.dot(Phi,v.gmrf.meanCond))
         # lower reward if agent is out of bound
         if not methods.sanityCheck(tau[0,:],tau[1,:],v.gmrf):
-            r -= 100
+            r -= par.outOfGridPenalty
         return r,o
 
     def backUp(self,v0,v,r):

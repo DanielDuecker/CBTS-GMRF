@@ -59,15 +59,6 @@ class GP:
         KStar = self.getKernelMatrix(input,input)
         var = KStar - np.dot(Lk.T,Lk)
 
-        if par.plotOptions.showActionRewardMapping:
-            if par.trajOrder != 2:
-                print("ActionRewardMapping can only be plotted in 2D case")
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection='3d')
-            ax.plot(self.trainInput[:, 0], self.trainInput[:, 1], self.trainOutput[:, 0], "g.")
-            ax.plot(input[:, 0], input[:, 1], mu[:, 0], "r.")
-            plt.show()
-
         return mu, var
 
 
