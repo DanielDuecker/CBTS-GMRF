@@ -90,9 +90,11 @@ class CBTS:
     def getNextTheta(self,v):
         if v.GP.emptyData:
             return par.initialTheta
-        thetaPredict = np.random.uniform(-par.thetaMin,par.thetaMax,(par.nThetaSamples,par.trajOrder))
+        thetaPredict = np.random.uniform(par.thetaMin,par.thetaMax,(par.nThetaSamples,par.trajOrder))
         mu,var = v.GP.predict(thetaPredict)
-        index = np.argmax(mu + self.kappa * var.diagonal())
+        h = mu + self.kappa * var.diagonal().reshape(par.nThetaSamples,1)
+        print("acq.-matrix:",h)
+        index = np.argmax(h)
         bestTheta = thetaPredict[index,:]
         print("getNextTheta:")
         print(bestTheta)
@@ -105,7 +107,6 @@ class CBTS:
         counter = 0
         while v.depth < self.maxDepth:
             nextTheta = np.random.normal(0,self.maxParamExploration,self.trajOrder)
-            nextTheta = np.expand_dims(nextTheta, axis=0)
             nextTraj, derivX, derivY = self.generateTrajectory(v,nextTheta)
             dr,do = self.evaluateTrajectory(v,nextTraj)
             r += dr
@@ -139,8 +140,8 @@ class CBTS:
         # dx = posX, dy = posY, cx = dC1/du|u=0 = derivX, cy = dC2/du|u=0 = derivY
         ax = 0
         ay = 0
-        bx = theta[0, 0]
-        by = theta[0, 1]
+        bx = theta[0]
+        by = theta[1]
         cx = v.auv.derivX
         cy = v.auv.derivY
         dx = v.auv.x

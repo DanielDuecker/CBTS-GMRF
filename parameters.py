@@ -74,9 +74,9 @@ maxDepth = 4
 branchingFactor = 10
 kappa = 10
 
-kernelPar = 0.1
+kernelPar = 10
 nThetaSamples = 10
-initialTheta = np.zeros((1,trajOrder))
+initialTheta = np.zeros(trajOrder)
 
 # action reward map
 ovMap2 = 0.01

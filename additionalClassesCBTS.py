@@ -26,10 +26,10 @@ class GP:
         return np.exp(-.5 * 1/par.kernelPar * squaredDistance)
 
     def getKernelMatrix(self,vec1,vec2):
-        print(vec1)
-        print(vec2)
         n = vec1.shape[0]
         N = vec2.shape[0]
+        print(vec1)
+        print(vec2)
         K = np.zeros((n,N))
         for i in range(n):
             for j in range(N):
@@ -38,8 +38,8 @@ class GP:
 
     def update(self,inputData,outputData):
         if self.emptyData:
-            self.trainInput = inputData
-            self.trainOutput = outputData
+            self.trainInput = np.expand_dims(inputData, axis=0)
+            self.trainOutput = np.expand_dims(outputData, axis=0)
             self.emptyData = False
         else:
             self.trainInput = np.vstack((self.trainInput,inputData))
