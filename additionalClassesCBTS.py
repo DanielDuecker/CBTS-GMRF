@@ -13,65 +13,51 @@ class node:
         self.children = []
         self.visits = 1
         self.D = []
+        self.GP = GP()
 
-class mapActionReward:
-    def __init__(self,thetaMin,thetaMax,nMapping,trajOrder):
-        self.thetaMin = thetaMin
-        self.thetaMax = thetaMax
-        self.nMapping = nMapping
-        self.nGridPoints = nMapping**trajOrder
-        self.trajOrder = trajOrder
-        self.meanCond = np.zeros((self.nGridPoints,1))
-        self.cov = np.eye(self.nGridPoints)
-        self.prec = np.linalg.inv(self.cov)
-        self.precCond = self.prec
-        self.covCond = self.cov
-        self.bSeq = np.zeros((self.nGridPoints,1))
-        self.thetaRange = np.linspace(thetaMin, thetaMax, self.nMapping+1)
-        self.gridSize = self.thetaRange[1]-self.thetaRange[0]
+class GP:
+    def __init__(self):
+        self.emptyData = True
+        self.trainInput = None
+        self.trainOutput = None
 
-    def resetMapping(self):
-        self.meanCond = np.zeros((self.nGridPoints,1))
-        self.cov = np.eye(self.nGridPoints) #todo: use different covariance matrix
-        self.prec = np.linalg.inv(self.cov)
-        self.precCond = self.prec
-        self.covCond = self.cov
-        self.bSeq = np.zeros((self.nGridPoints,1))
+    def kernel(self,z1,z2):
+        squaredDistance = np.linalg.norm(z1-z2,2)
+        return np.exp(-.5 * 1/par.kernelPar * squaredDistance)
 
-    def getIntervalIndex(self,thetaValue):
-        for i in range(self.nMapping):
-            if self.thetaRange[i] <= thetaValue < self.thetaRange[i+1]:
-                return i
-        if self.thetaMax <= thetaValue:
-            return self.nMapping-1
-        elif thetaValue <= self.thetaMin:
-            return 0
-        return "not in interval"
+    def getKernelMatrix(self,vec1,vec2):
+        print(vec1)
+        print(vec2)
+        n = vec1.shape[0]
+        N = vec2.shape[0]
+        K = np.zeros((n,N))
+        for i in range(n):
+            for j in range(N):
+                 K[i,j] = self.kernel(vec1[i,:],vec2[j,:])
+        return K
 
-    def mapConDisAction(self,theta):
-        # Phi = [[theta_n_0],[theta_n_1],[theta_n_2],...]
-        # with theta_n_i = [[theta_n-1_0],[theta_n-1_1],[theta_n-1_2],...] and so on
-        Phi = np.zeros((1,self.nGridPoints))
-        index = np.zeros((self.trajOrder,1))
-        for i in range(self.trajOrder):
-            index[i] = self.getIntervalIndex(theta[0,i]) * self.nMapping**i
-        Phi[0,int(sum(index))] = 1
-        return Phi
+    def update(self,inputData,outputData):
+        if self.emptyData:
+            self.trainInput = inputData
+            self.trainOutput = outputData
+            self.emptyData = False
+        else:
+            self.trainInput = np.vstack((self.trainInput,inputData))
+            self.trainOutput = np.vstack((self.trainOutput,outputData))
 
-    def updateMapActionReward(self,theta,z):
-        Phi = self.mapConDisAction(theta)
-        self.bSeq = self.bSeq + 1 / par.ovMap2 * Phi.T * z  # sequential update canonical mean
-        self.precCond = self.precCond + 1 / par.ovMap2 * np.dot(Phi.T, Phi)  # sequential update of precision matrix
-        self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
-        self.covCond = np.linalg.inv(self.precCond)
-        self.diagCovCond = self.covCond.diagonal()
+    def predict(self,input):
+        # according to https://www.cs.ubc.ca/~nando/540-2013/lectures/l6.pdf
+        K = self.getKernelMatrix(self.trainInput,self.trainInput)
+        L = np.linalg.cholesky(K)
 
-    def convertIndextoTheta(self,index):
-        theta = np.zeros((1, self.trajOrder))
-        for i in range(self.trajOrder):
-            position = int(index / (self.nMapping ** (self.trajOrder - i - 1)))
-            positionIndex = self.trajOrder - i - 1
-            theta[0, positionIndex] = self.thetaRange[position]
-            index = index % (self.nMapping ** (self.trajOrder - i - 1))
-        return theta
+        # Compute mean
+        Lk = np.linalg.solve(L,self.getKernelMatrix(self.trainInput,input))
+        mu = np.dot(Lk.T, np.linalg.solve(L,self.trainOutput))
+
+        # Compute variance
+        KStar = self.getKernelMatrix(input,input)
+        var = KStar - np.dot(Lk.T,Lk)
+
+        return mu, var
+
 

@@ -21,7 +21,7 @@ exploitingRate = 0
 nIter = 1000  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
-ov2 = 0.04  # measurement variance
+ov2 = 0.01  # measurement variance
 dX = dY = 0.01  # discretizaton in x and y for Plotting
 
 (x0, y0, alpha0) = (0, 0, math.pi/4)  # initial state
@@ -73,6 +73,10 @@ trajOrder = 2
 maxDepth = 4
 branchingFactor = 10
 kappa = 10
+
+kernelPar = 0.1
+nThetaSamples = 10
+initialTheta = np.zeros((1,trajOrder))
 
 # action reward map
 ovMap2 = 0.01

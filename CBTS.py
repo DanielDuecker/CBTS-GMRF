@@ -2,7 +2,7 @@ import math
 import numpy as np
 import methods
 import copy
-from additionalClassesCBTS import node, mapActionReward
+from additionalClassesCBTS import node
 import parameters as par
 
 class CBTS:
@@ -16,8 +16,6 @@ class CBTS:
         self.kappa = kappa
         self.xTraj = np.zeros((self.nTrajPoints,1))
         self.yTraj = np.zeros((self.nTrajPoints,1))
-        self.map = mapActionReward(par.thetaMin,par.thetaMax,par.dTheta,par.trajOrder)
-
 
     def getNewTraj(self, auv, gmrf):
         v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
@@ -44,11 +42,9 @@ class CBTS:
         print(" call tree policy:")
         while v.depth < self.maxDepth:
             print(len(v.D)," nodes have been created at this depth.")
-            if len(v.D) == 0:
-                self.map.resetMapping()
             if len(v.D) < self.branchingFactor:
                 print("     generate new node at depth ",v.depth)
-                theta = self.getNextTheta()
+                theta = self.getNextTheta(v)
                 traj, derivX, derivY = self.generateTrajectory(v, theta)
                 self.xTraj = np.hstack((self.xTraj,traj[0,:].reshape(self.nTrajPoints,1)))
                 self.yTraj = np.hstack((self.yTraj,traj[1,:].reshape(self.nTrajPoints,1)))
@@ -62,11 +58,10 @@ class CBTS:
                 print("     reward is: ",r)
 
                 # Update GP mapping from theta to r:
-                self.map.updateMapActionReward(theta,r)
+                v.GP.update(theta,r)
                 #print("Update GP mapping:")
                 #print("Theta:",theta)
                 #print("Reward:",r)
-                #print(np.max(self.map.meanCond))
                 #print("___")
 
                 # Create new node:
@@ -91,12 +86,14 @@ class CBTS:
                 print("No more actions at node",v)
                 v = self.bestChild(v)
                 print("to node",v)
-                print("to node",v)
 
-    def getNextTheta(self):
-        b = self.map.meanCond + self.kappa * self.map.covCond.diagonal().reshape(self.map.nGridPoints, 1)
-        index = np.random.choice(np.flatnonzero(b == b.max()))
-        bestTheta = self.map.convertIndextoTheta(index)
+    def getNextTheta(self,v):
+        if v.GP.emptyData:
+            return par.initialTheta
+        thetaPredict = np.random.uniform(-par.thetaMin,par.thetaMax,(par.nThetaSamples,par.trajOrder))
+        mu,var = v.GP.predict(thetaPredict)
+        index = np.argmax(mu + self.kappa * var.diagonal())
+        bestTheta = thetaPredict[index,:]
         print("getNextTheta:")
         print(bestTheta)
         print("Index of best theta:", index)
