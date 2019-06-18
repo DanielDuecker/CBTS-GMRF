@@ -138,6 +138,16 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
 
     fig.canvas.draw()
 
+def plotPolicy(GP,thetaPredict,mu):
+    if par.trajOrder != 2:
+        print("ActionRewardMapping can only be plotted in 2D case")
+    fig = plt.figure()
+    plt.show()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot(GP.trainInput[:, 0], GP.trainInput[:, 1], GP.trainOutput[:, 0], "g.")
+    ax.plot(thetaPredict[:, 0], thetaPredict[:, 1], mu[:, 0], "r.")
+    fig.canvas.draw()
+
 
 def sanityCheck(xVec,yVec,gmrf):
     for x in xVec:

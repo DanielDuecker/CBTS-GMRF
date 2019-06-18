@@ -62,14 +62,14 @@ outOfGridPenalty = 10
 
 # CBTS controller
 trajStepSize = 1
-CBTSIterations = 50
+CBTSIterations = 10
 nTrajPoints = int(trajStepSize/maxStepsize)
 
 thetaMin = -1
 thetaMax = 1
 trajOrder = 2
-maxDepth = 4
-branchingFactor = 30
+maxDepth = 2
+branchingFactor = 3
 kappa = 100
 
 kernelPar = 10

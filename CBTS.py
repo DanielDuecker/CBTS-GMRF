@@ -93,7 +93,6 @@ class CBTS:
         thetaPredict = np.random.uniform(par.thetaMin,par.thetaMax,(par.nThetaSamples,par.trajOrder))
         mu,var = v.GP.predict(thetaPredict)
         h = mu + self.kappa * var.diagonal().reshape(par.nThetaSamples,1)
-        print("acq.-matrix:",h)
         index = np.argmax(h)
         bestTheta = thetaPredict[index,:]
         print("getNextTheta:")
@@ -101,13 +100,8 @@ class CBTS:
         print("Index of best theta:", index)
 
         if par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor-1):
-            if par.trajOrder != 2:
-                print("ActionRewardMapping can only be plotted in 2D case")
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection='3d')
-            ax.plot(v.GP.trainInput[:, 0], v.GP.trainInput[:, 1], v.GP.trainOutput[:, 0], "g.")
-            ax.plot(thetaPredict[:, 0], thetaPredict[:, 1], mu[:, 0], "r.")
-            plt.show(block=True)
+            methods.plotPolicy(v.GP,thetaPredict,mu)
+
         return bestTheta
 
     def exploreNode(self,vl):
