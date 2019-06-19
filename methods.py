@@ -97,6 +97,7 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
 
 
 def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, xHist, yHist):
+    plt.figure(0)
     plt.clf()
     plt.ion()
 
@@ -140,8 +141,8 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
 
 def plotPolicy(GP,thetaPredict,mu):
     if par.trajOrder != 2:
-        print("ActionRewardMapping can only be plotted in 2D case")
-    fig = plt.figure()
+        print("ActionRewardMapping can only be plotted if theta is 2-dimensional")
+    fig = plt.figure(1)
     plt.show()
     ax = fig.add_subplot(111, projection='3d')
     ax.plot(GP.trainInput[:, 0], GP.trainInput[:, 1], GP.trainOutput[:, 0], "g.")

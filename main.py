@@ -46,7 +46,7 @@ CBTS1 = CBTS(par.CBTSIterations, par.nTrajPoints, par.trajOrder, par.maxDepth, p
 bestTraj = np.zeros((2,1))
 
 """Initialize plot"""
-fig = plt.figure()
+fig = plt.figure(0)
 methods.plotFields(fig, x, y, trueField, gmrf1, controller,CBTS1, iterVec, timeVec, xHist, yHist)
 plt.show()
 
@@ -86,6 +86,7 @@ for i in range(par.nIter - 1):
         xMeas, yMeas = controller.getNewState(auv, gmrf1)
     elif par.CBTS:
         if i%par.nTrajPoints == 0:
+            test=1
             bestTraj,auv.derivX, auv.derivY = CBTS1.getNewTraj(auv,gmrf1)
             #print("New trajectory generated:", bestTraj)
             test=1

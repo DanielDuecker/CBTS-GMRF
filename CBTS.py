@@ -85,20 +85,26 @@ class CBTS:
             else:
                 print("No more actions at node",v)
                 v = self.bestChild(v)
-                print("to node",v)
+                print("switching to node",v)
+
 
     def getNextTheta(self,v):
         if v.GP.emptyData:
-            return par.initialTheta
+            #return par.initialTheta
+            print("test")
+            return  np.random.uniform(par.thetaMin,par.thetaMax,par.trajOrder)
         thetaPredict = np.random.uniform(par.thetaMin,par.thetaMax,(par.nThetaSamples,par.trajOrder))
         mu,var = v.GP.predict(thetaPredict)
         h = mu + self.kappa * var.diagonal().reshape(par.nThetaSamples,1)
+        print("********************")
+        print("H:",h)
         index = np.argmax(h)
         bestTheta = thetaPredict[index,:]
         print("getNextTheta:")
         print(bestTheta)
         print("Index of best theta:", index)
 
+        # plot policy
         if par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor-1):
             methods.plotPolicy(v.GP,thetaPredict,mu)
 
@@ -112,7 +118,7 @@ class CBTS:
             nextTheta = np.random.uniform(par.thetaMin,par.thetaMax,par.trajOrder)
             nextTraj, derivX, derivY = self.generateTrajectory(v,nextTheta)
 
-            # adds explored paths to collected trajectories for plotting:
+            # add explored paths to collected trajectories for plotting:
             if par.plotOptions.showExploredPaths:
                 self.xTraj = np.hstack((self.xTraj, nextTraj[0, :].reshape(self.nTrajPoints, 1)))
                 self.yTraj = np.hstack((self.yTraj, nextTraj[1, :].reshape(self.nTrajPoints, 1)))
