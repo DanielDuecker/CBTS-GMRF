@@ -61,7 +61,7 @@ nUpdated = 10   # number of iterations
 outOfGridPenalty = 10
 
 # CBTS controller
-trajStepSize = 1
+trajStepSize = 0.4
 CBTSIterations = 20
 nTrajPoints = int(trajStepSize/maxStepsize)
 kappaChildSelection = 1
@@ -88,4 +88,4 @@ if stkf:
 
 class plotOptions:
     showExploredPaths = False
-    showActionRewardMapping = True
+    showActionRewardMapping = False

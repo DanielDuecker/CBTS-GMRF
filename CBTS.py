@@ -79,6 +79,7 @@ class CBTS:
                     vNew.auv.y = traj[1,i+1]
                     Phi = methods.mapConDis(vNew.gmrf,vNew.auv.x,vNew.auv.y)
                     vNew.gmrf.seqBayesianUpdate(o[i],Phi)
+
                 vNew.auv.derivX = derivX
                 vNew.auv.derivY = derivY
                 return vNew
