@@ -92,19 +92,18 @@ class CBTS:
         if v.GP.emptyData:
             #return par.initialTheta
             print("test")
-            return  np.random.uniform(par.thetaMin,par.thetaMax,par.trajOrder)
-        thetaPredict = np.random.uniform(par.thetaMin,par.thetaMax,(par.nThetaSamples,par.trajOrder))
-        mu,var = v.GP.predict(thetaPredict)
-        h = mu + self.kappa * var.diagonal().reshape(par.nThetaSamples,1)
-        print("********************")
-        print("H:",h)
-        index = np.argmax(h)
-        bestTheta = thetaPredict[index,:]
-        print("getNextTheta:")
-        print(bestTheta)
-        print("Index of best theta:", index)
+            bestTheta =  np.random.uniform(par.thetaMin,par.thetaMax,par.trajOrder)
+        else:
+            thetaPredict = np.random.uniform(par.thetaMin,par.thetaMax,(par.nThetaSamples,par.trajOrder))
+            mu,var = v.GP.predict(thetaPredict)
+            h = mu + self.kappa * var.diagonal().reshape(par.nThetaSamples,1)
+            index = np.argmax(h)
+            bestTheta = thetaPredict[index,:]
+            print("getNextTheta:")
+            print(bestTheta)
+            print("Index of best theta:", index)
 
-        # plot policy
+        # plot estimated reward over actions
         if par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor-1):
             methods.plotPolicy(v.GP,thetaPredict,mu)
 
@@ -197,5 +196,5 @@ class CBTS:
     def bestChild(self,v):
         g = []
         for child in v.children:
-            g.append(child.totalR/(child.visits-1) + self.kappa*math.sqrt(2*math.log(v.visits)/child.visits))
+            g.append(child.totalR/(child.visits-1) + par.kappaChildSelection*math.sqrt(2*math.log(v.visits)/child.visits))
         return v.children[np.argmax(g)]

@@ -147,6 +147,9 @@ def plotPolicy(GP,thetaPredict,mu):
     ax = fig.add_subplot(111, projection='3d')
     ax.plot(GP.trainInput[:, 0], GP.trainInput[:, 1], GP.trainOutput[:, 0], "g.")
     ax.plot(thetaPredict[:, 0], thetaPredict[:, 1], mu[:, 0], "r.")
+    ax.set_xlabel("theta[0]")
+    ax.set_ylabel("theta[1]")
+    ax.set_zlabel("reward")
     fig.canvas.draw()
 
 

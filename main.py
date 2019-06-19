@@ -89,7 +89,6 @@ for i in range(par.nIter - 1):
             test=1
             bestTraj,auv.derivX, auv.derivY = CBTS1.getNewTraj(auv,gmrf1)
             #print("New trajectory generated:", bestTraj)
-            test=1
         auv.x = bestTraj[0,i%par.nTrajPoints]
         auv.y = bestTraj[1,i%par.nTrajPoints]
         xMeas = auv.x
@@ -133,6 +132,7 @@ print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per i
 # TODO same kappa -> use different parameters
 # TODO still discrete theta
 # TODO maybe discount future rewards for exploration
+# TODO tidy up code, consistent classes and paramater policy
 # TODO Try small thetas for less branching and deeper trees
 # TODO Use generic gmrf implementation (also for action reward mapping)
 # TODO Use current belief mean in reward function -> more exploitation
