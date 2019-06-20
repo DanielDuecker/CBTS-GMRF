@@ -128,9 +128,9 @@ plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
-# TODO Check visit counter
-# TODO maybe discount future rewards for exploration
-# TODO Check computation time
+# TODO Improve negative rewards
+# TODO Check if theta are dynamically feasible
+# TODO Check computation time -> python library?
 # TODO -> Change implementation of belief update at each node
 # TODO tidy up code, consistent classes and paramater policy
 # TODO Try small thetas for less branching and deeper trees
@@ -141,3 +141,9 @@ print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per i
 # TODO add outer grid
 # TODO boundary conditions
 # TODO use of sparse commands
+
+# DONE
+# TODO maybe discount future rewards for exploration
+# TODO Check visit counter
+
+
