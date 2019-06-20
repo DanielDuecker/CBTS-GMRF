@@ -86,7 +86,7 @@ for i in range(par.nIter - 1):
         xMeas, yMeas = controller.getNewState(auv, gmrf1)
     elif par.CBTS:
         if i%par.nTrajPoints == 0:
-            test=1
+            breakpoint=1
             bestTraj,auv.derivX, auv.derivY = CBTS1.getNewTraj(auv,gmrf1)
             #print("New trajectory generated:", bestTraj)
         auv.x = bestTraj[0,i%par.nTrajPoints]

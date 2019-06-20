@@ -62,16 +62,16 @@ outOfGridPenalty = 10
 
 # CBTS controller
 trajStepSize = 1
-CBTSIterations = 10
+CBTSIterations = 50
 nTrajPoints = int(trajStepSize/maxStepsize)
 kappaChildSelection = 0.1
 
 thetaMin = -1
 thetaMax = 1
 trajOrder = 2
-maxDepth = 2
-branchingFactor = 3
-kappa = 10
+maxDepth = 10
+branchingFactor = 30
+kappa = 100
 
 kernelPar = 10
 nThetaSamples = 100
@@ -89,4 +89,4 @@ if stkf:
 
 class plotOptions:
     showExploredPaths = False
-    showActionRewardMapping = True
+    showActionRewardMapping = False
