@@ -6,10 +6,11 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 class node:
-    def __init__(self,gmrf,auv,r):
+    def __init__(self,gmrf,auv):
         self.gmrf = copy.deepcopy(gmrf)
         self.auv = copy.deepcopy(auv)
-        self.totalR = copy.deepcopy(r)
+        self.rewardToNode = 0
+        self.accReward = 0
         self.actionToNode = []
         self.depth = 0
         self.parent = []

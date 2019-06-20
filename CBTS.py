@@ -18,7 +18,7 @@ class CBTS:
         self.yTraj = np.zeros((self.nTrajPoints,1))
 
     def getNewTraj(self, auv, gmrf):
-        v0 = node(gmrf,auv,0) # create node with belief b and total reward 0
+        v0 = node(gmrf,auv) # create node with belief b and total reward 0
         self.xTraj = np.zeros((self.nTrajPoints, 1))
         self.yTraj = np.zeros((self.nTrajPoints, 1))
         for i in range(self.nIterations):
@@ -26,13 +26,15 @@ class CBTS:
             vl = self.treePolicy(v0) # get next node
             if vl is None:
                 continue # max depth and branching reached
-            r = self.exploreNode(vl)
-            vl.totalR += r
-            print("exploring node ",vl," at position",vl.auv.x,vl.auv.y, " yields reward of",r)
-            self.backUp(v0,vl,vl.totalR)
+
+            # rollout
+            futureReward = self.exploreNode(vl)
+            vl.accReward = vl.rewardToNode + futureReward
+            print("exploring node ",vl," at position",vl.auv.x,vl.auv.y, " yields reward of",futureReward)
+            self.backUp(v0,vl,vl.accReward)
             print("Level 1 nodes after backing up:")
             for Eachnode in v0.children:
-                print("Node:",Eachnode,"/Reward: ",Eachnode.totalR,"/Counter: ",Eachnode.visits)
+                print("Node:",Eachnode,"/Reward: ",Eachnode.accReward,"/Counter: ",Eachnode.visits)
         print("Best trajectory is now returned")
         print("_______________________________")
         bestTraj, derivX, derivY = self.getBestTheta(v0)
@@ -59,14 +61,11 @@ class CBTS:
 
                 # Update GP mapping from theta to r:
                 v.GP.update(theta,r)
-                #print("Update GP mapping:")
-                #print("Theta:",theta)
-                #print("Reward:",r)
-                #print("___")
 
                 # Create new node:
-                vNew = node(v.gmrf,v.auv,v.totalR)
-                vNew.totalR += r
+                vNew = node(v.gmrf,v.auv)
+                vNew.rewardToNode = v.rewardToNode + par.discountFactor**v.depth * r
+                vNew.totalReward = vNew.rewardToNode
                 vNew.parent = v
                 vNew.depth = v.depth + 1
                 vNew.actionToNode = theta
@@ -93,7 +92,7 @@ class CBTS:
         if v.GP.emptyData:
             #return par.initialTheta
             print("test")
-            bestTheta =  np.random.uniform(par.thetaMin,par.thetaMax,par.trajOrder)
+            bestTheta = np.random.uniform(par.thetaMin,par.thetaMax,par.trajOrder)
         else:
             thetaPredict = np.random.uniform(par.thetaMin,par.thetaMax,(par.nThetaSamples,par.trajOrder))
             mu,var = v.GP.predict(thetaPredict)
@@ -103,6 +102,8 @@ class CBTS:
             print("getNextTheta:")
             print(bestTheta)
             print("Index of best theta:", index)
+
+        # add next theta to GP
 
         # plot estimated reward over actions
         if par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor-1):
@@ -124,7 +125,7 @@ class CBTS:
                 self.yTraj = np.hstack((self.yTraj, nextTraj[1, :].reshape(self.nTrajPoints, 1)))
 
             dr,do = self.evaluateTrajectory(v,nextTraj)
-            r += dr
+            r += par.discountFactor**v.depth * dr
             v.auv.x = nextTraj[0,-1]
             v.auv.y = nextTraj[1,-1]
             v.auv.derivX = derivX
@@ -140,9 +141,9 @@ class CBTS:
         maxR = -math.inf
         bestTheta = np.zeros(2)
         for child in v0.children:
-            if child.totalR > maxR:
+            if child.accReward > maxR:
                 bestTheta = child.actionToNode
-                maxR = child.totalR
+                maxR = child.accReward
         bestTraj, derivX, derivY = self.generateTrajectory(v0,bestTheta)
         print("chosen best theta: ",bestTheta," with trajectory ",bestTraj)
         return bestTraj, derivX, derivY
@@ -186,16 +187,15 @@ class CBTS:
             r -= par.outOfGridPenalty
         return r,o
 
-    def backUp(self,v0,v,r):
-        v.visits += 1
+    def backUp(self,v0,v,reward):
         v = v.parent
         while v != v0:
-            v.visits += 2
-            v.totalR += r
+            v.visits += 1
+            v.accReward += reward
             v = v.parent
 
     def bestChild(self,v):
         g = []
         for child in v.children:
-            g.append(child.totalR/(child.visits-1) + par.kappaChildSelection*math.sqrt(2*math.log(v.visits)/child.visits))
+            g.append(child.accReward/child.visits + par.kappaChildSelection*math.sqrt(2*math.log(v.visits)/child.visits))
         return v.children[np.argmax(g)]
