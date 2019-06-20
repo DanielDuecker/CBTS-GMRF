@@ -134,6 +134,7 @@ print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per i
 # TODO -> Change implementation of belief update at each node
 # TODO tidy up code, consistent classes and paramater policy
 # TODO Try small thetas for less branching and deeper trees
+# TODO Compare to PI2
 # TODO Use generic gmrf implementation (also for action reward mapping)
 # TODO Use current belief mean in reward function -> more exploitation
 # TODO maybe use cubic splines or kernel trajs
