@@ -155,8 +155,17 @@ class CBTS:
         # dx = posX, dy = posY, cx = dC1/du|u=0 = derivX, cy = dC2/du|u=0 = derivY
         ax = 0
         ay = 0
-        bx = theta[0]
-        by = theta[1]
+
+        if par.trajOrder == 1:
+            if theta[0] < 0:
+                bx = theta[0]
+                by = 0
+            elif theta[0] >= 0:
+                bx = 0
+                by = -theta[0]
+        if par.trajOrder == 2:
+            bx = theta[0]
+            by = theta[1]
         cx = v.auv.derivX
         cy = v.auv.derivY
         dx = v.auv.x

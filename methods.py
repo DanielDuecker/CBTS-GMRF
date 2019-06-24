@@ -140,18 +140,22 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
     fig.canvas.draw()
 
 def plotPolicy(GP,thetaPredict,mu):
-    if par.trajOrder != 2:
-        print("ActionRewardMapping can only be plotted if theta is 2-dimensional")
     fig = plt.figure(1)
+    plt.clf()
     plt.show()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot(GP.trainInput[:, 0], GP.trainInput[:, 1], GP.trainOutput[:, 0], "g.")
-    ax.plot(thetaPredict[:, 0], thetaPredict[:, 1], mu[:, 0], "r.")
-    ax.set_xlabel("theta[0]")
-    ax.set_ylabel("theta[1]")
-    ax.set_zlabel("reward")
-    fig.canvas.draw()
 
+    if par.trajOrder == 2:
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot(GP.trainInput[:, 0], GP.trainInput[:, 1], GP.trainOutput[:, 0], "g.")
+        ax.plot(thetaPredict[:, 0], thetaPredict[:, 1], mu[:, 0], "r.")
+        ax.set_xlabel("theta[0]")
+        ax.set_ylabel("theta[1]")
+        ax.set_zlabel("reward")
+    elif par.trajOrder == 1:
+        ax = fig.add_subplot(111)
+        ax.plot(GP.trainInput[:, 0], GP.trainOutput[:, 0], "g.")
+        ax.plot(thetaPredict[:, 0], mu[:, 0], "r.")
+    fig.canvas.draw()
 
 def sanityCheck(xVec,yVec,gmrf):
     for x in xVec:

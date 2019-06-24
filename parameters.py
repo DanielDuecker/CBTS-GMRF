@@ -63,14 +63,14 @@ outOfGridPenalty = 10
 # CBTS controller
 trajStepSize = 1
 CBTSIterations = 40
-branchingFactor = 15
+branchingFactor = 3
 kappa = 10
 nTrajPoints = int(trajStepSize/maxStepsize)
 kappaChildSelection = 0.1
 
-thetaMin = -1
-thetaMax = 1
-trajOrder = 2
+thetaMin = -0.5
+thetaMax = 0.5
+trajOrder = 1
 maxDepth = 3
 initialTheta = np.zeros(trajOrder)
 discountFactor = 0.8
