@@ -90,9 +90,8 @@ class CBTS:
 
     def getNextTheta(self,v):
         if v.GP.emptyData:
-            #return par.initialTheta
-            print("test")
-            bestTheta = np.random.uniform(par.thetaMin,par.thetaMax,par.trajOrder)
+            bestTheta = par.initialTheta
+            #bestTheta = np.random.uniform(par.thetaMin,par.thetaMax,par.trajOrder)
         else:
             thetaPredict = np.random.uniform(par.thetaMin,par.thetaMax,(par.nThetaSamples,par.trajOrder))
             mu,var = v.GP.predict(thetaPredict)

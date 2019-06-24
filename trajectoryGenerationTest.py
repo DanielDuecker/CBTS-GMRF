@@ -56,7 +56,7 @@ for i in range(100):
         if test < 0:
             bx = test
             by = 0
-        elif test > = 0:
+        elif test >= 0:
             bx = 0
             by = -test
         theta = np.array([[0,0,bx,by]])
