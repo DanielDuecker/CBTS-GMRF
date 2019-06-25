@@ -248,11 +248,11 @@ class CBTS:
 
         if par.trajOrder == 1:
             if theta[0] < 0:
-                bx = theta[0]
+                bx = np.sign(v.auv.derivX)*theta[0]
                 by = 0
             elif theta[0] >= 0:
                 bx = 0
-                by = -theta[0]
+                by = -np.sign(v.auv.derivX)*theta[0]
         if par.trajOrder == 2:
             bx = theta[0]
             by = theta[1]
