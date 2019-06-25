@@ -129,7 +129,7 @@ class CBTS:
             self.backUp(v0,vl,vl.accReward)
             print("Level 1 nodes after backing up:")
             for Eachnode in v0.children:
-                print("Node:",Eachnode,"/Reward: ",Eachnode.accReward,"/Counter: ",Eachnode.visits)
+                print("Theta:",Eachnode.actionToNode,"/Reward: ",Eachnode.accReward,"/Counter: ",Eachnode.visits)
         print("Best trajectory is now returned")
         print("_______________________________")
         bestTraj, derivX, derivY = self.getBestTheta(v0)
@@ -286,7 +286,7 @@ class CBTS:
             r += np.dot(Phi,v.gmrf.covCond.diagonal())
             o.append(np.dot(Phi,v.gmrf.meanCond))
         # lower reward if agent is out of bound
-        if not methods.sanityCheck(tau[0,:],tau[1,:],v.gmrf):
+        if not methods.sanityCheck(tau[0,i+1].reshape(1,1),tau[1,i+1].reshape(1,1),v.gmrf):
             r -= par.outOfGridPenalty
         return r,o
 

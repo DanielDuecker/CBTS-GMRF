@@ -1,10 +1,11 @@
 import numpy as np
 import math
 
-# Parameters for all files
-# main.py
+"""Parameters for all files"""
+
+"""main.py"""
 stkf = True
-sequentialUpdate = False  # Does not work with truncation!
+sequentialUpdate = True  # Does not work with truncation!
 fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
 sinusoidal = False  # True: Use sinusoidal ground truth
@@ -33,23 +34,22 @@ dxdt = 0.001  # Shift of true field in x direction
 dydt = 0.001  # Shift of true field in y direction
 pulseTime = nIter / 2  # Duration of sinusodial pulsation
 
+"""GMRF class"""
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 10
+nX = 20
 yMin = 0
 yMax = 10
-nY = 10
+nY = 20
 nBeta = 1  # regression coefficients
-
-# gmrf class
 valueT = 1e-3  # Prior precision value for regression vector bet
 
-# stkf class
+"""STKF class"""
 sigmaT = 1e3 #1e2    # determines exponential decay of time kernel
 lambdSTKF = 1  # influences time kernel value
 sigma2 = 0.01
 
-# PI2 controller
+"""PI2 controller"""
 H = 10  # control horizon steps
 controlCost = 5# 5e-1   # affects noise of path roll-outs (negatively)
 R = controlCost*np.eye(H)   # input cost matrix
@@ -60,16 +60,16 @@ ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
 outOfGridPenalty = 10
 
-# CBTS controller
+"""CBTS controller"""
 trajStepSize = 1
-CBTSIterations = 40
-branchingFactor = 10
-kappa = 10
+CBTSIterations = 20
+branchingFactor = 20 # number of actions that should be evaluated for each path segment
+kappa = 100  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize/maxStepsize)
 kappaChildSelection = 0.1
 
-thetaMin = -1
-thetaMax = 1
+thetaMin = -2
+thetaMax = 2
 trajOrder = 1
 maxDepth = 4
 initialTheta = np.zeros(trajOrder)
