@@ -61,19 +61,21 @@ nUpdated = 10   # number of iterations
 outOfGridPenalty = 10
 
 """CBTS controller"""
-trajStepSize = 1
-CBTSIterations = 20
-branchingFactor = 20 # number of actions that should be evaluated for each path segment
+trajStepSize = 0.4
+CBTSIterations = 4
+branchingFactor = 5 # number of actions that should be evaluated for each path segment
 kappa = 100  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize/maxStepsize)
 kappaChildSelection = 0.1
 
-thetaMin = -2
-thetaMax = 2
+thetaMin = -1
+thetaMax = 1
+thetaExpMin = -0.2
+thetaExpMax = 0.2
 trajOrder = 1
-maxDepth = 4
+maxDepth = 3
 initialTheta = np.zeros(trajOrder)
-discountFactor = 0.8
+discountFactor = 0.5
 
 # action reward map
 ovMap2 = 0.01
@@ -87,5 +89,5 @@ if stkf:
     nBeta = 0
 
 class plotOptions:
-    showExploredPaths = False
+    showExploredPaths = True
     showActionRewardMapping = True

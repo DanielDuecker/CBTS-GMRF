@@ -208,9 +208,8 @@ class CBTS:
     def exploreNode(self,vl):
         r = 0
         v = copy.deepcopy(vl)
-        counter = 0
         while v.depth < self.maxDepth:
-            nextTheta = np.random.uniform(par.thetaMin,par.thetaMax,par.trajOrder)
+            nextTheta = np.random.uniform(par.thetaExpMin,par.thetaExpMax,par.trajOrder)
             nextTraj, derivX, derivY = self.generateTrajectory(v,nextTheta)
 
             # add explored paths to collected trajectories for plotting:
@@ -225,11 +224,7 @@ class CBTS:
             v.auv.derivX = derivX
             v.auv.derivY = derivY
             v.depth += 1
-            counter += 1
-        if counter > 0:
-            return r/counter
-        else:
-            return r
+        return r
 
     def getBestTheta(self,v0):
         maxR = -math.inf
