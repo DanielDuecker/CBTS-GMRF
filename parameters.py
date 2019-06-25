@@ -62,7 +62,7 @@ outOfGridPenalty = 10
 
 """CBTS controller"""
 trajStepSize = 0.4
-CBTSIterations = 4
+CBTSIterations = 5
 branchingFactor = 5 # number of actions that should be evaluated for each path segment
 kappa = 100  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize/maxStepsize)

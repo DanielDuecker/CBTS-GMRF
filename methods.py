@@ -100,7 +100,7 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
     plt.figure(0)
     plt.clf()
     plt.ion()
-    plt.axis('equal')
+    #plt.axis('equal')
 
     # Plotting ground truth
     ax1 = fig.add_subplot(221)
