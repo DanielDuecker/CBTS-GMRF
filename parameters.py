@@ -4,11 +4,11 @@ import math
 # Parameters for all files
 # main.py
 stkf = True
-sequentialUpdate = True  # Does not work with truncation!
+sequentialUpdate = False  # Does not work with truncation!
 fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
 sinusoidal = False  # True: Use sinusoidal ground truth
-temporal = False  # True: time varying field
+temporal = False # True: time varying field
 PIControl = False
 
 if not PIControl:

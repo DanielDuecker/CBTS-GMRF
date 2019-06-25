@@ -9,10 +9,130 @@ import parameters as par
 from scipy import interpolate
 from scipy import integrate
 import scipy
+import copy
+import parameters as par
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
-#todo: create generic GMRF class and use if for thetaR mapping in kCBTS.py too
-class gmrf:
+class agent:
+    def __init__(self,x0,y0,alpha0):
+        self.x = x0
+        self.y = y0
+        self.alpha = alpha0  # angle of direction of movement
+        self.derivX = math.cos(self.alpha)
+        self.derivY = math.sin(self.alpha)
+
+    def stateDynamics(self, x, y, alpha, u):
+        alpha += u
+        x += par.maxStepsize * math.cos(alpha)
+        y += par.maxStepsize * math.sin(alpha)
+        return x, y, alpha
+
+    def trajectoryFromControl(self,u):
+        xTraj = np.zeros((len(u), 1))
+        yTraj = np.zeros((len(u), 1))
+        alphaTraj = np.zeros((len(u), 1))
+        (xTraj[0], yTraj[0], alphaTraj[0]) = (self.x, self.y, self.alpha)
+        for i in range(len(u)-1):
+            (xTraj[i+1], yTraj[i+1], alphaTraj[i+1]) = self.stateDynamics(xTraj[i], yTraj[i], alphaTraj[i], u[i])
+        return xTraj, yTraj, alphaTraj
+
+class trueField:
+    def __init__(self, xEnd, yEnd, sinusoidal, temporal):
+        self.sinusoidal = sinusoidal
+        self.temporal = temporal
+
+        self.xShift = 0
+        self.yShift = 0
+        self.cScale = 1
+
+        self.xEnd = xEnd
+        self.yEnd = yEnd
+
+        if self.sinusoidal:
+            xGT = np.arange(par.xMin, par.xMax, par.dX)
+            yGT = np.arange(par.yMin, par.yMax, par.dY)
+            XGT, YGT = np.meshgrid(xGT, yGT)
+            zGT = np.sin(XGT) + np.sin(YGT)
+            self.fInit = interpolate.interp2d(xGT, yGT, zGT)
+        else:
+            xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
+            yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
+            #zGT = np.array([[1, 2, 2, 1, 1],
+            #[2, 4, 2, 1, 1],
+            #[1, 2, 3, 3, 2],
+            #[1, 1, 2, 3, 3],
+            #[1, 1, 2, 3, 3]])
+
+            zGT = np.array([[2, 4, 6, 7, 8],
+                            [2.1, 5, 7, 11.25, 9.5],
+                            [3, 5.6, 8.5, 17, 14.5],
+                            [2.5, 5.4, 6.9, 9, 8],
+                            [2, 2.3, 4, 6, 7.5]])
+
+        self.fieldMin = np.min([0,np.amin(zGT)])
+        self.fieldMax = np.amax(zGT)
+        self.fieldLevels = np.linspace(self.fieldMin,self.fieldMax,20)
+
+        self.fInit = interpolate.interp2d(xGT, yGT, zGT)
+
+    def field(self, x, y):
+        if not par.sinusoidal:
+            return self.fInit(x - self.xShift, y + self.yShift)
+        else:
+            return self.cScale * self.fInit(x, y)
+
+    def updateField(self, t):
+        if t < par.pulseTime:
+            self.xShift = par.dxdt * t % self.xEnd
+            self.yShift = par.dydt * t % self.yEnd
+            self.cScale = np.cos(math.pi * t / par.pulseTime)
+
+class GP:
+    def __init__(self):
+        self.emptyData = True
+        self.trainInput = None
+        self.trainOutput = None
+
+    def kernel(self,z1,z2):
+        squaredDistance = np.linalg.norm(z1-z2,2)
+        return np.exp(-.5 * 1/par.kernelPar * squaredDistance)
+
+    def getKernelMatrix(self,vec1,vec2):
+        n = vec1.shape[0]
+        N = vec2.shape[0]
+        K = np.zeros((n,N))
+        for i in range(n):
+            for j in range(N):
+                 K[i,j] = self.kernel(vec1[i,:],vec2[j,:])
+        return K
+
+    def update(self,inputData,outputData):
+        if self.emptyData:
+            self.trainInput = np.expand_dims(inputData, axis=0)
+            self.trainOutput = np.expand_dims(outputData, axis=0)
+            self.emptyData = False
+        else:
+            self.trainInput = np.vstack((self.trainInput,inputData))
+            self.trainOutput = np.vstack((self.trainOutput,outputData))
+
+    def predict(self,input):
+        # according to https://www.cs.ubc.ca/~nando/540-2013/lectures/l6.pdf
+        K = self.getKernelMatrix(self.trainInput,self.trainInput)
+        L = np.linalg.cholesky(K)
+
+        # Compute mean
+        Lk = np.linalg.solve(L,self.getKernelMatrix(self.trainInput,input))
+        mu = np.dot(Lk.T, np.linalg.solve(L,self.trainOutput))
+
+        # Compute variance
+        KStar = self.getKernelMatrix(input,input)
+        var = KStar - np.dot(Lk.T,Lk)
+
+        return mu, var
+
+class gmrf: #todo: create generic GMRF class and use if for thetaR mapping in kCBTS.py too
     def __init__(self, xMin, xMax, nX, yMin, yMax, nY, nBeta):
         """GMRF properties"""
         self.xMin = xMin
@@ -92,60 +212,7 @@ class gmrf:
         # TODO: Fix calculation of covariance diagonal
         # hSeq = np.linalg.solve(self.precCond, Phi_k.T)
         # self.diagCovCond = self.diagCovCond - 1 / (par.ov2 + np.dot(Phi_k, hSeq)[0, 0]) * np.dot(hSeq,
-        #                                                            hSeq.T).diagonal().reshape(self.nP + self.nBeta, 1)
-
-
-class trueField:
-    def __init__(self, xEnd, yEnd, sinusoidal, temporal):
-        self.sinusoidal = sinusoidal
-        self.temporal = temporal
-
-        self.xShift = 0
-        self.yShift = 0
-        self.cScale = 1
-
-        self.xEnd = xEnd
-        self.yEnd = yEnd
-
-        if self.sinusoidal:
-            xGT = np.arange(par.xMin, par.xMax, par.dX)
-            yGT = np.arange(par.yMin, par.yMax, par.dY)
-            XGT, YGT = np.meshgrid(xGT, yGT)
-            zGT = np.sin(XGT) + np.sin(YGT)
-            self.fInit = interpolate.interp2d(xGT, yGT, zGT)
-        else:
-            xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
-            yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
-            #zGT = np.array([[1, 2, 2, 1, 1],
-            #[2, 4, 2, 1, 1],
-            #[1, 2, 3, 3, 2],
-            #[1, 1, 2, 3, 3],
-            #[1, 1, 2, 3, 3]])
-
-            zGT = np.array([[2, 4, 6, 7, 8],
-                            [2.1, 5, 7, 11.25, 9.5],
-                            [3, 5.6, 8.5, 17, 14.5],
-                            [2.5, 5.4, 6.9, 9, 8],
-                            [2, 2.3, 4, 6, 7.5]])
-
-        self.fieldMin = np.min([0,np.amin(zGT)])
-        self.fieldMax = np.amax(zGT)
-        self.fieldLevels = np.linspace(self.fieldMin,self.fieldMax,20)
-
-        self.fInit = interpolate.interp2d(xGT, yGT, zGT)
-
-    def field(self, x, y):
-        if not par.sinusoidal:
-            return self.fInit(x - self.xShift, y + self.yShift)
-        else:
-            return self.cScale * self.fInit(x, y)
-
-    def updateField(self, t):
-        if t < par.pulseTime:
-            self.xShift = par.dxdt * t % self.xEnd
-            self.yShift = par.dydt * t % self.yEnd
-            self.cScale = np.cos(math.pi * t / par.pulseTime)
-
+        #                                                            hSeq.T).diagonal().reshape(self.nP + self.nBeta, 1) #todo: create generic GMRF class and use if for thetaR mapping in kCBTS.py too
 
 class stkf:
     def __init__(self, gmrf, trueF, dt, sigmaT, lambdSTKF, sigma2):
@@ -203,3 +270,17 @@ class stkf:
         self.gmrf.meanCond = np.dot(self.Cs, st)
         self.gmrf.covCond = np.dot(self.Cs, np.dot(covt, self.Cs.T))
         self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
+
+class node:
+    def __init__(self,gmrf,auv):
+        self.gmrf = copy.deepcopy(gmrf)
+        self.auv = copy.deepcopy(auv)
+        self.rewardToNode = 0
+        self.accReward = 0
+        self.actionToNode = []
+        self.depth = 0
+        self.parent = []
+        self.children = []
+        self.visits = 1
+        self.D = []
+        self.GP = GP()

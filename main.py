@@ -10,13 +10,13 @@ import parameters as par
 from classes import gmrf
 from classes import stkf
 from classes import trueField
+from classes import agent
 import control
-from CBTS import CBTS
 
 #np.set_printoptions(threshold=np.inf)
 
 """Agent"""
-auv = control.agent(par.x0, par.y0, par.alpha0)
+auv = agent(par.x0, par.y0, par.alpha0)
 xHist = [par.x0]  # x-state history vector
 yHist = [par.y0]  # y-state history vector
 
@@ -42,7 +42,7 @@ trueField = trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
 stkf1 = stkf(gmrf1, trueField, par.dt, par.sigmaT, par.lambdSTKF, par.sigma2)
 
 """"Continuous Belief Tree Search"""
-CBTS1 = CBTS(par.CBTSIterations, par.nTrajPoints, par.trajOrder, par.maxDepth, par.branchingFactor, par.kappa)
+CBTS1 = control.CBTS(par.CBTSIterations, par.nTrajPoints, par.trajOrder, par.maxDepth, par.branchingFactor, par.kappa)
 bestTraj = np.zeros((2,1))
 
 """Initialize plot"""
@@ -50,18 +50,16 @@ fig = plt.figure(0)
 methods.plotFields(fig, x, y, trueField, gmrf1, controller,CBTS1, iterVec, timeVec, xHist, yHist)
 plt.show()
 
-# Get first measurement:
+"""Get first measurement:"""
 (xMeas, yMeas) = methods.getNextState(par.x0, par.y0, par.x0, par.y0, par.maxStepsize, gmrf1)
 xHist.append(xMeas)
 yHist.append(yMeas)
-
-# Initialize measurement vector and mapping matrix
-zMeas = np.zeros((par.nMeas, 1))
+zMeas = np.zeros((par.nMeas, 1)) # Initialize measurement vector and mapping matrix
 Phi = np.zeros((par.nMeas, gmrf1.nP + gmrf1.nBeta))
 zMeas[0] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
 Phi[0, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
 
-# Update and plot field belief
+"""Update and plot field belief"""
 for i in range(par.nIter - 1):
     print("Iteration ", i, " of ", par.nIter, ".")
     t = i * par.dt
@@ -74,11 +72,10 @@ for i in range(par.nIter - 1):
         gmrf1.meanCond = stkf1.gmrf.meanCond
         gmrf1.covCond = stkf1.gmrf.covCond
         gmrf1.diagCovCond = stkf1.gmrf.diagCovCond
+    elif par.sequentialUpdate:
+        gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])
     else:
-        if par.sequentialUpdate:
-            gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])
-        else:
-            gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
+        gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
 
     """Controller"""
     if par.PIControl:
@@ -101,25 +98,25 @@ for i in range(par.nIter - 1):
     yHist.append(yMeas)
     zMeas[(i + 1) % par.nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
 
-    # Map measurement to surrounding grid vertices and stack under Phi matrix
+    """Map measurement to surrounding grid vertices and stack under Phi matrix"""
     Phi[(i + 1) % par.nMeas, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
 
-    # If truncated measurements are used, set conditioned mean and covariance as prior
+    """If truncated measurements are used, set conditioned mean and covariance as prior"""
     if par.truncation:
         if (i + 1) % par.nMeas == 0:
             gmrf1.covPrior = gmrf1.covCond
             gmrf1.meanPrior = gmrf1.meanCond
 
-    # Time measurement
+    """Time measurement"""
     timeAfter = time.time()
     iterVec.append(i)
     timeVec.append(timeAfter - timeBefore)
 
-    # Plotting:
+    """Plotting"""
     if not par.fastCalc:
         methods.plotFields(fig, x, y, trueField, gmrf1, controller,CBTS1, iterVec, timeVec, xHist, yHist)
 
-    # Update ground truth:
+    """Update ground truth:"""
     if par.temporal:
         trueField.updateField(i)
 
