@@ -125,12 +125,9 @@ plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
-# TODO Improve negative rewards
-# TODO Check if theta are dynamically feasible
 # TODO Check computation time -> python library?
 # TODO -> Change implementation of belief update at each node
 # TODO tidy up code, consistent classes and paramater policy
-# TODO Try small thetas for less branching and deeper trees
 # TODO Compare to PI2
 # TODO Use generic gmrf implementation (also for action reward mapping)
 # TODO Use current belief mean in reward function -> more exploitation
@@ -142,5 +139,10 @@ print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per i
 # DONE
 # TODO maybe discount future rewards for exploration
 # TODO Check visit counter
+# TODO Improve negative rewards
+# TODO Check if theta are dynamically feasible -> Done by only using specific input combinations which are incorporated
+#       in a lower dimensional input
+# TODO Try small thetas for less branching and deeper trees
+
 
 

@@ -58,10 +58,11 @@ lambd = 1e-1 # 1e-2 # rescales state costs, affects noise of path roll-outs (pos
 K = 15  # number of path roll outs
 ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
-outOfGridPenalty = 10
+outOfGridPenalty = 1
 
 """CBTS controller"""
 trajStepSize = 0.4
+trajScaling = 1
 CBTSIterations = 30
 branchingFactor = 8 # number of actions that should be evaluated for each path segment
 kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards

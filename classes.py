@@ -20,8 +20,8 @@ class agent:
         self.x = x0
         self.y = y0
         self.alpha = alpha0  # angle of direction of movement
-        self.derivX = math.cos(self.alpha)
-        self.derivY = math.sin(self.alpha)
+        self.derivX = par.trajScaling*math.cos(self.alpha)
+        self.derivY = par.trajScaling*math.sin(self.alpha)
 
     def stateDynamics(self, x, y, alpha, u):
         alpha += u
