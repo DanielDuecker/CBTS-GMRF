@@ -58,30 +58,30 @@ lambd = 1e-1 # 1e-2 # rescales state costs, affects noise of path roll-outs (pos
 K = 15  # number of path roll outs
 ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
-outOfGridPenalty = 1
+outOfGridPenalty = 1 # each observation outside of grid adds a negative reward
 
 """CBTS controller"""
-trajStepSize = 0.4
-trajScaling = 1
-CBTSIterations = 30
-branchingFactor = 8 # number of actions that should be evaluated for each path segment
+trajStepSize = 0.4  # determines number of measurement points along trajectory (depends on maxStepsize)
+trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
+CBTSIterations = 30  # determines runtime of algorithm, could also be done with time limit
+branchingFactor = 8  # number of actions that can be evaluated at max for each path segment
+maxDepth = 2 # depth of search tree
 kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
-nTrajPoints = int(trajStepSize/maxStepsize)
-kappaChildSelection = 1
+nTrajPoints = int(trajStepSize/maxStepsize) # number of measurement points along trajectory
+kappaChildSelection = 1 # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
+UCBRewardFactor = 0.1  # reward = variance + UCBRewardFactor*mean
 
-thetaMin = -1
-thetaMax = 1
-thetaExpMin = -1
-thetaExpMax = 1
-trajOrder = 1
-maxDepth = 2
-initialTheta = np.zeros(trajOrder)
-discountFactor = 0.8
+thetaMin = -1 # determines curvature of generated trajectories
+thetaMax = 1 # determines curvature of generated trajectories
+thetaExpMin = -1 # determines curvature of generated trajectories for node exploration
+thetaExpMax = 1 # determines curvature of generated trajectories for node exploration
+trajOrder = 1 # if higher order is used check trajectory generation function
+initialTheta = np.zeros(trajOrder) # leads to first trajectory being straight
+discountFactor = 0.8 # discounts future rewards
 
-# action reward map
-ovMap2 = 0.01
-kernelPar = 10
-nThetaSamples = 100
+#Gaussian Process for action reward mapping
+kernelPar = 10 # used in exponential kernel to determine variance between to inputs
+nThetaSamples = 100 # number of samples thetas which are candidates for next theta
 
 if not truncation:
     nMeas = nIter

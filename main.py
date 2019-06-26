@@ -125,16 +125,17 @@ plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
+# TODO Learning circular field
+# TODO Show plot of acquisiton funciton
 # TODO Check computation time -> python library?
+# TODO use of sparse commands
 # TODO -> Change implementation of belief update at each node
 # TODO tidy up code, consistent classes and paramater policy
 # TODO Compare to PI2
 # TODO Use generic gmrf implementation (also for action reward mapping)
-# TODO Use current belief mean in reward function -> more exploitation
 # TODO maybe use cubic splines or kernel trajs
 # TODO add outer grid
 # TODO boundary conditions
-# TODO use of sparse commands
 
 # DONE
 # TODO maybe discount future rewards for exploration
@@ -142,7 +143,9 @@ print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per i
 # TODO Improve negative rewards
 # TODO Check if theta are dynamically feasible -> Done by only using specific input combinations which are incorporated
 #       in a lower dimensional input
-# TODO Try small thetas for less branching and deeper trees
+# TODO Try small thetas for less branching and deeper
+# TODO Use current belief mean in reward function -> more exploitation
+
 
 
 

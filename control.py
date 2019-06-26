@@ -274,15 +274,16 @@ class CBTS:
         return tau, derivX, derivY
 
     def evaluateTrajectory(self,v,tau):
-        # TODO: maybe use r = sum(grad(mue) + parameter*sigma) from Seq.BO paper (Ramos)
         r = 0
         o = []
         for i in range(self.nTrajPoints-1):
             Phi = methods.mapConDis(v.gmrf, tau[0,i+1], tau[1,i+1])
-            r += np.dot(Phi,v.gmrf.covCond.diagonal())
+            r += (np.dot(Phi,v.gmrf.covCond.diagonal()) + par.UCBRewardFactor * np.dot(Phi,v.gmrf.meanCond))[0]
+            print(np.dot(Phi,v.gmrf.covCond.diagonal()).shape)
+            print(np.dot(Phi,v.gmrf.meanCond).shape)
             o.append(np.dot(Phi,v.gmrf.meanCond))
         # lower reward if agent is out of bound
-            if not methods.sanityCheck(tau[0,i+1].reshape(1,1),tau[1,i+1].reshape(1,1),v.gmrf):
+            if not methods.sanityCheck(tau[0,i+1]*np.eye(1),tau[1,i+1]*np.eye(1),v.gmrf):
                 r -= par.outOfGridPenalty
         return r,o
 
