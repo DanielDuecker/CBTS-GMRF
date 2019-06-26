@@ -282,8 +282,8 @@ class CBTS:
             r += np.dot(Phi,v.gmrf.covCond.diagonal())
             o.append(np.dot(Phi,v.gmrf.meanCond))
         # lower reward if agent is out of bound
-        if not methods.sanityCheck(tau[0,i+1].reshape(1,1),tau[1,i+1].reshape(1,1),v.gmrf):
-            r -= par.outOfGridPenalty
+            if not methods.sanityCheck(tau[0,i+1].reshape(1,1),tau[1,i+1].reshape(1,1),v.gmrf):
+                r -= par.outOfGridPenalty
         return r,o
 
     def backUp(self,v0,v,reward):
