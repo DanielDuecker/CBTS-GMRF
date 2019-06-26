@@ -47,6 +47,12 @@ class trueField:
         self.yShift = 0
         self.cScale = 1
 
+        self.radius = par.xMax/par.nX
+        self.xPeak = (par.xMax+par.xMin)/2
+        self.yPeak = (par.yMax+par.yMin)*3/4
+        self.peakValue = 10
+        self.gmrfField = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, 0)
+
         self.xEnd = xEnd
         self.yEnd = yEnd
 
@@ -56,7 +62,13 @@ class trueField:
             XGT, YGT = np.meshgrid(xGT, yGT)
             zGT = np.sin(XGT) + np.sin(YGT)
             self.fInit = interpolate.interp2d(xGT, yGT, zGT)
-        else:
+        elif par.peakField:
+            xGT = np.linspace(par.xMin, par.xMax, par.nX)
+            yGT = np.linspace(par.yMin, par.yMax, par.nY)
+            zGT = np.zeros((len(xGT),len(yGT)))
+            zGT += methods.mapConDis(self.gmrfField,self.xPeak,self.yPeak).reshape(zGT.shape)*self.peakV
+
+        elif par.predefinedField:
             xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
             yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
             #zGT = np.array([[1, 2, 2, 1, 1],

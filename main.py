@@ -127,6 +127,7 @@ print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per i
 
 # TODO Learning circular field
 # TODO Show plot of acquisiton funciton
+# TODO Check again feasability of trajs
 # TODO Check computation time -> python library?
 # TODO use of sparse commands
 # TODO -> Change implementation of belief update at each node
