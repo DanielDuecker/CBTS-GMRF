@@ -8,7 +8,7 @@ stkf = False
 sequentialUpdate = True  # Does not work with truncation!
 fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
-PIControl = True
+PIControl = False
 
 fieldType = 'peak' # 'sine' or 'predefined'
 temporal = True  # True: time varying field
@@ -59,7 +59,7 @@ lambd = 1e-1 # 1e-2 # rescales state costs, affects noise of path roll-outs (pos
 K = 15  # number of path roll outs
 ctrSamplingTime = 0.01  # time discretization
 nUpdated = 10   # number of iterations
-outOfGridPenalty = 1 # each observation outside of grid adds a negative reward
+outOfGridPenaltyPI2 = 10 # each observation outside of grid adds a negative reward
 
 """CBTS controller"""
 trajStepSize = 0.4  # determines number of measurement points along trajectory (depends on maxStepsize)
@@ -71,6 +71,7 @@ kappa = 0.1  # large: evaluate more untried actions; small: concentrate on actio
 nTrajPoints = int(trajStepSize/maxStepsize) # number of measurement points along trajectory
 kappaChildSelection = 1 # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
 UCBRewardFactor = 1  # reward = variance + UCBRewardFactor*mean
+outOfGridPenaltyCBTS = 1
 
 thetaMin = -1 # determines curvature of generated trajectories
 thetaMax = 1 # determines curvature of generated trajectories

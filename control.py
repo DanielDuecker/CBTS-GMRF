@@ -49,7 +49,7 @@ class piControl:
                 for i in range(self.H):
                     index = self.H-i-1
                     if not methods.sanityCheck(self.xPathRollOut[index, k]*np.eye(1), self.yPathRollOut[index, k]*np.eye(1), gmrf):
-                        stateCost += par.outOfGridPenalty
+                        stateCost += par.outOfGridPenaltyPI2
                     else:
                         Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
                         stateCost += 1/np.dot(Phi,gmrf.diagCovCond)
@@ -284,7 +284,7 @@ class CBTS:
             o.append(np.dot(Phi,v.gmrf.meanCond))
         # lower reward if agent is out of bound
             if not methods.sanityCheck(tau[0,i+1]*np.eye(1),tau[1,i+1]*np.eye(1),v.gmrf):
-                r -= par.outOfGridPenalty
+                r -= par.outOfGridPenaltyCBTS
 
         return r,o
 
