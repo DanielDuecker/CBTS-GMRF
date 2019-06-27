@@ -39,28 +39,44 @@ class agent:
         return xTraj, yTraj, alphaTraj
 
 class trueField:
-    def __init__(self, xEnd, yEnd, fieldType, temporal):
+    def __init__(self, xEnd, yEnd, fieldType):
         self.fieldType = fieldType
 
+        """parameters for temporal fields"""
         self.xShift = 0
         self.yShift = 0
         self.cScale = 1
 
-        #self.radius = par.xMax/par.nX
+        self.xRotationCenter = (par.xMax+par.xMin)/2
+        self.yRotationCenter = (par.yMax+par.yMin)/2
         self.xPeak = (par.xMax+par.xMin)/2
         self.yPeak = (par.yMax+par.yMin)*3/4
+        self.radius = math.sqrt((self.xPeak-self.xRotationCenter)**2 + (self.yPeak-self.yRotationCenter)**2)
+        self.angleChange = math.pi/32
         self.peakValue = 10
         self.gmrfField = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, 0)
 
         self.xEnd = xEnd
         self.yEnd = yEnd
 
+        self.fInit, zGT = self.getFieldFunction()
+
+        if self.fieldType == 'peak':
+            self.fieldMin = np.min([-0.3, np.amin(zGT)])
+        else:
+            self.fieldMin = np.min([0,np.amin(zGT)])
+
+        self.fieldMax = np.amax(zGT)
+        self.fieldLevels = np.linspace(self.fieldMin,self.fieldMax,20)
+
+    def getFieldFunction(self):
         if self.fieldType == 'sine':
             xGT = np.arange(par.xMin, par.xMax, par.dX)
             yGT = np.arange(par.yMin, par.yMax, par.dY)
             XGT, YGT = np.meshgrid(xGT, yGT)
             zGT = np.sin(XGT) + np.sin(YGT)
             self.fInit = interpolate.interp2d(xGT, yGT, zGT)
+
         elif self.fieldType == 'peak':
             xGT = np.linspace(par.xMin, par.xMax, par.nX)
             yGT = np.linspace(par.yMin, par.yMax, par.nY)
@@ -85,19 +101,14 @@ class trueField:
                             [2.5, 5.4, 6.9, 9, 8],
                             [2, 2.3, 4, 6, 7.5]])
 
-        self.fieldMin = np.min([0,np.amin(zGT)])
-        self.fieldMax = np.amax(zGT)
-        self.fieldLevels = np.linspace(self.fieldMin,self.fieldMax,20)
-
-        print(zGT)
-
-        self.fInit = interpolate.interp2d(xGT, yGT, zGT)
+        return interpolate.interp2d(xGT, yGT, zGT), zGT
 
     def field(self, x, y):
         if self.fieldType == 'sine':
             return self.cScale * self.fInit(x, y)
         elif self.fieldType == 'peak':
-            return self.fInit(x,y)
+            fField, zGT = self.getFieldFunction()
+            return fField(x,y)
         elif self.fieldType == 'predefined':
             return self.fInit(x - self.xShift, y + self.yShift)
 
@@ -106,6 +117,11 @@ class trueField:
             self.xShift = par.dxdt * t % self.xEnd
             self.yShift = par.dydt * t % self.yEnd
             self.cScale = np.cos(math.pi * t / par.pulseTime)
+
+            alpha = math.atan2((self.yPeak-self.yRotationCenter),(self.xPeak-self.xRotationCenter))
+            self.xPeak = self.xRotationCenter + self.radius*math.cos(alpha+self.angleChange)
+            self.yPeak = self.yRotationCenter + self.radius*math.sin(alpha+self.angleChange)
+
 
 class GP:
     def __init__(self):

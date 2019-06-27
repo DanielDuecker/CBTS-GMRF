@@ -36,7 +36,7 @@ gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta)
 controller = control.piControl(par.R, par.g, par.lambd, par.H, par.K, par.ctrSamplingTime, par.nUpdated)
 
 """Ground Truth"""
-trueField = trueField(x[-1], y[-1], par.fieldType, par.temporal)
+trueField = trueField(x[-1], y[-1], par.fieldType)
 
 """STKF extension of gmrf"""
 stkf1 = stkf(gmrf1, trueField, par.dt, par.sigmaT, par.lambdSTKF, par.sigma2)
@@ -117,7 +117,7 @@ for i in range(par.nIter - 1):
         methods.plotFields(fig, x, y, trueField, gmrf1, controller,CBTS1, iterVec, timeVec, xHist, yHist)
 
     """Update ground truth:"""
-    if par.temporal:
+    if par.temporal and i%par.nTrajPoints == 0:
         trueField.updateField(i)
 
 methods.plotFields(fig, x, y, trueField, gmrf1, controller,CBTS1, iterVec, timeVec, xHist, yHist)
@@ -125,6 +125,7 @@ plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
+# TODO Check mean field for peak Value
 # TODO Learning circular field
 # TODO Show plot of acquisiton funciton
 # TODO Check again feasability of trajs

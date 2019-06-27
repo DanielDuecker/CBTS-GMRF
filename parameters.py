@@ -11,7 +11,7 @@ truncation = False
 PIControl = False
 
 fieldType = 'peak' # 'sine' or 'predefined'
-temporal = False  # True: time varying field
+temporal = True  # True: time varying field
 
 if not PIControl:
     CBTS = True
@@ -38,10 +38,10 @@ pulseTime = nIter / 2  # Duration of sinusodial pulsation
 """GMRF class"""
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 20
+nX = 10
 yMin = 0
 yMax = 10
-nY = 20
+nY = 10
 nBeta = 1  # regression coefficients
 valueT = 1e-3  # Prior precision value for regression vector bet
 
@@ -63,14 +63,14 @@ outOfGridPenalty = 1 # each observation outside of grid adds a negative reward
 
 """CBTS controller"""
 trajStepSize = 0.4  # determines number of measurement points along trajectory (depends on maxStepsize)
-trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
-CBTSIterations = 30  # determines runtime of algorithm, could also be done with time limit
-branchingFactor = 8  # number of actions that can be evaluated at max for each path segment
-maxDepth = 2 # depth of search tree
-kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
+trajScaling = 2  # scales trajectories (cx and cy in case of quadratic trajectories)
+CBTSIterations = 50  # determines runtime of algorithm, could also be done with time limit
+branchingFactor = 4  # number of actions that can be evaluated at max for each path segment
+maxDepth = 4 # depth of search tree
+kappa = 1  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize/maxStepsize) # number of measurement points along trajectory
 kappaChildSelection = 1 # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-UCBRewardFactor = 0.01  # reward = variance + UCBRewardFactor*mean
+UCBRewardFactor = 1  # reward = variance + UCBRewardFactor*mean
 
 thetaMin = -1 # determines curvature of generated trajectories
 thetaMax = 1 # determines curvature of generated trajectories
