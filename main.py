@@ -126,9 +126,9 @@ plt.show(block=True)
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
 # TODO Learning circular field
+# TODO use of sparse commands
 # TODO Check again feasability of trajs
 # TODO Check computation time -> python library?
-# TODO use of sparse commands
 # TODO -> Change implementation of belief update at each node
 # TODO tidy up code, consistent classes and paramater policy
 # TODO Compare to PI2

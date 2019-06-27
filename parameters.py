@@ -20,7 +20,7 @@ else:
 
 exploitingRate = 0
 
-nIter = 10  # number of iterations
+nIter = 1000  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
 ov2 = 0.01  # measurement variance
@@ -92,6 +92,6 @@ if stkf:
     nBeta = 0
 
 class plotOptions:
-    showExploredPaths = True
+    showExploredPaths = False
     showActionRewardMapping = False
-    showAcquisitionFunction = True
+    showAcquisitionFunction = False
