@@ -125,9 +125,7 @@ plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
-# TODO Check mean field for peak Value
 # TODO Learning circular field
-# TODO Show plot of acquisiton funciton
 # TODO Check again feasability of trajs
 # TODO Check computation time -> python library?
 # TODO use of sparse commands
@@ -147,6 +145,10 @@ print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per i
 #       in a lower dimensional input
 # TODO Try small thetas for less branching and deeper
 # TODO Use current belief mean in reward function -> more exploitation
+# TODO Check mean field for peak Value -> due to noise
+# TODO Show plot of acquisiton function
+
+
 
 
 

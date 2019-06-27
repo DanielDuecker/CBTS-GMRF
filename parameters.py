@@ -10,8 +10,8 @@ fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Liv
 truncation = False
 PIControl = False
 
-fieldType = 'peak' # 'sine' or 'predefined'
-temporal = True  # True: time varying field
+fieldType = 'predefined' # 'sine' or 'predefined'
+temporal = False  # True: time varying field
 
 if not PIControl:
     CBTS = True
@@ -20,7 +20,7 @@ else:
 
 exploitingRate = 0
 
-nIter = 1000  # number of iterations
+nIter = 10  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
 ov2 = 0.01  # measurement variance
@@ -63,14 +63,14 @@ outOfGridPenaltyPI2 = 10 # each observation outside of grid adds a negative rewa
 
 """CBTS controller"""
 trajStepSize = 0.4  # determines number of measurement points along trajectory (depends on maxStepsize)
-trajScaling = 2  # scales trajectories (cx and cy in case of quadratic trajectories)
-CBTSIterations = 30  # determines runtime of algorithm, could also be done with time limit
-branchingFactor = 4  # number of actions that can be evaluated at max for each path segment
+trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
+CBTSIterations = 34  # determines runtime of algorithm, could also be done with time limit
+branchingFactor = 5  # number of actions that can be evaluated at max for each path segment
 maxDepth = 3 # depth of search tree
-kappa = 0.1  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
+kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize/maxStepsize) # number of measurement points along trajectory
 kappaChildSelection = 1 # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-UCBRewardFactor = 1  # reward = variance + UCBRewardFactor*mean
+UCBRewardFactor = 0.1  # reward = variance + UCBRewardFactor*mean
 outOfGridPenaltyCBTS = 1
 
 thetaMin = -1 # determines curvature of generated trajectories
@@ -92,6 +92,6 @@ if stkf:
     nBeta = 0
 
 class plotOptions:
-    showExploredPaths = False
+    showExploredPaths = True
     showActionRewardMapping = False
     showAcquisitionFunction = True
