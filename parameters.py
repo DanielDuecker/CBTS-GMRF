@@ -8,9 +8,10 @@ stkf = True
 sequentialUpdate = True  # Does not work with truncation!
 fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
-sinusoidal = False  # True: Use sinusoidal ground truth
-temporal = False # True: time varying field
 PIControl = False
+
+fieldType = 'peak' # 'sine' or 'predefined'
+temporal = False  # True: time varying field
 
 if not PIControl:
     CBTS = True
@@ -69,7 +70,7 @@ maxDepth = 2 # depth of search tree
 kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize/maxStepsize) # number of measurement points along trajectory
 kappaChildSelection = 1 # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-UCBRewardFactor = 0.1  # reward = variance + UCBRewardFactor*mean
+UCBRewardFactor = 0.01  # reward = variance + UCBRewardFactor*mean
 
 thetaMin = -1 # determines curvature of generated trajectories
 thetaMax = 1 # determines curvature of generated trajectories

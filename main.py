@@ -36,7 +36,7 @@ gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta)
 controller = control.piControl(par.R, par.g, par.lambd, par.H, par.K, par.ctrSamplingTime, par.nUpdated)
 
 """Ground Truth"""
-trueField = trueField(x[-1], y[-1], par.sinusoidal, par.temporal)
+trueField = trueField(x[-1], y[-1], par.fieldType, par.temporal)
 
 """STKF extension of gmrf"""
 stkf1 = stkf(gmrf1, trueField, par.dt, par.sigmaT, par.lambdSTKF, par.sigma2)

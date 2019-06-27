@@ -39,15 +39,14 @@ class agent:
         return xTraj, yTraj, alphaTraj
 
 class trueField:
-    def __init__(self, xEnd, yEnd, sinusoidal, temporal):
-        self.sinusoidal = sinusoidal
-        self.temporal = temporal
+    def __init__(self, xEnd, yEnd, fieldType, temporal):
+        self.fieldType = fieldType
 
         self.xShift = 0
         self.yShift = 0
         self.cScale = 1
 
-        self.radius = par.xMax/par.nX
+        #self.radius = par.xMax/par.nX
         self.xPeak = (par.xMax+par.xMin)/2
         self.yPeak = (par.yMax+par.yMin)*3/4
         self.peakValue = 10
@@ -56,19 +55,22 @@ class trueField:
         self.xEnd = xEnd
         self.yEnd = yEnd
 
-        if self.sinusoidal:
+        if self.fieldType == 'sine':
             xGT = np.arange(par.xMin, par.xMax, par.dX)
             yGT = np.arange(par.yMin, par.yMax, par.dY)
             XGT, YGT = np.meshgrid(xGT, yGT)
             zGT = np.sin(XGT) + np.sin(YGT)
             self.fInit = interpolate.interp2d(xGT, yGT, zGT)
-        elif par.peakField:
+        elif self.fieldType == 'peak':
             xGT = np.linspace(par.xMin, par.xMax, par.nX)
             yGT = np.linspace(par.yMin, par.yMax, par.nY)
             zGT = np.zeros((len(xGT),len(yGT)))
-            zGT += methods.mapConDis(self.gmrfField,self.xPeak,self.yPeak).reshape(zGT.shape)*self.peakV
+            for row in range(len(yGT)):
+                for column in range(len(xGT)):
+                    squaredDistance = np.linalg.norm(np.array([[xGT[column]],[yGT[row]]]) - np.array([[self.xPeak],[self.yPeak]]), 2)
+                    zGT[row,column] = np.exp(-.5 * 1 / 0.35 * squaredDistance)
 
-        elif par.predefinedField:
+        elif self.fieldType == 'predefined':
             xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
             yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
             #zGT = np.array([[1, 2, 2, 1, 1],
@@ -87,13 +89,17 @@ class trueField:
         self.fieldMax = np.amax(zGT)
         self.fieldLevels = np.linspace(self.fieldMin,self.fieldMax,20)
 
+        print(zGT)
+
         self.fInit = interpolate.interp2d(xGT, yGT, zGT)
 
     def field(self, x, y):
-        if not par.sinusoidal:
-            return self.fInit(x - self.xShift, y + self.yShift)
-        else:
+        if self.fieldType == 'sine':
             return self.cScale * self.fInit(x, y)
+        elif self.fieldType == 'peak':
+            return self.fInit(x,y)
+        elif self.fieldType == 'predefined':
+            return self.fInit(x - self.xShift, y + self.yShift)
 
     def updateField(self, t):
         if t < par.pulseTime:
