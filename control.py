@@ -40,7 +40,6 @@ class piControl:
                 # sample control noise and compute path roll-outs
                 for j in range(self.H):
                     noise[:, k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
-
                 (xTrVec, yTrVec, alphaNew) = auv.trajectoryFromControl(self.u[:, 0] + noise[:, k])
                 self.xPathRollOut[:, k] = xTrVec[:, 0]
                 self.yPathRollOut[:, k] = yTrVec[:, 0]

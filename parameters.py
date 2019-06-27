@@ -4,11 +4,11 @@ import math
 """Parameters for all files"""
 
 """main.py"""
-stkf = True
+stkf = False
 sequentialUpdate = True  # Does not work with truncation!
 fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
-PIControl = False
+PIControl = True
 
 fieldType = 'peak' # 'sine' or 'predefined'
 temporal = True  # True: time varying field
@@ -64,10 +64,10 @@ outOfGridPenalty = 1 # each observation outside of grid adds a negative reward
 """CBTS controller"""
 trajStepSize = 0.4  # determines number of measurement points along trajectory (depends on maxStepsize)
 trajScaling = 2  # scales trajectories (cx and cy in case of quadratic trajectories)
-CBTSIterations = 50  # determines runtime of algorithm, could also be done with time limit
-branchingFactor = 5  # number of actions that can be evaluated at max for each path segment
-maxDepth = 5 # depth of search tree
-kappa = 1  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
+CBTSIterations = 30  # determines runtime of algorithm, could also be done with time limit
+branchingFactor = 4  # number of actions that can be evaluated at max for each path segment
+maxDepth = 3 # depth of search tree
+kappa = 0.1  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize/maxStepsize) # number of measurement points along trajectory
 kappaChildSelection = 1 # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
 UCBRewardFactor = 1  # reward = variance + UCBRewardFactor*mean

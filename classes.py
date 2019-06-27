@@ -52,7 +52,7 @@ class trueField:
         self.xPeak = (par.xMax+par.xMin)/2
         self.yPeak = (par.yMax+par.yMin)*3/4
         self.radius = math.sqrt((self.xPeak-self.xRotationCenter)**2 + (self.yPeak-self.yRotationCenter)**2)
-        self.angleChange = -math.pi/32
+        self.angleChange = -math.pi/16
         self.peakValue = 10
         self.gmrfField = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, 0)
 

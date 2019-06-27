@@ -165,7 +165,7 @@ def plotRewardFunction(gmrf):
     plt.title("Current rewards for each point")
 
     X,Y = np.meshgrid(gmrf.x,gmrf.y)
-    r = gmrf.covCond.diagonal() + par.UCBRewardFactor * gmrf.meanCond[:,0]
+    r = gmrf.covCond.diagonal()[0:gmrf.nX*gmrf.nX] + par.UCBRewardFactor * gmrf.meanCond[0:(gmrf.nX*gmrf.nY),0]
     ax = fig.add_subplot(111)
     ax.contourf(X,Y,r.reshape((gmrf.nX,gmrf.nY)))
     fig.canvas.draw()
