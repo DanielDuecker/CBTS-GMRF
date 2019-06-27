@@ -52,7 +52,7 @@ class trueField:
         self.xPeak = (par.xMax+par.xMin)/2
         self.yPeak = (par.yMax+par.yMin)*3/4
         self.radius = math.sqrt((self.xPeak-self.xRotationCenter)**2 + (self.yPeak-self.yRotationCenter)**2)
-        self.angleChange = math.pi/32
+        self.angleChange = -math.pi/32
         self.peakValue = 10
         self.gmrfField = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, 0)
 
@@ -63,10 +63,10 @@ class trueField:
 
         if self.fieldType == 'peak':
             self.fieldMin = np.min([-0.3, np.amin(zGT)])
+            self.fieldMax = 1
         else:
             self.fieldMin = np.min([0,np.amin(zGT)])
-
-        self.fieldMax = np.amax(zGT)
+            self.fieldMax = np.amax(zGT)
         self.fieldLevels = np.linspace(self.fieldMin,self.fieldMax,20)
 
     def getFieldFunction(self):
@@ -84,7 +84,7 @@ class trueField:
             for row in range(len(yGT)):
                 for column in range(len(xGT)):
                     squaredDistance = np.linalg.norm(np.array([[xGT[column]],[yGT[row]]]) - np.array([[self.xPeak],[self.yPeak]]), 2)
-                    zGT[row,column] = np.exp(-.5 * 1 / 0.35 * squaredDistance)
+                    zGT[row,column] = np.exp(-.5 * 1 / 0.5 * squaredDistance)
 
         elif self.fieldType == 'predefined':
             xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
@@ -121,7 +121,6 @@ class trueField:
             alpha = math.atan2((self.yPeak-self.yRotationCenter),(self.xPeak-self.xRotationCenter))
             self.xPeak = self.xRotationCenter + self.radius*math.cos(alpha+self.angleChange)
             self.yPeak = self.yRotationCenter + self.radius*math.sin(alpha+self.angleChange)
-
 
 class GP:
     def __init__(self):

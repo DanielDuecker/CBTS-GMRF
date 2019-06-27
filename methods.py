@@ -158,6 +158,18 @@ def plotPolicy(GP,thetaPredict,mu):
         ax.plot(thetaPredict[:, 0], mu[:, 0], "r.")
     fig.canvas.draw()
 
+def plotRewardFunction(gmrf):
+    fig = plt.figure(2)
+    plt.clf()
+    plt.show()
+    plt.title("Current rewards for each point")
+
+    X,Y = np.meshgrid(gmrf.x,gmrf.y)
+    r = gmrf.covCond.diagonal() + par.UCBRewardFactor * gmrf.meanCond[:,0]
+    ax = fig.add_subplot(111)
+    ax.contourf(X,Y,r.reshape((gmrf.nX,gmrf.nY)))
+    fig.canvas.draw()
+
 def sanityCheck(xVec,yVec,gmrf):
     for x in xVec:
         if x < gmrf.xMin:

@@ -197,8 +197,6 @@ class CBTS:
             print(bestTheta)
             print("Index of best theta:", index)
 
-        # add next theta to GP
-
         # plot estimated reward over actions
         if par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor-1):
             print("checked")
@@ -236,6 +234,11 @@ class CBTS:
                 maxR = child.accReward
         bestTraj, derivX, derivY = self.generateTrajectory(v0,bestTheta)
         print("chosen best theta: ",bestTheta," with trajectory ",bestTraj)
+
+        # plot acquisition function
+        if par.plotOptions.showAcquisitionFunction:
+            methods.plotRewardFunction(v0.gmrf)
+
         return bestTraj, derivX, derivY
 
     def generateTrajectory(self,v, theta):
@@ -279,12 +282,11 @@ class CBTS:
         for i in range(self.nTrajPoints-1):
             Phi = methods.mapConDis(v.gmrf, tau[0,i+1], tau[1,i+1])
             r += (np.dot(Phi,v.gmrf.covCond.diagonal()) + par.UCBRewardFactor * np.dot(Phi,v.gmrf.meanCond))[0]
-            print(np.dot(Phi,v.gmrf.covCond.diagonal()).shape)
-            print(np.dot(Phi,v.gmrf.meanCond).shape)
             o.append(np.dot(Phi,v.gmrf.meanCond))
         # lower reward if agent is out of bound
             if not methods.sanityCheck(tau[0,i+1]*np.eye(1),tau[1,i+1]*np.eye(1),v.gmrf):
                 r -= par.outOfGridPenalty
+
         return r,o
 
     def backUp(self,v0,v,reward):
