@@ -4,14 +4,14 @@ import math
 """Parameters for all files"""
 
 """main.py"""
-stkf = False
+stkf = True
 sequentialUpdate = True  # Does not work with truncation!
 fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
 PIControl = False
 
-fieldType = 'peak' # 'sine' or 'predefined'
-temporal = True  # True: time varying field
+fieldType = 'predefined' # 'sine' or 'predefined'
+temporal = False  # True: time varying field
 
 if not PIControl:
     CBTS = True
@@ -24,6 +24,7 @@ nIter = 1000  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
 ov2 = 0.01  # measurement variance
+ov2Real = ov2
 dX = dY = 0.01  # discretizaton in x and y for Plotting
 
 (x0, y0, alpha0) = (0, 0, math.pi/4)  # initial state
@@ -38,11 +39,12 @@ pulseTime = nIter / 2  # Duration of sinusodial pulsation
 """GMRF class"""
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 20
+nX = 10
 yMin = 0
 yMax = 10
-nY = 20
+nY = 10
 nBeta = 1  # regression coefficients
+nEdge = 5
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 """STKF class"""
@@ -64,13 +66,13 @@ outOfGridPenaltyPI2 = 10 # each observation outside of grid adds a negative rewa
 """CBTS controller"""
 trajStepSize = 0.4  # determines number of measurement points along trajectory (depends on maxStepsize)
 trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
-CBTSIterations = 10  # determines runtime of algorithm, could also be done with time limit
+CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
 branchingFactor = 5  # number of actions that can be evaluated at max for each path segment
-maxDepth = 5 # depth of search tree
+maxDepth = 3 # depth of search tree
 kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize/maxStepsize) # number of measurement points along trajectory
 kappaChildSelection = 1 # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-UCBRewardFactor = 5  # reward = variance + UCBRewardFactor*mean
+UCBRewardFactor = 0.1  # reward = variance + UCBRewardFactor*mean
 outOfGridPenaltyCBTS = 1
 
 thetaMin = -1 # determines curvature of generated trajectories

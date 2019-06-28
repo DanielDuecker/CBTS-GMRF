@@ -30,7 +30,7 @@ timeVec = []
 iterVec = []
 
 """GMRF representation"""
-gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta)
+gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta, par.nEdge)
 
 """PI2 Controller"""
 controller = control.piControl(par.R, par.g, par.lambd, par.H, par.K, par.ctrSamplingTime, par.nUpdated)
@@ -56,7 +56,7 @@ xHist.append(xMeas)
 yHist.append(yMeas)
 zMeas = np.zeros((par.nMeas, 1)) # Initialize measurement vector and mapping matrix
 Phi = np.zeros((par.nMeas, gmrf1.nP + gmrf1.nBeta))
-zMeas[0] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
+zMeas[0] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
 Phi[0, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
 
 """Update and plot field belief"""
@@ -96,7 +96,7 @@ for i in range(par.nIter - 1):
 
     xHist.append(xMeas)
     yHist.append(yMeas)
-    zMeas[(i + 1) % par.nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2)
+    zMeas[(i + 1) % par.nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
 
     """Map measurement to surrounding grid vertices and stack under Phi matrix"""
     Phi[(i + 1) % par.nMeas, :] = methods.mapConDis(gmrf1, xMeas, yMeas)

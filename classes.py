@@ -54,7 +54,7 @@ class trueField:
         self.radius = math.sqrt((self.xPeak-self.xRotationCenter)**2 + (self.yPeak-self.yRotationCenter)**2)
         self.angleChange = -math.pi/2
         self.peakValue = 10
-        self.gmrfField = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, 0)
+        self.gmrfField = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, 0, 0)
 
         self.xEnd = xEnd
         self.yEnd = yEnd
@@ -166,23 +166,32 @@ class GP:
         return mu, var
 
 class gmrf: #todo: create generic GMRF class and use if for thetaR mapping in kCBTS.py too
-    def __init__(self, xMin, xMax, nX, yMin, yMax, nY, nBeta):
+    def __init__(self, xMin, xMax, nX, yMin, yMax, nY, nBeta, nEdge):
         """GMRF properties"""
         self.xMin = xMin
         self.xMax = xMax
-        self.nX = nX  # Total number of vertices in x
-        self.x = np.linspace(self.xMin, self.xMax, self.nX)  # Vector of x grid values
 
         self.yMin = yMin
         self.yMax = yMax
-        self.nY = nY  # Total number of vertices in y
-        self.y = np.linspace(self.yMin, self.yMax, self.nY)  # Vector of y grid values
 
-        self.nP = nX * nY  # Total number of vertices
+        self.nEdge = nEdge
 
-        # Distance between two vertices in x and y
-        self.dx = (self.xMax - self.xMin) / (self.nX - 1)
-        self.dy = (self.yMax - self.yMin) / (self.nY - 1)
+        # Distance between two vertices in x and y without edges
+        self.dx = (self.xMax - self.xMin) / (nX - 1)
+        self.dy = (self.yMax - self.yMin) / (nY - 1)
+
+        self.nY = nY + 2*self.nEdge  # Total number of vertices in y with edges
+        self.nX = nX + 2*self.nEdge  # Total number of vertices in x with edges
+        self.nP = self.nX * self.nY  # Total number of vertices
+
+        self.xMinEdge = self.xMin - self.nEdge*self.dx
+        self.xMaxEdge = self.xMax + self.nEdge*self.dx
+        self.yMinEdge = self.yMin - self.nEdge*self.dy
+        self.yMaxEdge = self.yMax + self.nEdge*self.dy
+
+
+        self.x = np.linspace(self.xMinEdge, self.xMaxEdge, self.nX)  # Vector of x grid values
+        self.y = np.linspace(self.yMinEdge, self.yMaxEdge, self.nY)  # Vector of y grid values
 
         "Mean augmented bayesian regression"
         # Mean regression matrix

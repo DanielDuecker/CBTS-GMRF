@@ -16,12 +16,12 @@ def mapConDis(gmrf, xMeas, yMeas):
     Phi = np.hstack((Phi, np.zeros((1, gmrf.nBeta))))
 
     # Get grid position relative to surrounding vertices
-    xRel = (xMeas - gmrf.xMin) % gmrf.dx - gmrf.dx / 2
-    yRel = (yMeas - gmrf.yMin) % gmrf.dy - gmrf.dy / 2
+    xRel = (xMeas - gmrf.xMinEdge) % gmrf.dx - gmrf.dx / 2
+    yRel = (yMeas - gmrf.yMinEdge) % gmrf.dy - gmrf.dy / 2
 
     # Get index of upper left neighbor
-    xPos = int((xMeas - gmrf.xMin) / gmrf.dx)
-    yPos = int((yMeas - gmrf.yMin) / gmrf.dy)
+    xPos = int((xMeas - gmrf.xMinEdge) / gmrf.dx)
+    yPos = int((yMeas - gmrf.yMinEdge) / gmrf.dy)
 
     # Local coordinate system is different from Geist! (e_y=-e_y_Geist)
     # because now mean vector is [vertice0,vertice1,vertice3,...])
@@ -52,6 +52,7 @@ def getPrecisionMatrix(gmrf):
     for i in range(gmrf.nP):
         if (i % gmrf.nX) == 0:  # left border
             if i >= gmrf.nX:
+                Lambda[i, i - 1] = 0
                 Lambda[i, i - 1] = 0
         if (i % gmrf.nX) == (gmrf.nX - 1):  # right border
             if i <= (gmrf.nP - gmrf.nX):
@@ -109,14 +110,14 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
 
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
-    ax2.contourf(gmrf.x, gmrf.y, gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),levels=trueField.fieldLevels)
+    ax2.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge], gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],levels=trueField.fieldLevels)
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Mean of belief")
 
     # Plotting covariance matrix
     ax3 = fig.add_subplot(223)
-    ax3.contourf(gmrf.x, gmrf.y, gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),levels=gmrf.covLevels)
+    ax3.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge], gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],levels=gmrf.covLevels)
     if par.PIControl:
         ax3.plot(controller.xTraj,controller.yTraj,'blue')
         for k in range(par.K):
@@ -164,10 +165,10 @@ def plotRewardFunction(gmrf):
     plt.show()
     plt.title("Current rewards for each point")
 
-    X,Y = np.meshgrid(gmrf.x,gmrf.y)
-    r = gmrf.covCond.diagonal()[0:gmrf.nX*gmrf.nX] + par.UCBRewardFactor * gmrf.meanCond[0:(gmrf.nX*gmrf.nY),0]
+    X,Y = np.meshgrid(gmrf.x[gmrf.nEdge:-gmrf.nEdge],gmrf.y[gmrf.nEdge:-gmrf.nEdge])
+    r = gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge] + par.UCBRewardFactor * gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge]
     ax = fig.add_subplot(111)
-    ax.contourf(X,Y,r.reshape((gmrf.nX,gmrf.nY)))
+    ax.contourf(X,Y,r)
     fig.canvas.draw()
 
 def sanityCheck(xVec,yVec,gmrf):
