@@ -95,5 +95,5 @@ if stkf:
 
 class plotOptions:
     showExploredPaths = False
-    showActionRewardMapping = True
+    showActionRewardMapping = False
     showAcquisitionFunction = True
