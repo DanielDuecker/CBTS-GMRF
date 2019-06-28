@@ -131,6 +131,7 @@ print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per i
 # TODO Check computation time -> python library?
 # TODO -> Change implementation of belief update at each node
 # TODO tidy up code, consistent classes and paramater policy
+# TODO Check reason for vertices in PI2
 # TODO Compare to PI2
 # TODO Use generic gmrf implementation (also for action reward mapping)
 # TODO maybe use cubic splines or kernel trajs

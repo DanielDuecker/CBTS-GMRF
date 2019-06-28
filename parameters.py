@@ -51,26 +51,26 @@ lambdSTKF = 1  # influences time kernel value
 sigma2 = 0.01
 
 """PI2 controller"""
-H = 10  # control horizon steps
+H = 20  # control horizon steps
 controlCost = 5# 5e-1   # affects noise of path roll-outs (negatively)
 R = controlCost*np.eye(H)   # input cost matrix
 g = np.ones((H,1))
 lambd = 1e-1 # 1e-2 # rescales state costs, affects noise of path roll-outs (positively)
 K = 15  # number of path roll outs
-ctrSamplingTime = 0.01  # time discretization
+ctrSamplingTime = 0.1  # time discretization
 nUpdated = 10   # number of iterations
 outOfGridPenaltyPI2 = 10 # each observation outside of grid adds a negative reward
 
 """CBTS controller"""
 trajStepSize = 0.4  # determines number of measurement points along trajectory (depends on maxStepsize)
 trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
-CBTSIterations = 34  # determines runtime of algorithm, could also be done with time limit
+CBTSIterations = 10  # determines runtime of algorithm, could also be done with time limit
 branchingFactor = 5  # number of actions that can be evaluated at max for each path segment
-maxDepth = 3 # depth of search tree
+maxDepth = 2 # depth of search tree
 kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize/maxStepsize) # number of measurement points along trajectory
 kappaChildSelection = 1 # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-UCBRewardFactor = 0.1  # reward = variance + UCBRewardFactor*mean
+UCBRewardFactor = 0.01  # reward = variance + UCBRewardFactor*mean
 outOfGridPenaltyCBTS = 1
 
 thetaMin = -1 # determines curvature of generated trajectories
@@ -79,7 +79,7 @@ thetaExpMin = -1 # determines curvature of generated trajectories for node explo
 thetaExpMax = 1 # determines curvature of generated trajectories for node exploration
 trajOrder = 1 # if higher order is used check trajectory generation function
 initialTheta = np.zeros(trajOrder) # leads to first trajectory being straight
-discountFactor = 0.8 # discounts future rewards
+discountFactor = 0.5 # discounts future rewards
 
 #Gaussian Process for action reward mapping
 kernelPar = 10 # used in exponential kernel to determine variance between to inputs
