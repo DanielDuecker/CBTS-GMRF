@@ -66,12 +66,12 @@ trajStepSize = 0.4  # determines number of measurement points along trajectory (
 trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
 CBTSIterations = 10  # determines runtime of algorithm, could also be done with time limit
 branchingFactor = 5  # number of actions that can be evaluated at max for each path segment
-maxDepth = 2 # depth of search tree
+maxDepth = 3 # depth of search tree
 kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize/maxStepsize) # number of measurement points along trajectory
 kappaChildSelection = 1 # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
 UCBRewardFactor = 0.01  # reward = variance + UCBRewardFactor*mean
-outOfGridPenaltyCBTS = 1
+outOfGridPenaltyCBTS = 0.1
 
 thetaMin = -1 # determines curvature of generated trajectories
 thetaMax = 1 # determines curvature of generated trajectories
