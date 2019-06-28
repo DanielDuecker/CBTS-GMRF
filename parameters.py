@@ -10,8 +10,8 @@ fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Liv
 truncation = False
 PIControl = False
 
-fieldType = 'predefined' # 'sine' or 'predefined'
-temporal = False  # True: time varying field
+fieldType = 'peak' # 'sine' or 'predefined'
+temporal = True  # True: time varying field
 
 if not PIControl:
     CBTS = True
@@ -46,7 +46,7 @@ nBeta = 1  # regression coefficients
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 """STKF class"""
-sigmaT = 1e2 #1e3    # determines exponential decay of time kernel
+sigmaT = 1e5 #1e3    # determines exponential decay of time kernel
 lambdSTKF = 1  # influences time kernel value
 sigma2 = 0.01
 
@@ -58,7 +58,7 @@ g = np.ones((H,1))
 lambd = 1e-1 # 1e-2 # rescales state costs, affects noise of path roll-outs (positively)
 K = 15  # number of path roll outs
 ctrSamplingTime = 0.1  # time discretization
-nUpdated = 10   # number of iterations
+nUpdated = 5   # number of iterations
 outOfGridPenaltyPI2 = 10 # each observation outside of grid adds a negative reward
 
 """CBTS controller"""
@@ -66,12 +66,12 @@ trajStepSize = 0.4  # determines number of measurement points along trajectory (
 trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
 CBTSIterations = 10  # determines runtime of algorithm, could also be done with time limit
 branchingFactor = 5  # number of actions that can be evaluated at max for each path segment
-maxDepth = 3 # depth of search tree
+maxDepth = 5 # depth of search tree
 kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize/maxStepsize) # number of measurement points along trajectory
 kappaChildSelection = 1 # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-UCBRewardFactor = 0.01  # reward = variance + UCBRewardFactor*mean
-outOfGridPenaltyCBTS = 0.1
+UCBRewardFactor = 5  # reward = variance + UCBRewardFactor*mean
+outOfGridPenaltyCBTS = 1
 
 thetaMin = -1 # determines curvature of generated trajectories
 thetaMax = 1 # determines curvature of generated trajectories
@@ -93,5 +93,5 @@ if stkf:
 
 class plotOptions:
     showExploredPaths = False
-    showActionRewardMapping = False
-    showAcquisitionFunction = False
+    showActionRewardMapping = True
+    showAcquisitionFunction = True

@@ -125,7 +125,9 @@ plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
+# TODO Use function for rotating field
 # TODO Learning circular field
+# TODO Try Car(2) precision matrix
 # TODO use of sparse commands
 # TODO Check again feasability of trajs
 # TODO Check computation time -> python library?
