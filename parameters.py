@@ -72,7 +72,7 @@ maxDepth = 3  # depth of search tree
 kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize / maxStepsize)  # number of measurement points along trajectory
 kappaChildSelection = 1  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-UCBRewardFactor = 0.01  # reward = variance + UCBRewardFactor*mean
+UCBRewardFactor = 0  # reward = variance + UCBRewardFactor*mean
 outOfGridPenaltyCBTS = 1
 
 thetaMin = -1  # determines curvature of generated trajectories
