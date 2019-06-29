@@ -39,7 +39,7 @@ class agent:
 
 
 class trueField:
-    def __init__(self, xEnd, yEnd, fieldType):
+    def __init__(self, fieldType):
         self.fieldType = fieldType
 
         """parameters for temporal fields"""
@@ -55,72 +55,59 @@ class trueField:
         self.angleChange = -math.pi / 2
         self.peakValue = 15
 
-        self.xEnd = xEnd
-        self.yEnd = yEnd
+        xPreDef = np.array([0, 2, 4, 6, 9])  # column coordinates
+        yPreDef = np.array([0, 1, 3, 5, 9])  # row coordinates
+        # zPreDef = np.array([[1, 2, 2, 1, 1],
+        # [2, 4, 2, 1, 1],
+        # [1, 2, 3, 3, 2],
+        # [1, 1, 2, 3, 3],
+        # [1, 1, 2, 3, 3]])
+        zPreDef = np.array([[2, 4, 6, 7, 8],
+                      [2.1, 5, 7, 11.25, 9.5],
+                      [3, 5.6, 8.5, 17, 14.5],
+                      [2.5, 5.4, 6.9, 9, 8],
+                      [2, 2.3, 4, 6, 7.5]])
 
-        self.fInit, zGT = self.getFieldFunction()
+        self.minValPreDef = np.min((0,np.min(zPreDef)))
+        self.maxValPreDef = np.max(zPreDef)
 
-        if self.fieldType == 'peak':
-            self.fieldMin = np.min([-0.3, np.amin(zGT)])
-            self.fieldMax = 1
-        else:
-            self.fieldMin = np.min([0, np.amin(zGT)])
-            self.fieldMax = np.amax(zGT)
+        self.fPreDef = interpolate.interp2d(xPreDef, yPreDef, zPreDef)
+
+        self.zInit, self.fieldMin, self.fieldMax = self.getField(np.eye(1),np.eye(1))
         self.fieldLevels = np.linspace(self.fieldMin, self.fieldMax, 20)
 
-    def getFieldFunction(self):
+    def getField(self,X,Y):
         if self.fieldType == 'sine':
-            xGT = np.arange(par.xMin, par.xMax, par.dX)
-            yGT = np.arange(par.yMin, par.yMax, par.dY)
-            XGT, YGT = np.meshgrid(xGT, yGT)
-            zGT = np.sin(XGT) + np.sin(YGT)
-            self.fInit = interpolate.interp2d(xGT, yGT, zGT)
+            Z = self.cScale*(np.sin(X) + np.sin(Y))
+            fMin = -0.1
+            fMax = 2.1
 
         elif self.fieldType == 'peak':
-            xGT = np.linspace(par.xMin, par.xMax, par.nGridX)
-            yGT = np.linspace(par.yMin, par.yMax, par.nGridY)
-            zGT = np.zeros((len(xGT), len(yGT)))
-            for row in range(len(yGT)):
-                for column in range(len(xGT)):
-                    squaredDistance = np.linalg.norm(
-                        np.array([[xGT[column]], [yGT[row]]]) - np.array([[self.xPeak], [self.yPeak]]), 2)
-                    zGT[row, column] = np.exp(-.5 * 1 / 0.5 * squaredDistance)
-
+            Z = np.exp(-(X-self.xPeak/0.7)**2)*np.exp(-(Y-self.yPeak/0.7)**2)
+            fMin = -0.1
+            fMax = 1.1
         else:
-            xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
-            yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
-            # zGT = np.array([[1, 2, 2, 1, 1],
-            # [2, 4, 2, 1, 1],
-            # [1, 2, 3, 3, 2],
-            # [1, 1, 2, 3, 3],
-            # [1, 1, 2, 3, 3]])
+            Z = self.fPreDef(X - self.xShift,Y + self.yShift)
+            fMin = self.minValPreDef
+            fMax = self.maxValPreDef
 
-            zGT = np.array([[2, 4, 6, 7, 8],
-                            [2.1, 5, 7, 11.25, 9.5],
-                            [3, 5.6, 8.5, 17, 14.5],
-                            [2.5, 5.4, 6.9, 9, 8],
-                            [2, 2.3, 4, 6, 7.5]])
+        return Z, fMin, fMax
 
-        return interpolate.interp2d(xGT, yGT, zGT), zGT
+    def getFieldValue(self,x,y):
+        Z,fMin,fMax = self.getField(x,y)
+        return Z
 
-    def field(self, x, y):
-        if self.fieldType == 'sine':
-            return self.cScale * self.fInit(x, y)
-        elif self.fieldType == 'peak':
-            fField, zGT = self.getFieldFunction()
-            return fField(x, y)
-        elif self.fieldType == 'predefined':
-            return self.fInit(x - self.xShift, y + self.yShift)
 
     def updateField(self, t):
         if t < par.pulseTime:
-            self.xShift = par.dxdt * t % self.xEnd
-            self.yShift = par.dydt * t % self.yEnd
             self.cScale = np.cos(math.pi * t / par.pulseTime)
 
             alpha = math.atan2((self.yPeak - self.yRotationCenter), (self.xPeak - self.xRotationCenter))
             self.xPeak = self.xRotationCenter + self.radius * math.cos(alpha + self.angleChange)
             self.yPeak = self.yRotationCenter + self.radius * math.sin(alpha + self.angleChange)
+
+            self.xShift = par.dxdt * t
+            self.yShift = par.dydt * t
 
 
 class GP:
@@ -177,6 +164,9 @@ class gmrf:
         self.yMin = par.yMin
         self.yMax = par.yMax
 
+        self.nGridX = par.nGridX
+        self.nGridY = par.nGridY
+
         self.nEdge = par.nEdge
 
         self.ov2 = par.ov2
@@ -184,11 +174,11 @@ class gmrf:
         self.dt = par.dt
 
         # Distance between two vertices in x and y without edges
-        self.dx = (self.xMax - self.xMin) / (par.nGridX - 1)
-        self.dy = (self.yMax - self.yMin) / (par.nGridY - 1)
+        self.dx = (self.xMax - self.xMin) / (self.nGridX - 1)
+        self.dy = (self.yMax - self.yMin) / (self.nGridY - 1)
 
-        self.nY = par.nGridY + 2 * self.nEdge  # Total number of vertices in y with edges
-        self.nX = par.nGridX + 2 * self.nEdge  # Total number of vertices in x with edges
+        self.nY = self.nGridY + 2 * self.nEdge  # Total number of vertices in y with edges
+        self.nX = self.nGridX + 2 * self.nEdge  # Total number of vertices in x with edges
         self.nP = self.nX * self.nY  # Total number of vertices
 
         self.xMinEdge = self.xMin - self.nEdge * self.dx

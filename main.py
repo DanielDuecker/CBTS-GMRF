@@ -36,7 +36,7 @@ gmrf1 = gmrf()
 controller = control.piControl()
 
 """Ground Truth"""
-trueField = trueField(x[-1], y[-1], par.fieldType)
+trueField = trueField(par.fieldType)
 
 """STKF extension of gmrf"""
 stkf1 = stkf(gmrf1)

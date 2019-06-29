@@ -7,7 +7,7 @@ import parameters as par
 
 def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
     noise = np.random.normal(0, math.sqrt(noiseVariance))
-    return (trueField.field(xMeas, yMeas) + noise)[0]
+    return (trueField.getFieldValue(xMeas, yMeas) + noise)[0]
 
 
 def mapConDis(gmrf, xMeas, yMeas):
@@ -105,7 +105,9 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
 
     # Plotting ground truth
     ax1 = fig.add_subplot(221)
-    ax1.contourf(x, y, trueField.field(x, y),levels=trueField.fieldLevels)
+    z,zMin,zMax = trueField.getField(x,y)
+    z.reshape((x.shape[0],y.shape[0]))
+    ax1.contourf(x, y, z, levels=trueField.fieldLevels)
     plt.title("True field")
 
     # Plotting conditioned mean
