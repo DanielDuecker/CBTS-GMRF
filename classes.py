@@ -4,7 +4,6 @@ import numpy as np
 
 import methods
 import math
-import parameters as par
 
 from scipy import interpolate
 from scipy import integrate
@@ -20,13 +19,15 @@ class agent:
         self.x = x0
         self.y = y0
         self.alpha = alpha0  # angle of direction of movement
-        self.derivX = par.trajScaling*math.cos(self.alpha)
-        self.derivY = par.trajScaling*math.sin(self.alpha)
+        self.maxStepsize = par.maxStepsize
+        self.trajScaling = par.trajScaling
+        self.derivX = self.trajScaling*math.cos(self.alpha)
+        self.derivY = self.trajScaling*math.sin(self.alpha)
 
     def stateDynamics(self, x, y, alpha, u):
         alpha += u
-        x += par.maxStepsize * math.cos(alpha)
-        y += par.maxStepsize * math.sin(alpha)
+        x += self.maxStepsize * math.cos(alpha)
+        y += self.maxStepsize * math.sin(alpha)
         return x, y, alpha
 
     def trajectoryFromControl(self,u):
@@ -53,8 +54,7 @@ class trueField:
         self.yPeak = (par.yMax+par.yMin)*3/4
         self.radius = math.sqrt((self.xPeak-self.xRotationCenter)**2 + (self.yPeak-self.yRotationCenter)**2)
         self.angleChange = -math.pi/2
-        self.peakValue = 10
-        self.gmrfField = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, 0, 0)
+        self.peakValue = 15
 
         self.xEnd = xEnd
         self.yEnd = yEnd
@@ -89,17 +89,17 @@ class trueField:
         elif self.fieldType == 'predefined':
             xGT = np.array([0, 2, 4, 6, 9])  # column coordinates
             yGT = np.array([0, 1, 3, 5, 9])  # row coordinates
-            zGT = np.array([[1, 2, 2, 1, 1],
-            [2, 4, 2, 1, 1],
-            [1, 2, 3, 3, 2],
-            [1, 1, 2, 3, 3],
-            [1, 1, 2, 3, 3]])
+            #zGT = np.array([[1, 2, 2, 1, 1],
+            #[2, 4, 2, 1, 1],
+            #[1, 2, 3, 3, 2],
+            #[1, 1, 2, 3, 3],
+            #[1, 1, 2, 3, 3]])
 
-            #zGT = np.array([[2, 4, 6, 7, 8],
-            #                [2.1, 5, 7, 11.25, 9.5],
-            #                [3, 5.6, 8.5, 17, 14.5],
-            #                [2.5, 5.4, 6.9, 9, 8],
-            #                [2, 2.3, 4, 6, 7.5]])
+            zGT = np.array([[2, 4, 6, 7, 8],
+                            [2.1, 5, 7, 11.25, 9.5],
+                            [3, 5.6, 8.5, 17, 14.5],
+                            [2.5, 5.4, 6.9, 9, 8],
+                            [2, 2.3, 4, 6, 7.5]])
 
         return interpolate.interp2d(xGT, yGT, zGT), zGT
 
@@ -124,13 +124,14 @@ class trueField:
 
 class GP:
     def __init__(self):
+        self.kernelPar = par.kernelPar
         self.emptyData = True
         self.trainInput = None
         self.trainOutput = None
 
     def kernel(self,z1,z2):
         squaredDistance = np.linalg.norm(z1-z2,2)
-        return np.exp(-.5 * 1/par.kernelPar * squaredDistance)
+        return np.exp(-.5 * 1/self.kernelPar * squaredDistance)
 
     def getKernelMatrix(self,vec1,vec2):
         n = vec1.shape[0]
@@ -165,23 +166,27 @@ class GP:
 
         return mu, var
 
-class gmrf: #todo: create generic GMRF class and use if for thetaR mapping in kCBTS.py too
-    def __init__(self, xMin, xMax, nX, yMin, yMax, nY, nBeta, nEdge):
+class gmrf:
+    def __init__(self):
         """GMRF properties"""
-        self.xMin = xMin
-        self.xMax = xMax
+        self.xMin = par.xMin
+        self.xMax = par.xMax
 
-        self.yMin = yMin
-        self.yMax = yMax
+        self.yMin = par.yMin
+        self.yMax = par.yMax
 
-        self.nEdge = nEdge
+        self.nEdge = par.nEdge
+
+        self.ov2 = par.ov2
+        self.valueT = par.valueT
+        self.dt = par.dt
 
         # Distance between two vertices in x and y without edges
-        self.dx = (self.xMax - self.xMin) / (nX - 1)
-        self.dy = (self.yMax - self.yMin) / (nY - 1)
+        self.dx = (self.xMax - self.xMin) / (par.nGridX - 1)
+        self.dy = (self.yMax - self.yMin) / (par.nGridY - 1)
 
-        self.nY = nY + 2*self.nEdge  # Total number of vertices in y with edges
-        self.nX = nX + 2*self.nEdge  # Total number of vertices in x with edges
+        self.nY = par.nGridY + 2*self.nEdge  # Total number of vertices in y with edges
+        self.nX = par.nGridX + 2*self.nEdge  # Total number of vertices in x with edges
         self.nP = self.nX * self.nY  # Total number of vertices
 
         self.xMinEdge = self.xMin - self.nEdge*self.dx
@@ -195,9 +200,9 @@ class gmrf: #todo: create generic GMRF class and use if for thetaR mapping in kC
 
         "Mean augmented bayesian regression"
         # Mean regression matrix
-        F = np.ones((self.nP, nBeta))
-        self.nBeta = nBeta
-        self.Tinv = np.linalg.inv(par.valueT * np.eye(self.nBeta))
+        self.nBeta = par.nBeta
+        F = np.ones((self.nP, self.nBeta))
+        self.Tinv = np.linalg.inv(self.valueT * np.eye(self.nBeta))
 
         # Precision matrix for z values (without regression variable beta)
         self.Lambda = methods.getPrecisionMatrix(self)
@@ -224,19 +229,19 @@ class gmrf: #todo: create generic GMRF class and use if for thetaR mapping in kC
 
     def bayesianUpdate(self, zMeas, Phi):
         """Update conditioned precision matrix"""
-        R = np.dot(Phi, np.dot(self.covPrior, Phi.T)) + par.ov2 * np.eye(
+        R = np.dot(Phi, np.dot(self.covPrior, Phi.T)) + self.ov2 * np.eye(
             len(zMeas))  # covariance matrix of measurements
         temp1 = np.dot(Phi, self.covPrior)
         temp2 = np.dot(np.linalg.inv(R), temp1)
         temp3 = np.dot(Phi.T, temp2)
 
         self.covCond = self.covPrior - np.dot(self.covPrior, temp3)
-        # self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/par.ov2*np.dot(Phi.T,Phi))) # alternative way
+        # self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/self.ov2*np.dot(Phi.T,Phi))) # alternative way
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
 
         "Update mean"
         if par.truncation:
-            self.meanCond = self.meanPrior + 1 / par.ov2 * np.dot(self.covCond,
+            self.meanCond = self.meanPrior + 1 / self.ov2 * np.dot(self.covCond,
                                                                   np.dot(Phi.T, zMeas - np.dot(Phi, self.meanPrior)))
         else:
             self.meanCond = np.dot(self.covPrior, np.dot(Phi.T, np.dot(np.linalg.inv(R), zMeas)))
@@ -245,30 +250,29 @@ class gmrf: #todo: create generic GMRF class and use if for thetaR mapping in kC
         Phi_k = Phi_k.reshape(1, self.nP + self.nBeta)
         zMeas_k = zMeas_k.reshape(1, 1)
 
-        self.bSeq = self.bSeq + 1 / par.ov2 * Phi_k.T * zMeas_k  # sequential update canonical mean
-        self.precCond = self.precCond + 1 / par.ov2 * np.dot(Phi_k.T, Phi_k)  # sequential update of precision matrix
+        self.bSeq = self.bSeq + 1 / self.ov2 * Phi_k.T * zMeas_k  # sequential update canonical mean
+        self.precCond = self.precCond + 1 / self.ov2 * np.dot(Phi_k.T, Phi_k)  # sequential update of precision matrix
         self.covCond = np.linalg.inv(self.precCond)
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)  # works too
         self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
 
         # TODO: Fix calculation of covariance diagonal
         # hSeq = np.linalg.solve(self.precCond, Phi_k.T)
-        # self.diagCovCond = self.diagCovCond - 1 / (par.ov2 + np.dot(Phi_k, hSeq)[0, 0]) * np.dot(hSeq,
+        # self.diagCovCond = self.diagCovCond - 1 / (self.ov2 + np.dot(Phi_k, hSeq)[0, 0]) * np.dot(hSeq,
         #                                                            hSeq.T).diagonal().reshape(self.nP + self.nBeta, 1) #todo: create generic GMRF class and use if for thetaR mapping in kCBTS.py too
 
 class stkf:
-    def __init__(self, gmrf, trueF, dt, sigmaT, lambdSTKF, sigma2):
-        self.gmrf = gmrf
-        self.trueField = trueF
-        self.dt = dt
-        self.sigmaT = sigmaT
-        self.lambdSTKF = lambdSTKF
+    def __init__(self, gmrf1):
+        self.gmrf = gmrf1
+        self.dt = par.dt
+        self.sigmaT = par.sigmaT
+        self.lambdSTKF = par.lambdSTKF
 
         # State representation of Sr
-        self.F = -1 / sigmaT * np.eye(1)
-        self.H = math.sqrt(2 * lambdSTKF / sigmaT) * np.eye(1)
+        self.F = -1 / self.sigmaT * np.eye(1)
+        self.H = math.sqrt(2 * self.lambdSTKF / self.sigmaT) * np.eye(1)
         self.G = np.eye(1)
-        self.sigma2 = sigma2
+        self.sigma2 = par.sigma2
 
         # Kernels
         self.Ks = np.linalg.inv(methods.getPrecisionMatrix(self.gmrf))
@@ -277,10 +281,10 @@ class stkf:
 
         self.sigmaZero = scipy.linalg.solve_continuous_lyapunov(self.F, -self.G * self.G.T)
 
-        self.A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * par.dt)
+        self.A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * self.dt)
         self.Cs = np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H))
         QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(self.F, tau)), np.dot(self.G,
-                                                np.dot(self.G.T,scipy.linalg.expm(np.dot(self.F,tau)).T))),0, par.dt)[0]
+                                                np.dot(self.G.T,scipy.linalg.expm(np.dot(self.F,tau)).T))),0, self.dt)[0]
         self.Q = np.kron(np.eye(self.gmrf.nP), QBar)
         self.R = self.sigma2 * np.eye(1)
 
@@ -314,8 +318,8 @@ class stkf:
         self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
 
 class node:
-    def __init__(self,gmrf,auv):
-        self.gmrf = copy.deepcopy(gmrf)
+    def __init__(self,gmrf1,auv):
+        self.gmrf = copy.deepcopy(gmrf1)
         self.auv = copy.deepcopy(auv)
         self.rewardToNode = 0
         self.accReward = 0

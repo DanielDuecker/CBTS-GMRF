@@ -10,7 +10,7 @@ fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Liv
 truncation = False
 PIControl = False
 
-fieldType = 'predefined' # 'sine' or 'predefined'
+fieldType = 'predefined' # 'peak','sine' or 'predefined'
 temporal = False  # True: time varying field
 
 if not PIControl:
@@ -39,10 +39,10 @@ pulseTime = nIter / 2  # Duration of sinusodial pulsation
 """GMRF class"""
 xMin = 0  # GMRF dimensions
 xMax = 10
-nX = 10
+nGridX = 10
 yMin = 0
 yMax = 10
-nY = 10
+nGridY = 10
 nBeta = 1  # regression coefficients
 nEdge = 5
 valueT = 1e-3  # Prior precision value for regression vector bet
@@ -64,7 +64,7 @@ nUpdated = 5   # number of iterations
 outOfGridPenaltyPI2 = 10 # each observation outside of grid adds a negative reward
 
 """CBTS controller"""
-trajStepSize = 0.4  # determines number of measurement points along trajectory (depends on maxStepsize)
+trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
 trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
 CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
 branchingFactor = 5  # number of actions that can be evaluated at max for each path segment
@@ -72,13 +72,13 @@ maxDepth = 3 # depth of search tree
 kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize/maxStepsize) # number of measurement points along trajectory
 kappaChildSelection = 1 # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-UCBRewardFactor = 0.1  # reward = variance + UCBRewardFactor*mean
+UCBRewardFactor = 0.01  # reward = variance + UCBRewardFactor*mean
 outOfGridPenaltyCBTS = 1
 
 thetaMin = -1 # determines curvature of generated trajectories
 thetaMax = 1 # determines curvature of generated trajectories
-thetaExpMin = -1 # determines curvature of generated trajectories for node exploration
-thetaExpMax = 1 # determines curvature of generated trajectories for node exploration
+thetaExpMin = thetaMin # determines curvature of generated trajectories for node exploration
+thetaExpMax = thetaMax # determines curvature of generated trajectories for node exploration
 trajOrder = 1 # if higher order is used check trajectory generation function
 initialTheta = np.zeros(trajOrder) # leads to first trajectory being straight
 discountFactor = 0.5 # discounts future rewards

@@ -12,6 +12,7 @@ from classes import stkf
 from classes import trueField
 from classes import agent
 import control
+import copy
 
 #np.set_printoptions(threshold=np.inf)
 
@@ -30,19 +31,19 @@ timeVec = []
 iterVec = []
 
 """GMRF representation"""
-gmrf1 = gmrf(par.xMin, par.xMax, par.nX, par.yMin, par.yMax, par.nY, par.nBeta, par.nEdge)
+gmrf1 = gmrf()
 
 """PI2 Controller"""
-controller = control.piControl(par.R, par.g, par.lambd, par.H, par.K, par.ctrSamplingTime, par.nUpdated)
+controller = control.piControl()
 
 """Ground Truth"""
 trueField = trueField(x[-1], y[-1], par.fieldType)
 
 """STKF extension of gmrf"""
-stkf1 = stkf(gmrf1, trueField, par.dt, par.sigmaT, par.lambdSTKF, par.sigma2)
+stkf1 = stkf(gmrf1)
 
 """"Continuous Belief Tree Search"""
-CBTS1 = control.CBTS(par.CBTSIterations, par.nTrajPoints, par.trajOrder, par.maxDepth, par.branchingFactor, par.kappa)
+CBTS1 = control.CBTS()
 bestTraj = np.zeros((2,1))
 
 """Initialize plot"""
@@ -69,9 +70,6 @@ for i in range(par.nIter - 1):
     """Update belief"""
     if par.stkf:
         stkf1.kalmanFilter(t, xMeas, yMeas, zMeas[i])
-        gmrf1.meanCond = stkf1.gmrf.meanCond
-        gmrf1.covCond = stkf1.gmrf.covCond
-        gmrf1.diagCovCond = stkf1.gmrf.diagCovCond
     elif par.sequentialUpdate:
         gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])
     else:

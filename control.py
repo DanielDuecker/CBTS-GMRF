@@ -4,19 +4,19 @@ import parameters as par
 import methods
 import copy
 from classes import node
-import matplotlib.pyplot as plt
 
 class piControl:
-    def __init__(self, R, g, lambd, H, K, dt, nUpdated):
-        self.R = R  # input cost matrix
-        self.g = g  # mapping from u to states
-        self.lambd = lambd  # influences state costs and noise variance
+    def __init__(self):
+        self.R = par.R  # input cost matrix
+        self.g = par.g  # mapping from u to states
+        self.lambd = par.lambd  # influences state costs and noise variance
         self.varNoise = self.lambd*np.linalg.inv(self.R)
-        self.H = H  # control horizon steps
-        self.K = K  # number of path roll outs
-        self.dt = dt    # time discretization
-        self.nUpdated = nUpdated    # number of iterations
+        self.H = par.H  # control horizon steps
+        self.K = par.K  # number of path roll outs
+        self.dt = par.dt    # time discretization
+        self.nUpdated = par.nUpdated    # number of iterations
         self.u = np.zeros((self.H, 1))
+        self.outOfGridPenaltyPI2 = par.outOfGridPenaltyPI2
 
         self.xTraj = np.zeros((1, self.K))
         self.yTraj = np.zeros((1, self.K))
@@ -49,7 +49,7 @@ class piControl:
                 for i in range(self.H):
                     index = self.H-i-1
                     if not methods.sanityCheck(self.xPathRollOut[index, k]*np.eye(1), self.yPathRollOut[index, k]*np.eye(1), gmrf):
-                        stateCost += par.outOfGridPenaltyPI2
+                        stateCost += self.outOfGridPenaltyPI2
                     else:
                         Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
                         stateCost += 1/np.dot(Phi,gmrf.diagCovCond)
@@ -101,13 +101,24 @@ class piControl:
         return auv.x, auv.y
 
 class CBTS:
-    def __init__(self, nIterations, nTrajPoints, trajOrder, maxDepth, branchingFactor, kappa):
-        self.nIterations = nIterations
-        self.nTrajPoints = nTrajPoints
-        self.trajOrder = trajOrder
-        self.maxDepth = maxDepth
-        self.branchingFactor = branchingFactor # maximum number of generated actions per node
-        self.kappa = kappa
+    def __init__(self):
+        self.nIterations = par.CBTSIterations
+        self.nTrajPoints = par.nTrajPoints
+        self.trajOrder = par.trajOrder
+        self.maxDepth = par.maxDepth
+        self.branchingFactor = par.branchingFactor # maximum number of generated actions per node
+        self.kappa = par.kappa
+        self.discountFactor = par.discountFactor
+        self.initialTheta = par.initialTheta
+        self.thetaMin = par.thetaMin
+        self.thetaMax = par.thetaMax
+        self.thetaExpMin = par.thetaExpMin
+        self.thetaExpMax = par.thetaExpMax
+        self.nThetaSamples = par.nThetaSamples
+        self.UCBRewardFactor = par.UCBRewardFactor
+        self.kappaChildSelection = par.kappaChildSelection
+        self.outOfGridPenaltyCBTS = par.outOfGridPenaltyCBTS
+
         self.xTraj = np.zeros((self.nTrajPoints,1))
         self.yTraj = np.zeros((self.nTrajPoints,1))
 
@@ -158,7 +169,7 @@ class CBTS:
 
                 # Create new node:
                 vNew = node(v.gmrf,v.auv)
-                vNew.rewardToNode = v.rewardToNode + par.discountFactor**v.depth * r
+                vNew.rewardToNode = v.rewardToNode + self.discountFactor**v.depth * r
                 vNew.totalReward = vNew.rewardToNode
                 vNew.parent = v
                 vNew.depth = v.depth + 1
@@ -184,12 +195,12 @@ class CBTS:
 
     def getNextTheta(self,v):
         if v.GP.emptyData:
-            bestTheta = par.initialTheta
-            #bestTheta = np.random.uniform(par.thetaMin,par.thetaMax,par.trajOrder)
+            bestTheta = self.initialTheta
+            #bestTheta = np.random.uniform(self.thetaMin,self.thetaMax,self.trajOrder)
         else:
-            thetaPredict = np.random.uniform(par.thetaMin,par.thetaMax,(par.nThetaSamples,par.trajOrder))
+            thetaPredict = np.random.uniform(self.thetaMin,self.thetaMax,(self.nThetaSamples,self.trajOrder))
             mu,var = v.GP.predict(thetaPredict)
-            h = mu + self.kappa * var.diagonal().reshape(par.nThetaSamples,1)
+            h = mu + self.kappa * var.diagonal().reshape(self.nThetaSamples,1)
             index = np.argmax(h)
             bestTheta = thetaPredict[index,:]
             print("getNextTheta:")
@@ -207,7 +218,7 @@ class CBTS:
         r = 0
         v = copy.deepcopy(vl)
         while v.depth < self.maxDepth:
-            nextTheta = np.random.uniform(par.thetaExpMin,par.thetaExpMax,par.trajOrder)
+            nextTheta = np.random.uniform(self.thetaExpMin,self.thetaExpMax,self.trajOrder)
             nextTraj, derivX, derivY = self.generateTrajectory(v,nextTheta)
 
             # add explored paths to collected trajectories for plotting:
@@ -216,7 +227,7 @@ class CBTS:
                 self.yTraj = np.hstack((self.yTraj, nextTraj[1, :].reshape(self.nTrajPoints, 1)))
 
             dr,do = self.evaluateTrajectory(v,nextTraj)
-            r += par.discountFactor**v.depth * dr
+            r += self.discountFactor**v.depth * dr
             v.auv.x = nextTraj[0,-1]
             v.auv.y = nextTraj[1,-1]
             v.auv.derivX = derivX
@@ -248,14 +259,14 @@ class CBTS:
         ax = 0
         ay = 0
 
-        if par.trajOrder == 1:
+        if self.trajOrder == 1:
             if theta[0] < 0:
                 bx = np.sign(v.auv.derivX)*theta[0]
                 by = 0
             elif theta[0] >= 0:
                 bx = 0
                 by = -np.sign(v.auv.derivY)*theta[0]
-        if par.trajOrder == 2:
+        if self.trajOrder == 2:
             bx = theta[0]
             by = theta[1]
         cx = v.auv.derivX
@@ -280,11 +291,11 @@ class CBTS:
         o = []
         for i in range(self.nTrajPoints-1):
             Phi = methods.mapConDis(v.gmrf, tau[0,i+1], tau[1,i+1])
-            r += (np.dot(Phi,v.gmrf.covCond.diagonal()) + par.UCBRewardFactor * np.dot(Phi,v.gmrf.meanCond))[0]
+            r += (np.dot(Phi,v.gmrf.covCond.diagonal()) + self.UCBRewardFactor * np.dot(Phi,v.gmrf.meanCond))[0]
             o.append(np.dot(Phi,v.gmrf.meanCond))
         # lower reward if agent is out of bound
             if not methods.sanityCheck(tau[0,i+1]*np.eye(1),tau[1,i+1]*np.eye(1),v.gmrf):
-                r -= par.outOfGridPenaltyCBTS
+                r -= self.outOfGridPenaltyCBTS
 
         return r,o
 
@@ -298,5 +309,5 @@ class CBTS:
     def bestChild(self,v):
         g = []
         for child in v.children:
-            g.append(child.accReward/child.visits + par.kappaChildSelection*math.sqrt(2*math.log(v.visits)/child.visits))
+            g.append(child.accReward/child.visits + self.kappaChildSelection*math.sqrt(2*math.log(v.visits)/child.visits))
         return v.children[np.argmax(g)]
