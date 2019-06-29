@@ -5,16 +5,15 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
+import control
 import methods
 import parameters as par
+from classes import agent
 from classes import gmrf
 from classes import stkf
 from classes import trueField
-from classes import agent
-import control
-import copy
 
-#np.set_printoptions(threshold=np.inf)
+# np.set_printoptions(threshold=np.inf)
 
 """Agent"""
 auv = agent(par.x0, par.y0, par.alpha0)
@@ -44,18 +43,18 @@ stkf1 = stkf(gmrf1)
 
 """"Continuous Belief Tree Search"""
 CBTS1 = control.CBTS()
-bestTraj = np.zeros((2,1))
+bestTraj = np.zeros((2, 1))
 
 """Initialize plot"""
 fig = plt.figure(0)
-methods.plotFields(fig, x, y, trueField, gmrf1, controller,CBTS1, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 plt.show()
 
 """Get first measurement:"""
 (xMeas, yMeas) = methods.getNextState(par.x0, par.y0, par.x0, par.y0, par.maxStepsize, gmrf1)
 xHist.append(xMeas)
 yHist.append(yMeas)
-zMeas = np.zeros((par.nMeas, 1)) # Initialize measurement vector and mapping matrix
+zMeas = np.zeros((par.nMeas, 1))  # Initialize measurement vector and mapping matrix
 Phi = np.zeros((par.nMeas, gmrf1.nP + gmrf1.nBeta))
 zMeas[0] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
 Phi[0, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
@@ -80,12 +79,11 @@ for i in range(par.nIter - 1):
         # Get next state according to PI Controller
         xMeas, yMeas = controller.getNewState(auv, gmrf1)
     elif par.CBTS:
-        if i%par.nTrajPoints == 0:
-            breakpoint = 1
-            bestTraj,auv.derivX, auv.derivY = CBTS1.getNewTraj(auv,gmrf1)
-            #print("New trajectory generated:", bestTraj)
-        auv.x = bestTraj[0,i%par.nTrajPoints]
-        auv.y = bestTraj[1,i%par.nTrajPoints]
+        if i % par.nTrajPoints == 0:
+            bestTraj, auv.derivX, auv.derivY = CBTS1.getNewTraj(auv, gmrf1)
+            # print("New trajectory generated:", bestTraj)
+        auv.x = bestTraj[0, i % par.nTrajPoints]
+        auv.y = bestTraj[1, i % par.nTrajPoints]
         xMeas = auv.x
         yMeas = auv.y
     else:
@@ -112,13 +110,13 @@ for i in range(par.nIter - 1):
 
     """Plotting"""
     if not par.fastCalc:
-        methods.plotFields(fig, x, y, trueField, gmrf1, controller,CBTS1, iterVec, timeVec, xHist, yHist)
+        methods.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 
     """Update ground truth:"""
-    if par.temporal and i%par.nTrajPoints == 0:
+    if par.temporal and i % par.nTrajPoints == 0:
         trueField.updateField(i)
 
-methods.plotFields(fig, x, y, trueField, gmrf1, controller,CBTS1, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
@@ -148,9 +146,3 @@ print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per i
 # TODO Use current belief mean in reward function -> more exploitation
 # TODO Check mean field for peak Value -> due to noise
 # TODO Show plot of acquisiton function
-
-
-
-
-
-

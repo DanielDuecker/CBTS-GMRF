@@ -39,9 +39,6 @@ def generateTrajectory(alpha,posX,posY,derivX,derivY,theta,nTrajPoints):
 #bx, by, cx
 #theta = np.array([[1,1,1]])
 thetaRange = np.linspace(-1,1,100)
-x = 5
-y = 5
-alpha = -math.pi/4
 
 plt.show()
 for i in range(100):

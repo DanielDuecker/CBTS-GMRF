@@ -1,6 +1,5 @@
-import parameters as par
 import numpy as np
-from kCBTS import mapActionReward
+from CBTS import mapActionReward
 
 map = mapActionReward(-1,2,3,3)
 print(map.meanCond)

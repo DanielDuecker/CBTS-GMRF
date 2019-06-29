@@ -3,11 +3,13 @@ import math
 import parameters as par
 import methods
 
+
 def stateDynamics(self, x, y, alpha, u):
     alpha += u
     x += par.maxStepsize * math.cos(alpha)
     y += par.maxStepsize * math.sin(alpha)
     return x, y, alpha
+
 
 class piControl:
     def __init__(self, H, nUpdated):
@@ -16,9 +18,9 @@ class piControl:
         self.a = 1
 
     def calcEntropy(self, covMatrix):
-        return 0.5*math.log(np.trace(covMatrix))*self.a**(1/(self.a-1))
+        return 0.5 * math.log(np.trace(covMatrix)) * self.a ** (1 / (self.a - 1))
 
-    def utility(self,gmrf,newX,newY):
+    def utility(self, gmrf, newX, newY):
         oldCovMatrix = gmrf.covCond
 
         Phi = methods.mapConDis(gmrf, newX, newY)
@@ -29,16 +31,15 @@ class piControl:
 
     def getBestState(self):
 
-
-    def replanPath(self,x,y, gmrf):
+    def replanPath(self, x, y, gmrf):
         meanCopy = gmrf.meanCond
         covCopy = gmrf.covCond
-        trajX = x*np.eye(1)
-        trajY = y*np.eye(1)
+        trajX = x * np.eye(1)
+        trajY = y * np.eye(1)
 
         for i in range(self.nUpdated):
-            nextX,nextY = self.getBestState()
+            nextX, nextY = self.getBestState()
             trajX.append(nextX)
             trajY.append(nextY)
 
-        return x,y
+        return x, y
