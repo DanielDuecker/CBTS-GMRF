@@ -85,18 +85,20 @@ class trueField:
 
         self.fieldLevels = np.linspace(self.fieldMin, self.fieldMax, 20)
 
-    def getField(self,X,Y):
+    def getField(self,x,y):
         if self.fieldType == 'sine':
+            X,Y = np.meshgrid(x, y)
             Z = self.cScale*(np.sin(X) + np.sin(Y))
         elif self.fieldType == 'peak':
+            X,Y = np.meshgrid(x, y)
             Z = self.peakValue * np.exp(-((X-self.xPeak)/2)**2)*np.exp(-((Y-self.yPeak)/2)**2)
         else:
-            Z = self.fPreDef(X - self.xShift,Y + self.yShift)
+            Z = self.fPreDef(x - self.xShift,y + self.yShift)
         return Z
 
     def updateField(self, t):
         if t < par.pulseTime:
-            self.cScale = np.cos(math.pi * t / par.pulseTime)
+            self.cScale = np.cos(10*math.pi * t / par.pulseTime)
 
             alpha = math.atan2((self.yPeak - self.yRotationCenter), (self.xPeak - self.xRotationCenter))
             self.xPeak = self.xRotationCenter + self.radius * math.cos(alpha + self.angleChange)

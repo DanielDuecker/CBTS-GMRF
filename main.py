@@ -47,7 +47,7 @@ bestTraj = np.zeros((2, 1))
 
 """Initialize plot"""
 fig = plt.figure(0)
-methods.plotFields(fig, X, Y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
+methods.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 plt.show()
 
 """Get first measurement:"""
@@ -110,10 +110,10 @@ for i in range(par.nIter - 1):
 
     """Plotting"""
     if not par.fastCalc:
-        methods.plotFields(fig, X, Y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
+        methods.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 
     """Update ground truth:"""
-    if par.temporal and i % par.nTrajPoints == 0:
+    if par.temporal:
         trueField.updateField(i)
 
 methods.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
