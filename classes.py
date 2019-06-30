@@ -52,7 +52,8 @@ class trueField:
         self.yPeak = (par.yMax + par.yMin) * 3 / 4
         self.radius = math.sqrt((self.xPeak - self.xRotationCenter) ** 2 + (self.yPeak - self.yRotationCenter) ** 2)
         self.angleChange = -math.pi / 8
-        self.peakValue = 1
+        self.peakValue = 10
+        self.peakPar = 0.8
 
         """predefined field"""
         self.xShift = 0
@@ -77,8 +78,8 @@ class trueField:
             self.fieldMin = -2.5
             self.fieldMax = 2.5
         elif self.fieldType == 'peak':
-            self.fieldMin = -0.5
-            self.fieldMax = self.peakValue + 0.5
+            self.fieldMin = -1
+            self.fieldMax = self.peakValue + 1
         else:
             self.fieldMin = self.minValPreDef-par.ov2
             self.fieldMax = self.maxValPreDef+par.ov2
@@ -91,7 +92,7 @@ class trueField:
             Z = self.cScale*(np.sin(X) + np.sin(Y))
         elif self.fieldType == 'peak':
             X,Y = np.meshgrid(x, y)
-            Z = self.peakValue * np.exp(-((X-self.xPeak)/2)**2)*np.exp(-((Y-self.yPeak)/2)**2)
+            Z = self.peakValue * np.exp(-((X-self.xPeak)/self.peakPar)**2)*np.exp(-((Y-self.yPeak)/self.peakPar)**2)
         else:
             Z = self.fPreDef(x - self.xShift,y + self.yShift)
         return Z

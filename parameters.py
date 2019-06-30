@@ -4,7 +4,7 @@ import numpy as np
 """Parameters for all files"""
 
 """main.py"""
-stkf = True
+stkf = False
 sequentialUpdate = True  # Does not work with truncation!
 fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
