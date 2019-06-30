@@ -77,11 +77,11 @@ class trueField:
         self.fieldLevels = np.linspace(self.fieldMin, self.fieldMax, 20)
 
     def getField(self,X,Y):
+        Z = np.zeros(X.shape)
         if self.fieldType == 'sine':
             Z = self.cScale*(np.sin(X) + np.sin(Y))
             fMin = -0.1
             fMax = 2.1
-
         elif self.fieldType == 'peak':
             Z = np.exp(-(X-self.xPeak/0.7)**2)*np.exp(-(Y-self.yPeak/0.7)**2)
             fMin = -0.1
@@ -94,8 +94,8 @@ class trueField:
         return Z, fMin, fMax
 
     def getFieldValue(self,x,y):
-        Z,fMin,fMax = self.getField(x,y)
-        return Z
+        z,fMin,fMax = self.getField(x,y)
+        return z
 
 
     def updateField(self, t):

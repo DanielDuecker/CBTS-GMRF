@@ -106,7 +106,7 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
     # Plotting ground truth
     ax1 = fig.add_subplot(221)
     z,zMin,zMax = trueField.getField(x,y)
-    z.reshape((x.shape[0],y.shape[0]))
+    #z.reshape((x.shape[0],y.shape[0]))
     ax1.contourf(x, y, z, levels=trueField.fieldLevels)
     plt.title("True field")
 
