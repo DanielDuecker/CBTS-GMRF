@@ -10,8 +10,8 @@ fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Liv
 truncation = False
 PIControl = False
 
-fieldType = 'peak'  # 'peak','sine' or 'predefined'
-temporal = True  # True: time varying field
+fieldType = 'predefined'  # 'peak','sine' or 'predefined'
+temporal = False  # True: time varying field
 
 if not PIControl:
     CBTS = True
@@ -34,7 +34,7 @@ yVel = maxStepsize
 
 dxdt = 0.001  # Shift of true field in x direction
 dydt = 0.001  # Shift of true field in y direction
-pulseTime = nIter / 2  # Duration of sinusodial pulsation
+pulseTime = nIter  # Duration of sinusodial pulsation
 
 """GMRF class"""
 xMin = 0  # GMRF dimensions
@@ -66,13 +66,13 @@ outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative rew
 """CBTS controller"""
 trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
 trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
-CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
-branchingFactor = 5  # number of actions that can be evaluated at max for each path segment
+CBTSIterations = 10  # determines runtime of algorithm, could also be done with time limit
+branchingFactor = 4  # number of actions that can be evaluated at max for each path segment
 maxDepth = 3  # depth of search tree
 kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize / maxStepsize)  # number of measurement points along trajectory
 kappaChildSelection = 1  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-UCBRewardFactor = 0  # reward = variance + UCBRewardFactor*mean
+UCBRewardFactor = 0.1  # reward = variance + UCBRewardFactor*mean
 outOfGridPenaltyCBTS = 1
 
 thetaMin = -1  # determines curvature of generated trajectories

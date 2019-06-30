@@ -7,7 +7,7 @@ import parameters as par
 
 def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
     noise = np.random.normal(0, math.sqrt(noiseVariance))
-    return (trueField.getFieldValue(xMeas, yMeas) + noise)[0]
+    return (trueField.getField(xMeas, yMeas) + noise)
 
 
 def mapConDis(gmrf, xMeas, yMeas):
@@ -97,7 +97,7 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
     return xNext, yNext
 
 
-def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, xHist, yHist):
+def plotFields(fig, X, Y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, xHist, yHist):
     plt.figure(0)
     plt.clf()
     plt.ion()
@@ -105,9 +105,8 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
 
     # Plotting ground truth
     ax1 = fig.add_subplot(221)
-    z,zMin,zMax = trueField.getField(x,y)
-    #z.reshape((x.shape[0],y.shape[0]))
-    ax1.contourf(x, y, z, levels=trueField.fieldLevels)
+    Z= trueField.getField(X,Y)
+    ax1.contourf(X, Y, Z, levels=trueField.fieldLevels)
     plt.title("True field")
 
     # Plotting conditioned mean
@@ -143,7 +142,7 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
     ax4.plot(iterVec, timeVec, 'black')
     plt.xlabel("Iteration index")
     plt.ylabel("calculation time in s")
-    plt.title("Update calculation time over iteration index")
+    plt.title("Update computation time over iteration index")
 
     fig.canvas.draw()
 

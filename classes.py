@@ -42,19 +42,21 @@ class trueField:
     def __init__(self, fieldType):
         self.fieldType = fieldType
 
-        """parameters for temporal fields"""
-        self.xShift = 0
-        self.yShift = 0
+        """sine field"""
         self.cScale = 1
 
+        """peak field"""
         self.xRotationCenter = (par.xMax + par.xMin) / 2
         self.yRotationCenter = (par.yMax + par.yMin) / 2
         self.xPeak = (par.xMax + par.xMin) / 2
         self.yPeak = (par.yMax + par.yMin) * 3 / 4
         self.radius = math.sqrt((self.xPeak - self.xRotationCenter) ** 2 + (self.yPeak - self.yRotationCenter) ** 2)
-        self.angleChange = -math.pi / 2
-        self.peakValue = 15
+        self.angleChange = -math.pi / 8
+        self.peakValue = 1
 
+        """predefined field"""
+        self.xShift = 0
+        self.yShift = 0
         xPreDef = np.array([0, 2, 4, 6, 9])  # column coordinates
         yPreDef = np.array([0, 1, 3, 5, 9])  # row coordinates
         # zPreDef = np.array([[1, 2, 2, 1, 1],
@@ -67,36 +69,30 @@ class trueField:
                       [3, 5.6, 8.5, 17, 14.5],
                       [2.5, 5.4, 6.9, 9, 8],
                       [2, 2.3, 4, 6, 7.5]])
-
         self.minValPreDef = np.min((0,np.min(zPreDef)))
         self.maxValPreDef = np.max(zPreDef)
-
         self.fPreDef = interpolate.interp2d(xPreDef, yPreDef, zPreDef)
 
-        self.zInit, self.fieldMin, self.fieldMax = self.getField(np.eye(1),np.eye(1))
+        if self.fieldType == 'sine':
+            self.fieldMin = -2.5
+            self.fieldMax = 2.5
+        elif self.fieldType == 'peak':
+            self.fieldMin = -0.5
+            self.fieldMax = self.peakValue + 0.5
+        else:
+            self.fieldMin = self.minValPreDef-par.ov2
+            self.fieldMax = self.maxValPreDef+par.ov2
+
         self.fieldLevels = np.linspace(self.fieldMin, self.fieldMax, 20)
 
     def getField(self,X,Y):
-        Z = np.zeros(X.shape)
         if self.fieldType == 'sine':
             Z = self.cScale*(np.sin(X) + np.sin(Y))
-            fMin = -0.1
-            fMax = 2.1
         elif self.fieldType == 'peak':
-            Z = np.exp(-(X-self.xPeak/0.7)**2)*np.exp(-(Y-self.yPeak/0.7)**2)
-            fMin = -0.1
-            fMax = 1.1
+            Z = self.peakValue * np.exp(-((X-self.xPeak)/2)**2)*np.exp(-((Y-self.yPeak)/2)**2)
         else:
             Z = self.fPreDef(X - self.xShift,Y + self.yShift)
-            fMin = self.minValPreDef
-            fMax = self.maxValPreDef
-
-        return Z, fMin, fMax
-
-    def getFieldValue(self,x,y):
-        z,fMin,fMax = self.getField(x,y)
-        return z
-
+        return Z
 
     def updateField(self, t):
         if t < par.pulseTime:
