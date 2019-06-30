@@ -60,16 +60,16 @@ class trueField:
         self.yShift = 0
         xPreDef = np.array([0, 2, 4, 6, 9])  # column coordinates
         yPreDef = np.array([0, 1, 3, 5, 9])  # row coordinates
-        # zPreDef = np.array([[1, 2, 2, 1, 1],
-        # [2, 4, 2, 1, 1],
-        # [1, 2, 3, 3, 2],
-        # [1, 1, 2, 3, 3],
-        # [1, 1, 2, 3, 3]])
-        zPreDef = np.array([[2, 4, 6, 7, 8],
-                      [2.1, 5, 7, 11.25, 9.5],
-                      [3, 5.6, 8.5, 17, 14.5],
-                      [2.5, 5.4, 6.9, 9, 8],
-                      [2, 2.3, 4, 6, 7.5]])
+        zPreDef = np.array([[1, 2, 2, 1, 1],
+        [2, 4, 2, 1, 1],
+        [1, 2, 3, 3, 2],
+        [1, 1, 2, 3, 3],
+        [1, 1, 2, 3, 3]])
+        #zPreDef = np.array([[2, 4, 6, 7, 8],
+        #              [2.1, 5, 7, 11.25, 9.5],
+        #              [3, 5.6, 8.5, 17, 14.5],
+        #              [2.5, 5.4, 6.9, 9, 8],
+        #              [2, 2.3, 4, 6, 7.5]])
         self.minValPreDef = np.min((0,np.min(zPreDef)))
         self.maxValPreDef = np.max(zPreDef)
         self.fPreDef = interpolate.interp2d(xPreDef, yPreDef, zPreDef)
@@ -79,7 +79,7 @@ class trueField:
             self.fieldMax = 2.5
         elif self.fieldType == 'peak':
             self.fieldMin = -1
-            self.fieldMax = self.peakValue + 1
+            self.fieldMax = self.peakValue + 0.1
         else:
             self.fieldMin = self.minValPreDef-par.ov2
             self.fieldMax = self.maxValPreDef+par.ov2

@@ -107,13 +107,16 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
     ax1 = fig.add_subplot(221)
     Z= trueField.getField(x,y)
     ax1.contourf(x, y, Z, levels=trueField.fieldLevels)
+    ax1.plot(xHist, yHist, 'black')
     plt.title("True field")
 
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
-    ax2.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
-                 gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],
-                 levels=trueField.fieldLevels)
+    #ax2.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
+                 #gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],
+                 #levels=trueField.fieldLevels)
+    ax2.contourf(gmrf.x, gmrf.y,gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),levels=trueField.fieldLevels)
+    ax2.plot(xHist, yHist, 'black')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Mean of belief")
