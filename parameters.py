@@ -39,10 +39,10 @@ pulseTime = nIter  # Duration of sinusodial pulsation
 """GMRF class"""
 xMin = 0  # GMRF dimensions
 xMax = 10
-nGridX = 8
+nGridX = 10
 yMin = 0
 yMax = 10
-nGridY = 8
+nGridY = 10
 nBeta = 1  # regression coefficients
 nEdge = 3 # needs to be at least 1
 valueT = 1e-3  # Prior precision value for regression vector bet
@@ -66,8 +66,8 @@ outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative rew
 """CBTS controller"""
 trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
 trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
-CBTSIterations = 10  # determines runtime of algorithm, could also be done with time limit
-branchingFactor = 6  # number of actions that can be evaluated at max for each path segment
+CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
+branchingFactor = 5  # number of actions that can be evaluated at max for each path segment
 maxDepth = 4  # depth of search tree
 kappa = 50  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize / maxStepsize)  # number of measurement points along trajectory

@@ -190,4 +190,5 @@ def sanityCheck(xVec,yVec,gmrf):
             return False
         elif y > gmrf.yMax:
             return False
+
     return True
