@@ -27,7 +27,7 @@ ov2 = 0.01  # measurement variance
 ov2Real = ov2
 dX = dY = 0.01  # discretizaton in x and y for Plotting
 
-(x0, y0, alpha0) = (5, 5, math.pi / 4)  # initial state
+(x0, y0, alpha0) = (0, 0, math.pi / 4)  # initial state
 maxStepsize = 0.1  # maximum change in every state per iteration
 xVel = maxStepsize
 yVel = maxStepsize
@@ -44,7 +44,7 @@ yMin = 0
 yMax = 10
 nGridY = 20
 nBeta = 1  # regression coefficients
-nEdge = 5
+nEdge = 5 # needs to be at least 1
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 """STKF class"""

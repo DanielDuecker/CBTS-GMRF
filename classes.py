@@ -173,8 +173,8 @@ class gmrf:
         self.dt = par.dt
 
         # Distance between two vertices in x and y without edges
-        self.dx = (self.xMax - self.xMin) / (self.nGridX - 1)
-        self.dy = (self.yMax - self.yMin) / (self.nGridY - 1)
+        self.dx = round((self.xMax - self.xMin) / (self.nGridX - 1),5)
+        self.dy = round((self.yMax - self.yMin) / (self.nGridY - 1),5)
 
         self.nY = self.nGridY + 2 * self.nEdge  # Total number of vertices in y with edges
         self.nX = self.nGridX + 2 * self.nEdge  # Total number of vertices in x with edges

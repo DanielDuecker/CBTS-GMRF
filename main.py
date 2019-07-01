@@ -51,9 +51,8 @@ methods.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, time
 plt.show()
 
 """Get first measurement:"""
-(xMeas, yMeas) = methods.getNextState(par.x0, par.y0, par.x0, par.y0, par.maxStepsize, gmrf1)
-xHist.append(xMeas)
-yHist.append(yMeas)
+xMeas = par.x0
+yMeas = par.y0
 zMeas = np.zeros((par.nMeas, 1))  # Initialize measurement vector and mapping matrix
 Phi = np.zeros((par.nMeas, gmrf1.nP + gmrf1.nBeta))
 zMeas[0] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
