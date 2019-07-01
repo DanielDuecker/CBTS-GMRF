@@ -3,7 +3,7 @@ import copy
 import math
 import numpy as np
 
-import methods
+import functions
 import parameters as par
 from classes import node
 
@@ -52,11 +52,11 @@ class piControl:
                 stateCost = 0
                 for i in range(self.H):
                     index = self.H - i - 1
-                    if not methods.sanityCheck(self.xPathRollOut[index, k] * np.eye(1),
+                    if not functions.sanityCheck(self.xPathRollOut[index, k] * np.eye(1),
                                                self.yPathRollOut[index, k] * np.eye(1), gmrf):
                         stateCost += self.outOfGridPenaltyPI2
                     else:
-                        Phi = methods.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
+                        Phi = functions.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
                         stateCost += 1 / np.dot(Phi, gmrf.diagCovCond)
                     uHead = self.u[index:self.H, 0] + np.dot(M[index:self.H, index:self.H], noise[index:self.H, k])
                     S[index, k] = S[index + 1, k] + stateCost + 0.5 * np.dot(uHead.T,
@@ -189,7 +189,7 @@ class CBTS:
                 for i in range(len(o)):
                     vNew.auv.x = traj[0, i + 1]
                     vNew.auv.y = traj[1, i + 1]
-                    Phi = methods.mapConDis(vNew.gmrf, vNew.auv.x, vNew.auv.y)
+                    Phi = functions.mapConDis(vNew.gmrf, vNew.auv.x, vNew.auv.y)
                     vNew.gmrf.seqBayesianUpdate(o[i], Phi)
 
                 vNew.auv.derivX = derivX
@@ -216,7 +216,7 @@ class CBTS:
 
             # plot estimated reward over actions
             if par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor - 1):
-                methods.plotPolicy(v.GP, thetaPredict, mu)
+                functions.plotPolicy(v.GP, thetaPredict, mu)
 
         return bestTheta
 
@@ -253,7 +253,7 @@ class CBTS:
 
         # plot acquisition function
         if par.plotOptions.showAcquisitionFunction:
-            methods.plotRewardFunction(v0.gmrf)
+            functions.plotRewardFunction(v0.gmrf)
 
         return bestTraj, derivX, derivY
 
@@ -300,11 +300,11 @@ class CBTS:
         r = - self.controlCost * theta
         o = []
         for i in range(self.nTrajPoints - 1):
-            Phi = methods.mapConDis(v.gmrf, tau[0, i + 1], tau[1, i + 1])
+            Phi = functions.mapConDis(v.gmrf, tau[0, i + 1], tau[1, i + 1])
             r += (np.dot(Phi, v.gmrf.covCond.diagonal()) + self.UCBRewardFactor * np.dot(Phi, v.gmrf.meanCond))[0]
             o.append(np.dot(Phi, v.gmrf.meanCond))
             # lower reward if agent is out of bound
-            if not methods.sanityCheck(tau[0, i + 1] * np.eye(1), tau[1, i + 1] * np.eye(1), v.gmrf):
+            if not functions.sanityCheck(tau[0, i + 1] * np.eye(1), tau[1, i + 1] * np.eye(1), v.gmrf):
                 r -= self.outOfGridPenaltyCBTS
 
         return r, o

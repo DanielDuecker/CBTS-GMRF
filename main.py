@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import control
-import methods
+import functions
 import parameters as par
 from classes import agent
 from classes import gmrf
@@ -47,7 +47,7 @@ bestTraj = np.zeros((2, 1))
 
 """Initialize plot"""
 fig = plt.figure(0)
-methods.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
+functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 plt.show()
 
 """Get first measurement:"""
@@ -55,8 +55,8 @@ xMeas = par.x0
 yMeas = par.y0
 zMeas = np.zeros((par.nMeas, 1))  # Initialize measurement vector and mapping matrix
 Phi = np.zeros((par.nMeas, gmrf1.nP + gmrf1.nBeta))
-zMeas[0] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
-Phi[0, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
+zMeas[0] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
+Phi[0, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
 
 """Update and plot field belief"""
 for i in range(par.nIter - 1):
@@ -87,14 +87,14 @@ for i in range(par.nIter - 1):
         yMeas = auv.y
     else:
         # Get next measurement according to dynamics, stack under measurement vector
-        xMeas, yMeas = methods.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
+        xMeas, yMeas = functions.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
 
     xHist.append(xMeas)
     yHist.append(yMeas)
-    zMeas[(i + 1) % par.nMeas] = methods.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
+    zMeas[(i + 1) % par.nMeas] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
 
     """Map measurement to surrounding grid vertices and stack under Phi matrix"""
-    Phi[(i + 1) % par.nMeas, :] = methods.mapConDis(gmrf1, xMeas, yMeas)
+    Phi[(i + 1) % par.nMeas, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
 
     """If truncated measurements are used, set conditioned mean and covariance as prior"""
     if par.truncation:
@@ -109,13 +109,13 @@ for i in range(par.nIter - 1):
 
     """Plotting"""
     if not par.fastCalc:
-        methods.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
+        functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 
     """Update ground truth:"""
     if par.temporal:
         trueField.updateField(i)
 
-methods.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
+functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 plt.show(block=True)
 
 print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")

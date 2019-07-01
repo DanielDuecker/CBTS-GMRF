@@ -8,7 +8,7 @@ import scipy
 from scipy import integrate
 from scipy import interpolate
 
-import methods
+import functions
 import parameters as par
 
 
@@ -195,7 +195,7 @@ class gmrf:
         self.Tinv = np.linalg.inv(self.valueT * np.eye(self.nBeta))
 
         # Precision matrix for z values (without regression variable beta)
-        self.Lambda = methods.getPrecisionMatrix(self)
+        self.Lambda = functions.getPrecisionMatrix(self)
 
         # Augmented prior covariance matrix
         covPriorUpperLeft = np.linalg.inv(self.Lambda) + np.dot(F, np.dot(self.Tinv, F.T))
@@ -266,7 +266,7 @@ class stkf:
         self.sigma2 = par.sigma2
 
         # Kernels
-        self.Ks = np.linalg.inv(methods.getPrecisionMatrix(self.gmrf))
+        self.Ks = np.linalg.inv(functions.getPrecisionMatrix(self.gmrf))
         self.KsChol = np.linalg.cholesky(self.Ks)
         # h = lambda tau: lambdSTKF * math.exp(-abs(tau) / sigmaT) # used time kernel
 
@@ -289,7 +289,7 @@ class stkf:
             st = np.dot(self.A, self.skk)
             covt = np.dot(self.A, np.dot(self.covkk, self.A.T))
         else:
-            Phi = methods.mapConDis(self.gmrf, xMeas, yMeas)
+            Phi = functions.mapConDis(self.gmrf, xMeas, yMeas)
             C = np.dot(Phi, self.Cs)
 
             # Kalman Regression
