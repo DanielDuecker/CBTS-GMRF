@@ -6,7 +6,7 @@ import numpy as np
 """main.py"""
 stkf = True
 sequentialUpdate = True  # Does not work with truncation!
-fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
+fastCalc = True  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
 PIControl = False
 
@@ -20,7 +20,7 @@ else:
 
 exploitingRate = 0
 
-nIter = 1000  # number of iterations
+nIter = 200  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
 ov2 = 0.01  # measurement variance
@@ -82,6 +82,7 @@ thetaExpMax = thetaMax  # determines curvature of generated trajectories for nod
 trajOrder = 1  # if higher order is used check trajectory generation function
 initialTheta = np.zeros(trajOrder)  # leads to first trajectory being straight
 discountFactor = 0.5  # discounts future rewards
+inputCost = 0
 
 # Gaussian Process for action reward mapping
 kernelPar = 10  # used in exponential kernel to determine variance between to inputs

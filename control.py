@@ -116,6 +116,7 @@ class CBTS:
         self.branchingFactor = par.branchingFactor  # maximum number of generated actions per node
         self.kappa = par.kappa
         self.discountFactor = par.discountFactor
+        self.inputCost = par.inputCost
         self.initialTheta = par.initialTheta
         self.thetaMin = par.thetaMin
         self.thetaMax = par.thetaMax
@@ -163,7 +164,7 @@ class CBTS:
                 self.xTraj = np.hstack((self.xTraj, traj[0, :].reshape(self.nTrajPoints, 1)))
                 self.yTraj = np.hstack((self.yTraj, traj[1, :].reshape(self.nTrajPoints, 1)))
 
-                r, o = self.evaluateTrajectory(v, traj)
+                r, o = self.evaluateTrajectory(v, traj, theta)
                 v.D.append((theta, r))
 
                 print("     generated trajectory: ", traj)
@@ -231,7 +232,7 @@ class CBTS:
                 self.xTraj = np.hstack((self.xTraj, nextTraj[0, :].reshape(self.nTrajPoints, 1)))
                 self.yTraj = np.hstack((self.yTraj, nextTraj[1, :].reshape(self.nTrajPoints, 1)))
 
-            dr, do = self.evaluateTrajectory(v, nextTraj)
+            dr, do = self.evaluateTrajectory(v, nextTraj, nextTheta)
             r += self.discountFactor ** v.depth * dr
             v.auv.x = nextTraj[0, -1]
             v.auv.y = nextTraj[1, -1]
@@ -295,8 +296,8 @@ class CBTS:
 
         return tau, derivX, derivY
 
-    def evaluateTrajectory(self, v, tau):
-        r = 0
+    def evaluateTrajectory(self, v, tau, theta):
+        r = - self.inputCost * theta
         o = []
         for i in range(self.nTrajPoints - 1):
             Phi = methods.mapConDis(v.gmrf, tau[0, i + 1], tau[1, i + 1])
