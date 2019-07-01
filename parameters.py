@@ -39,10 +39,10 @@ pulseTime = nIter  # Duration of sinusodial pulsation
 """GMRF class"""
 xMin = 0  # GMRF dimensions
 xMax = 10
-nGridX = 20
+nGridX = 10
 yMin = 0
 yMax = 10
-nGridY = 20
+nGridY = 10
 nBeta = 1  # regression coefficients
 nEdge = 5 # needs to be at least 1
 valueT = 1e-3  # Prior precision value for regression vector bet

@@ -124,9 +124,6 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
     ax3.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
                  gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],
                  levels=gmrf.covLevels)
-    ax3.contourf(gmrf.x, gmrf.y,
-                 gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),
-                 levels=gmrf.covLevels)
     if par.PIControl:
         ax3.plot(controller.xTraj,controller.yTraj,'blue')
         for k in range(par.K):
