@@ -10,7 +10,7 @@ fastCalc = True  # True: Fast Calculation, only one plot in the end; False: Live
 truncation = False
 PIControl = False
 
-fieldType = 'predefined'  # 'peak','sine' or 'predefined'
+fieldType = 'peak'  # 'peak','sine' or 'predefined'
 temporal = False  # True: time varying field
 
 if not PIControl:
@@ -82,7 +82,7 @@ thetaExpMax = thetaMax  # determines curvature of generated trajectories for nod
 trajOrder = 1  # if higher order is used check trajectory generation function
 initialTheta = np.zeros(trajOrder)  # leads to first trajectory being straight
 discountFactor = 0.5  # discounts future rewards
-controlCost = 0.5
+controlCost = 0.4
 
 # Gaussian Process for action reward mapping
 kernelPar = 10  # used in exponential kernel to determine variance between to inputs

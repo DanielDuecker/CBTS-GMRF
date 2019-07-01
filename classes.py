@@ -211,7 +211,7 @@ class gmrf:
         self.covCond = self.covPrior
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
         self.precCond = np.linalg.inv(self.covCond)
-        self.covLevels = np.linspace(0, min(np.amax(self.diagCovCond), 0.9), 20)  # using np.amax(self.diagCovCond)
+        self.covLevels = np.linspace(-0.2, min(np.amax(self.diagCovCond), 0.9), 20)  # using np.amax(self.diagCovCond)
         # leads to wrong scaling, since self.diagCovCond is initialized too hight due to T_inv
 
         "Sequential bayesian regression"

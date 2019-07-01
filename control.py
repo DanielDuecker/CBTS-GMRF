@@ -116,7 +116,7 @@ class CBTS:
         self.branchingFactor = par.branchingFactor  # maximum number of generated actions per node
         self.kappa = par.kappa
         self.discountFactor = par.discountFactor
-        self.inputCost = par.inputCost
+        self.controlCost = par.controlCost
         self.initialTheta = par.initialTheta
         self.thetaMin = par.thetaMin
         self.thetaMax = par.thetaMax
