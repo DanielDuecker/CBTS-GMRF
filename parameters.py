@@ -10,7 +10,7 @@ fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Liv
 truncation = False
 PIControl = False
 
-fieldType = 'sine'  # 'peak','sine' or 'predefined'
+fieldType = 'predefined'  # 'peak','sine' or 'predefined'
 temporal = False  # True: time varying field
 
 if not PIControl:
