@@ -10,7 +10,7 @@ fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Liv
 truncation = False
 PIControl = False
 
-fieldType = 'predefined'  # 'peak','sine' or 'predefined'
+fieldType = 'sine'  # 'peak','sine' or 'predefined'
 temporal = False  # True: time varying field
 
 if not PIControl:
@@ -27,7 +27,7 @@ ov2 = 0.01  # measurement variance
 ov2Real = ov2
 dX = dY = 0.01  # discretizaton in x and y for Plotting
 
-(x0, y0, alpha0) = (0, 0, math.pi / 4)  # initial state
+(x0, y0, alpha0) = (5, 5, math.pi / 4)  # initial state
 maxStepsize = 0.1  # maximum change in every state per iteration
 xVel = maxStepsize
 yVel = maxStepsize
@@ -39,10 +39,10 @@ pulseTime = nIter  # Duration of sinusodial pulsation
 """GMRF class"""
 xMin = 0  # GMRF dimensions
 xMax = 10
-nGridX = 5
+nGridX = 20
 yMin = 0
 yMax = 10
-nGridY = 5
+nGridY = 20
 nBeta = 1  # regression coefficients
 nEdge = 1
 valueT = 1e-3  # Prior precision value for regression vector bet

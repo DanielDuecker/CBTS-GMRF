@@ -111,10 +111,9 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
 
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
-    #ax2.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
-                 #gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],
-                 #levels=trueField.fieldLevels)
-    ax2.contourf(gmrf.x, gmrf.y,gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),levels=trueField.fieldLevels)
+    ax2.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
+                 gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],
+                 levels=trueField.fieldLevels)
     ax2.plot(xHist, yHist, 'black')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
@@ -124,6 +123,9 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
     ax3 = fig.add_subplot(223)
     ax3.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
                  gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],
+                 levels=gmrf.covLevels)
+    ax3.contourf(gmrf.x, gmrf.y,
+                 gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX),
                  levels=gmrf.covLevels)
     if par.PIControl:
         ax3.plot(controller.xTraj,controller.yTraj,'blue')
