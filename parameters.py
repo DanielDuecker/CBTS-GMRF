@@ -6,11 +6,11 @@ import numpy as np
 """main.py"""
 stkf = True
 sequentialUpdate = True  # Does not work with truncation!
-fastCalc = True  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
+fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
 PIControl = False
 
-fieldType = 'peak'  # 'peak','sine' or 'predefined'
+fieldType = 'predefined'  # 'peak','sine' or 'predefined'
 temporal = False  # True: time varying field
 
 if not PIControl:
@@ -20,7 +20,7 @@ else:
 
 exploitingRate = 0
 
-nIter = 200  # number of iterations
+nIter = 1000  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
 ov2 = 0.01  # measurement variance
@@ -39,12 +39,12 @@ pulseTime = nIter  # Duration of sinusodial pulsation
 """GMRF class"""
 xMin = 0  # GMRF dimensions
 xMax = 10
-nGridX = 10
+nGridX = 8
 yMin = 0
 yMax = 10
-nGridY = 10
+nGridY = 8
 nBeta = 1  # regression coefficients
-nEdge = 5 # needs to be at least 1
+nEdge = 3 # needs to be at least 1
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 """STKF class"""
@@ -67,9 +67,9 @@ outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative rew
 trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
 trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
 CBTSIterations = 10  # determines runtime of algorithm, could also be done with time limit
-branchingFactor = 4  # number of actions that can be evaluated at max for each path segment
-maxDepth = 3  # depth of search tree
-kappa = 10  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
+branchingFactor = 6  # number of actions that can be evaluated at max for each path segment
+maxDepth = 4  # depth of search tree
+kappa = 50  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize / maxStepsize)  # number of measurement points along trajectory
 kappaChildSelection = 1  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
 UCBRewardFactor = 0.1  # reward = variance + UCBRewardFactor*mean
@@ -82,7 +82,7 @@ thetaExpMax = thetaMax  # determines curvature of generated trajectories for nod
 trajOrder = 1  # if higher order is used check trajectory generation function
 initialTheta = np.zeros(trajOrder)  # leads to first trajectory being straight
 discountFactor = 0.5  # discounts future rewards
-controlCost = 0.3
+controlCost = 0.5
 
 # Gaussian Process for action reward mapping
 kernelPar = 10  # used in exponential kernel to determine variance between to inputs

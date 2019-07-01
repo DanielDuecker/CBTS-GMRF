@@ -70,8 +70,8 @@ class trueField:
         #              [3, 5.6, 8.5, 17, 14.5],
         #              [2.5, 5.4, 6.9, 9, 8],
         #              [2, 2.3, 4, 6, 7.5]])
-        self.minValPreDef = np.min((0,np.min(zPreDef)))
-        self.maxValPreDef = np.max(zPreDef)
+        self.minValPreDef = np.min((0,np.min(zPreDef)-1))
+        self.maxValPreDef = np.max(zPreDef)+1
         self.fPreDef = interpolate.interp2d(xPreDef, yPreDef, zPreDef)
 
         if self.fieldType == 'sine':
