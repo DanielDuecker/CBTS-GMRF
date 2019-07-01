@@ -44,7 +44,7 @@ yMin = 0
 yMax = 10
 nGridY = 20
 nBeta = 1  # regression coefficients
-nEdge = 1
+nEdge = 5
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 """STKF class"""
