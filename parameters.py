@@ -4,7 +4,7 @@ import numpy as np
 """Parameters for all files"""
 
 """main.py"""
-stkf = False
+stkf = True
 sequentialUpdate = True  # Does not work with truncation!
 fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
@@ -39,12 +39,12 @@ pulseTime = nIter  # Duration of sinusodial pulsation
 """GMRF class"""
 xMin = 0  # GMRF dimensions
 xMax = 10
-nGridX = 10
+nGridX = 5
 yMin = 0
 yMax = 10
-nGridY = 10
+nGridY = 5
 nBeta = 1  # regression coefficients
-nEdge = 5
+nEdge = 1
 valueT = 1e-3  # Prior precision value for regression vector bet
 
 """STKF class"""

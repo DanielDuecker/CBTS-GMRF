@@ -13,7 +13,7 @@ def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
 def mapConDis(gmrf, xMeas, yMeas):
     # Initialize j-th row of mapping matrix Phi
     Phi = np.zeros((1, gmrf.nP))
-    Phi = np.hstack((Phi, np.zeros((1, gmrf.nBeta))))
+    Phi = np.hstack((Phi, np.zeros((1, gmrf.nBeta)))) #TODO Change this
 
     # Get grid position relative to surrounding vertices
     xRel = (xMeas - gmrf.xMinEdge) % gmrf.dx - gmrf.dx / 2
@@ -38,7 +38,6 @@ def mapConDis(gmrf, xMeas, yMeas):
 
     except:
         print("Error! Agent is out of bound with state (",xMeas,",",yMeas,")")
-
     return Phi
 
 
