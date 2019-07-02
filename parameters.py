@@ -6,7 +6,7 @@ import numpy as np
 """main.py"""
 stkf = True
 sequentialUpdate = True  # Does not work with truncation!
-fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
+fastCalc = True  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
 PIControl = False
 
@@ -20,7 +20,7 @@ else:
 
 exploitingRate = 0
 
-nIter = 1000  # number of iterations
+nIter = 400  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
 ov2 = 0.01  # measurement variance
@@ -67,12 +67,12 @@ outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative rew
 trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
 trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
 CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
-branchingFactor = 5  # number of actions that can be evaluated at max for each path segment
-maxDepth = 4  # depth of search tree
+branchingFactor = 6  # number of actions that can be evaluated at max for each path segment
+maxDepth = 3  # depth of search tree
 kappa = 50  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
 nTrajPoints = int(trajStepSize / maxStepsize)  # number of measurement points along trajectory
 kappaChildSelection = 1  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-UCBRewardFactor = 0.1  # reward = variance + UCBRewardFactor*mean
+UCBRewardFactor = 0.05  # reward = variance + UCBRewardFactor*mean
 outOfGridPenaltyCBTS = 1
 
 thetaMin = -1  # determines curvature of generated trajectories
@@ -82,7 +82,7 @@ thetaExpMax = thetaMax  # determines curvature of generated trajectories for nod
 trajOrder = 1  # if higher order is used check trajectory generation function
 initialTheta = np.zeros(trajOrder)  # leads to first trajectory being straight
 discountFactor = 0.5  # discounts future rewards
-controlCost = 0.5
+controlCost = 0.2
 
 # Gaussian Process for action reward mapping
 kernelPar = 10  # used in exponential kernel to determine variance between to inputs
@@ -98,3 +98,4 @@ class plotOptions:
     showExploredPaths = False
     showActionRewardMapping = False
     showAcquisitionFunction = False
+    showPerformance = True
