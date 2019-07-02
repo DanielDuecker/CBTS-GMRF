@@ -29,6 +29,10 @@ X, Y = np.meshgrid(x, y)
 timeVec = []
 iterVec = []
 
+"""Performance measurement"""
+diffMeanVec = []
+totalVarVec = []
+
 """GMRF representation"""
 gmrf1 = gmrf()
 
@@ -104,8 +108,15 @@ for i in range(par.nIter - 1):
 
     """Time measurement"""
     timeAfter = time.time()
-    iterVec.append(i)
     timeVec.append(timeAfter - timeBefore)
+
+    """Measure performance"""
+    if par.plotOptions.showPerformance:
+        diffMean, totalVar = functions.measurePerformance(gmrf1,trueField)
+        diffMeanVec.append(diffMean)
+        totalVarVec.append(totalVar)
+        functions.plotPerformance(diffMeanVec,totalVarVec)
+
 
     """Plotting"""
     if not par.fastCalc:
@@ -114,6 +125,7 @@ for i in range(par.nIter - 1):
     """Update ground truth:"""
     if par.temporal:
         trueField.updateField(i)
+
 
 functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 plt.show(block=True)

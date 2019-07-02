@@ -107,7 +107,7 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
     Z= trueField.getField(x,y)
     ax1.contourf(x, y, Z, levels=trueField.fieldLevels)
     ax1.plot(xHist, yHist, 'black')
-    plt.title("True field")
+    plt.title("True Field")
 
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
@@ -117,7 +117,7 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
     ax2.plot(xHist, yHist, 'black')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
-    plt.title("Mean of belief")
+    plt.title("Mean of Belief")
 
     # Plotting covariance matrix
     ax3 = fig.add_subplot(223)
@@ -136,14 +136,15 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, x
 
     plt.xlabel("x in m")
     plt.ylabel("y in m")
-    plt.title("Uncertainty belief")
+    plt.title("Uncertainty Belief")
 
     # Plotting time consumption
     ax4 = fig.add_subplot(224)
-    ax4.plot(iterVec, timeVec, 'black')
-    plt.xlabel("Iteration index")
-    plt.ylabel("calculation time in s")
-    plt.title("Update computation time over iteration index")
+    plt.cla()
+    ax4.plot(timeVec)
+    plt.xlabel("Iteration Index")
+    plt.ylabel("Time in s")
+    plt.title("Computation Time")
 
     fig.canvas.draw()
 
@@ -156,9 +157,9 @@ def plotPolicy(GP,thetaPredict,mu):
         ax = fig.add_subplot(111, projection='3d')
         ax.plot(GP.trainInput[:, 0], GP.trainInput[:, 1], GP.trainOutput[:, 0], "g.")
         ax.plot(thetaPredict[:, 0], thetaPredict[:, 1], mu[:, 0], "r.")
-        ax.set_xlabel("theta[0]")
-        ax.set_ylabel("theta[1]")
-        ax.set_zlabel("reward")
+        ax.set_xlabel("Theta[0]")
+        ax.set_ylabel("Theta[1]")
+        ax.set_zlabel("Reward")
     elif par.trajOrder == 1:
         ax = fig.add_subplot(111)
         ax.plot(GP.trainInput[:, 0], GP.trainOutput[:, 0], "g.")
@@ -169,7 +170,10 @@ def plotRewardFunction(gmrf):
     fig = plt.figure(2)
     plt.clf()
     plt.show()
-    plt.title("Current rewards for each point")
+    plt.title("Current Rewards for Each Position")
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.legend()
 
     X,Y = np.meshgrid(gmrf.x[gmrf.nEdge:-gmrf.nEdge],gmrf.y[gmrf.nEdge:-gmrf.nEdge])
     r = gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge] \
@@ -190,5 +194,25 @@ def sanityCheck(xVec,yVec,gmrf):
             return False
         elif y > gmrf.yMax:
             return False
-
     return True
+
+def measurePerformance(gmrf,trueField):
+    diffMean = np.sum(trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge],gmrf.y[gmrf.nEdge:-gmrf.nEdge])
+                      -gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge])
+    totalVar = np.sum(gmrf.covCond)
+    return diffMean,totalVar
+
+def plotPerformance(diffMean,totalVar):
+    fig = plt.figure(3)
+    plt.clf()
+    plt.show()
+    plt.title('Performance Measurement')
+    ax1 = fig.add_subplot(211)
+    ax1.plot(diffMean)
+    plt.xlabel('Iteration Index')
+    plt.ylabel('Difference Between Ground Truth and Belief')
+    ax2 = fig.add_subplot(212)
+    ax2.plot(totalVar)
+    plt.xlabel('Iteration Index')
+    plt.ylabel('Total Belief Uncertainty')
+    fig.canvas.draw()
