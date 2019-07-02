@@ -131,20 +131,18 @@ class CBTS:
         self.yTraj = np.zeros((self.nTrajPoints, 1))
 
     def getNewTraj(self, auv, gmrf):
+        print("calculating..")
         v0 = node(gmrf, auv)  # create node with belief b and total reward 0
         self.xTraj = np.zeros((self.nTrajPoints, 1))
         self.yTraj = np.zeros((self.nTrajPoints, 1))
         for i in range(self.nIterations):
-            print("CBTS-Iteration", i, "of", self.nIterations)
             vl = self.treePolicy(v0)  # get next node
             if vl is None:
                 continue  # max depth and branching reached
-
             # rollout
             futureReward = self.exploreNode(vl)
             vl.accReward = vl.rewardToNode + futureReward
             self.backUp(v0, vl, vl.accReward)
-            for Eachnode in v0.children:
         bestTraj, derivX, derivY = self.getBestTheta(v0)
         return bestTraj, derivX, derivY
 
@@ -195,7 +193,6 @@ class CBTS:
             h = mu + self.kappa * var.diagonal().reshape(self.nThetaSamples, 1)
             index = np.argmax(h)
             bestTheta = thetaPredict[index, :]
-            print(bestTheta)
 
             # plot estimated reward over actions
             if par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor - 1):

@@ -20,7 +20,7 @@ else:
 
 exploitingRate = 0
 
-nIter = 500  # number of iterations
+nIter = 1  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
 ov2 = 0.01  # measurement variance
