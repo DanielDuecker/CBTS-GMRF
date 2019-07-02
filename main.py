@@ -1,136 +1,133 @@
 # First 2D-GMRF Implementation
 
-import time
+def main():
+    import time
 
-import matplotlib.pyplot as plt
-import numpy as np
+    import matplotlib.pyplot as plt
+    import numpy as np
 
-import control
-import functions
-import parameters as par
-from classes import agent
-from classes import gmrf
-from classes import stkf
-from classes import trueField
+    import control
+    import functions
+    import parameters as par
+    from classes import agent
+    from classes import gmrf
+    from classes import stkf
+    from classes import trueField
 
-# np.set_printoptions(threshold=np.inf)
+    """Agent"""
+    auv = agent(par.x0, par.y0, par.alpha0)
+    xHist = [par.x0]  # x-state history vector
+    yHist = [par.y0]  # y-state history vector
 
-"""Agent"""
-auv = agent(par.x0, par.y0, par.alpha0)
-xHist = [par.x0]  # x-state history vector
-yHist = [par.y0]  # y-state history vector
+    """Plotting grid"""
+    x = np.arange(par.xMin, par.xMax, par.dX)
+    y = np.arange(par.yMin, par.yMax, par.dY)
 
-"""Plotting grid"""
-x = np.arange(par.xMin, par.xMax, par.dX)
-y = np.arange(par.yMin, par.yMax, par.dY)
-X, Y = np.meshgrid(x, y)
+    """Time"""
+    timeVec = []
+    iterVec = []
 
-"""Time"""
-timeVec = []
-iterVec = []
+    """Performance measurement"""
+    diffMeanVec = []
+    totalVarVec = []
 
-"""Performance measurement"""
-diffMeanVec = []
-totalVarVec = []
+    """GMRF representation"""
+    gmrf1 = gmrf()
 
-"""GMRF representation"""
-gmrf1 = gmrf()
+    """PI2 Controller"""
+    controller = control.piControl()
 
-"""PI2 Controller"""
-controller = control.piControl()
+    """Ground Truth"""
+    trueField = trueField(par.fieldType)
 
-"""Ground Truth"""
-trueField = trueField(par.fieldType)
+    """STKF extension of gmrf"""
+    stkf1 = stkf(gmrf1)
 
-"""STKF extension of gmrf"""
-stkf1 = stkf(gmrf1)
+    """"Continuous Belief Tree Search"""
+    CBTS1 = control.CBTS()
+    bestTraj = np.zeros((2, 1))
 
-""""Continuous Belief Tree Search"""
-CBTS1 = control.CBTS()
-bestTraj = np.zeros((2, 1))
+    """Initialize plot"""
+    fig = plt.figure(0)
+    functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
+    plt.show()
 
-"""Initialize plot"""
-fig = plt.figure(0)
-functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
-plt.show()
+    """Get first measurement:"""
+    xMeas = par.x0
+    yMeas = par.y0
+    zMeas = np.zeros((par.nMeas, 1))  # Initialize measurement vector and mapping matrix
+    Phi = np.zeros((par.nMeas, gmrf1.nP + gmrf1.nBeta))
+    zMeas[0] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
+    Phi[0, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
 
-"""Get first measurement:"""
-xMeas = par.x0
-yMeas = par.y0
-zMeas = np.zeros((par.nMeas, 1))  # Initialize measurement vector and mapping matrix
-Phi = np.zeros((par.nMeas, gmrf1.nP + gmrf1.nBeta))
-zMeas[0] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
-Phi[0, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
+    """Update and plot field belief"""
+    for i in range(par.nIter - 1):
+        print("Iteration ", i, " of ", par.nIter, ".")
+        t = i * par.dt
 
-"""Update and plot field belief"""
-for i in range(par.nIter - 1):
-    print("Iteration ", i, " of ", par.nIter, ".")
-    t = i * par.dt
+        timeBefore = time.time()
 
-    timeBefore = time.time()
+        """Update belief"""
+        if par.stkf:
+            stkf1.kalmanFilter(t, xMeas, yMeas, zMeas[i])
+        elif par.sequentialUpdate:
+            gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])
+        else:
+            gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
 
-    """Update belief"""
-    if par.stkf:
-        stkf1.kalmanFilter(t, xMeas, yMeas, zMeas[i])
-    elif par.sequentialUpdate:
-        gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])
-    else:
-        gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
+        """Controller"""
+        if par.PIControl:
+            # Get next state according to PI Controller
+            xMeas, yMeas = controller.getNewState(auv, gmrf1)
+        elif par.CBTS:
+            if i % par.nTrajPoints == 0:
+                bestTraj, auv.derivX, auv.derivY = CBTS1.getNewTraj(auv, gmrf1)
+                # print("New trajectory generated:", bestTraj)
+            auv.x = bestTraj[0, i % par.nTrajPoints]
+            auv.y = bestTraj[1, i % par.nTrajPoints]
+            xMeas = auv.x
+            yMeas = auv.y
+        else:
+            # Get next measurement according to dynamics, stack under measurement vector
+            xMeas, yMeas = functions.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
 
-    """Controller"""
-    if par.PIControl:
-        # Get next state according to PI Controller
-        xMeas, yMeas = controller.getNewState(auv, gmrf1)
-    elif par.CBTS:
-        if i % par.nTrajPoints == 0:
-            bestTraj, auv.derivX, auv.derivY = CBTS1.getNewTraj(auv, gmrf1)
-            # print("New trajectory generated:", bestTraj)
-        auv.x = bestTraj[0, i % par.nTrajPoints]
-        auv.y = bestTraj[1, i % par.nTrajPoints]
-        xMeas = auv.x
-        yMeas = auv.y
-    else:
-        # Get next measurement according to dynamics, stack under measurement vector
-        xMeas, yMeas = functions.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
+        xHist.append(xMeas)
+        yHist.append(yMeas)
+        zMeas[(i + 1) % par.nMeas] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
 
-    xHist.append(xMeas)
-    yHist.append(yMeas)
-    zMeas[(i + 1) % par.nMeas] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
+        """Map measurement to surrounding grid vertices and stack under Phi matrix"""
+        Phi[(i + 1) % par.nMeas, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
 
-    """Map measurement to surrounding grid vertices and stack under Phi matrix"""
-    Phi[(i + 1) % par.nMeas, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
+        """If truncated measurements are used, set conditioned mean and covariance as prior"""
+        if par.truncation:
+            if (i + 1) % par.nMeas == 0:
+                gmrf1.covPrior = gmrf1.covCond
+                gmrf1.meanPrior = gmrf1.meanCond
 
-    """If truncated measurements are used, set conditioned mean and covariance as prior"""
-    if par.truncation:
-        if (i + 1) % par.nMeas == 0:
-            gmrf1.covPrior = gmrf1.covCond
-            gmrf1.meanPrior = gmrf1.meanCond
+        """Time measurement"""
+        timeAfter = time.time()
+        timeVec.append(timeAfter - timeBefore)
 
-    """Time measurement"""
-    timeAfter = time.time()
-    timeVec.append(timeAfter - timeBefore)
-
-    """Measure performance"""
-    if par.plotOptions.showPerformance:
-        diffMean, totalVar = functions.measurePerformance(gmrf1,trueField)
+        """Measure performance"""
+        diffMean, totalVar = functions.measurePerformance(gmrf1, trueField)
         diffMeanVec.append(diffMean)
         totalVarVec.append(totalVar)
-        functions.plotPerformance(diffMeanVec,totalVarVec)
+        if par.plotOptions.showPerformance:
+            functions.plotPerformance(diffMeanVec,totalVarVec)
 
 
-    """Plotting"""
-    if not par.fastCalc:
-        functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
+        """Plotting"""
+        if not par.fastCalc:
+            functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 
-    """Update ground truth:"""
-    if par.temporal:
-        trueField.updateField(i)
+        """Update ground truth:"""
+        if par.temporal:
+            trueField.updateField(i)
 
-
-functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
-plt.show(block=True)
-
-print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
+    return np.asarray(diffMeanVec), np.asarray(totalVarVec)
+#functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
+#plt.show(block=True)
+#print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
 # TODO Use function for rotating field
 # TODO Check first mean beliefs in STKF
