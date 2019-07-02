@@ -1,7 +1,7 @@
 import parameters as par
-import main
 import numpy as np
 import matplotlib.pyplot as plt
+import main
 
 nSim = 10
 nIter = par.nIter-1
