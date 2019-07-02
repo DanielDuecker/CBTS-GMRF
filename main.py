@@ -82,7 +82,6 @@ def main():
         elif par.CBTS:
             if i % par.nTrajPoints == 0:
                 bestTraj, auv.derivX, auv.derivY = CBTS1.getNewTraj(auv, gmrf1)
-                # print("New trajectory generated:", bestTraj)
             auv.x = bestTraj[0, i % par.nTrajPoints]
             auv.y = bestTraj[1, i % par.nTrajPoints]
             xMeas = auv.x
@@ -127,7 +126,6 @@ def main():
     return np.asarray(diffMeanVec), np.asarray(totalVarVec)
 #functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 #plt.show(block=True)
-#print("Last updates needed approx. ", np.mean(timeVec[-100:-1]), " seconds per iteration.")
 
 # TODO Use function for rotating field
 # TODO Check first mean beliefs in STKF

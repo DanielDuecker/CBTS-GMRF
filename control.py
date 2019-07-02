@@ -143,22 +143,14 @@ class CBTS:
             # rollout
             futureReward = self.exploreNode(vl)
             vl.accReward = vl.rewardToNode + futureReward
-            print("exploring node ", vl, " at position", vl.auv.x, vl.auv.y, " yields reward of", futureReward)
             self.backUp(v0, vl, vl.accReward)
-            print("Level 1 nodes after backing up:")
             for Eachnode in v0.children:
-                print("Theta:", Eachnode.actionToNode, "/Reward: ", Eachnode.accReward, "/Counter: ", Eachnode.visits)
-        print("Best trajectory is now returned")
-        print("_______________________________")
         bestTraj, derivX, derivY = self.getBestTheta(v0)
         return bestTraj, derivX, derivY
 
     def treePolicy(self, v):
-        print(" call tree policy:")
         while v.depth < self.maxDepth:
-            print(len(v.D), " nodes have been created at this depth.")
             if len(v.D) < self.branchingFactor:
-                print("     generate new node at depth ", v.depth)
                 theta = self.getNextTheta(v)
                 traj, derivX, derivY = self.generateTrajectory(v, theta)
                 self.xTraj = np.hstack((self.xTraj, traj[0, :].reshape(self.nTrajPoints, 1)))
@@ -166,11 +158,6 @@ class CBTS:
 
                 r, o = self.evaluateTrajectory(v, traj, theta)
                 v.D.append((theta, r))
-
-                print("     generated trajectory: ", traj)
-                print("     with theta = ", theta)
-                print("     data set is now: ", v.D)
-                print("     reward is: ", r)
 
                 # Update GP mapping from theta to r:
                 v.GP.update(theta, r)
@@ -196,9 +183,7 @@ class CBTS:
                 vNew.auv.derivY = derivY
                 return vNew
             else:
-                print("No more actions at node", v)
                 v = self.bestChild(v)
-                print("switching to node", v)
 
     def getNextTheta(self, v):
         if v.GP.emptyData:
@@ -210,9 +195,7 @@ class CBTS:
             h = mu + self.kappa * var.diagonal().reshape(self.nThetaSamples, 1)
             index = np.argmax(h)
             bestTheta = thetaPredict[index, :]
-            print("getNextTheta:")
             print(bestTheta)
-            print("Index of best theta:", index)
 
             # plot estimated reward over actions
             if par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor - 1):
@@ -249,7 +232,6 @@ class CBTS:
                 bestTheta = child.actionToNode
                 maxR = child.accReward
         bestTraj, derivX, derivY = self.generateTrajectory(v0, bestTheta)
-        print("chosen best theta: ", bestTheta, " with trajectory ", bestTraj)
 
         # plot acquisition function
         if par.plotOptions.showAcquisitionFunction:
@@ -278,7 +260,6 @@ class CBTS:
         else:
             bx = 0
             by = 0
-            print("No implemented trajectory generation!")
         cx = v.auv.derivX
         cy = v.auv.derivY
         dx = v.auv.x
