@@ -6,7 +6,7 @@ import numpy as np
 """main.py"""
 stkf = True
 sequentialUpdate = True  # Does not work with truncation!
-fastCalc = True  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
+fastCalc = False  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 truncation = False
 PIControl = False
 

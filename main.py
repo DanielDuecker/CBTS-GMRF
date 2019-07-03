@@ -25,7 +25,6 @@ def main():
 
     """Time"""
     timeVec = []
-    iterVec = []
 
     """Performance measurement"""
     diffMeanVec = []
@@ -50,7 +49,11 @@ def main():
     """Initialize plot"""
     if par.plot:
         fig = plt.figure(0)
+        plt.clf()
+        plt.ion()
+        # plt.axis('equal')
         functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
+        fig.canvas.draw()
         plt.show()
 
     """Get first measurement:"""
@@ -113,13 +116,21 @@ def main():
         diffMeanVec.append(diffMean)
         totalVarVec.append(totalVar)
         if par.plotOptions.showPerformance:
-            functions.plotPerformance(diffMeanVec,totalVarVec)
+            fig = plt.figure(3)
+            plt.clf()
+            plt.show()
+            functions.plotPerformance(fig, diffMeanVec, totalVarVec)
+            fig.canvas.draw()
 
 
         """Plotting"""
         if par.plot:
             if not par.fastCalc:
+                plt.figure(0)
+                plt.clf()
+                plt.ion()
                 functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
+                fig.canvas.draw()
 
         """Update ground truth:"""
         if par.temporal:
