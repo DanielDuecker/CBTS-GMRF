@@ -96,7 +96,7 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
     return xNext, yNext
 
 
-def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, iterVec, timeVec, xHist, yHist):
+def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist, yHist):
     plt.figure(0)
     plt.clf()
     plt.ion()

@@ -48,9 +48,10 @@ def main():
     bestTraj = np.zeros((2, 1))
 
     """Initialize plot"""
-    fig = plt.figure(0)
-    functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
-    plt.show()
+    if par.plot:
+        fig = plt.figure(0)
+        functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
+        plt.show()
 
     """Get first measurement:"""
     xMeas = par.x0
@@ -116,14 +117,15 @@ def main():
 
 
         """Plotting"""
-        if not par.fastCalc:
-            functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
+        if par.plot:
+            if not par.fastCalc:
+                functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
 
         """Update ground truth:"""
         if par.temporal:
             trueField.updateField(i)
 
-    return np.asarray(diffMeanVec), np.asarray(totalVarVec)
+    return x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist, diffMeanVec, totalVarVec
 #functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 #plt.show(block=True)
 

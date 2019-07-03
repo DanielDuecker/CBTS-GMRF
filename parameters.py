@@ -13,6 +13,8 @@ PIControl = False
 fieldType = 'predefined'  # 'peak','sine' or 'predefined'
 temporal = False  # True: time varying field
 
+plot = False
+
 if not PIControl:
     CBTS = True
 else:
@@ -20,7 +22,7 @@ else:
 
 exploitingRate = 0
 
-nIter = 1  # number of iterations
+nIter = 10  # number of iterations
 dt = 1  # timesteps per iteration
 nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
 ov2 = 0.01  # measurement variance
