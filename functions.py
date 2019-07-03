@@ -97,23 +97,22 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
 
 
 def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist, yHist):
-    plt.figure(0)
-    plt.clf()
-    plt.ion()
-    # plt.axis('equal')
-
     # Plotting ground truth
     ax1 = fig.add_subplot(221)
-    Z= trueField.getField(x,y)
-    ax1.contourf(x, y, Z, levels=trueField.fieldLevels)
+    Z = trueField.getField(x,y)
+    CS = ax1.contourf(x, y, Z, levels=trueField.fieldLevels)
+    for a in CS.collections:
+        a.set_edgecolor('face')
     ax1.plot(xHist, yHist, 'black')
     plt.title("True Field")
 
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
-    ax2.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
+    CS = ax2.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
                  gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],
                  levels=trueField.fieldLevels)
+    for a in CS.collections:
+        a.set_edgecolor('face')
     ax2.plot(xHist, yHist, 'black')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
@@ -121,9 +120,11 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist, yHi
 
     # Plotting covariance matrix
     ax3 = fig.add_subplot(223)
-    ax3.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
+    CS = ax3.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
                  gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],
                  levels=gmrf.covLevels)
+    for a in CS.collections:
+        a.set_edgecolor('face')
     if par.PIControl:
         ax3.plot(controller.xTraj,controller.yTraj,'blue')
         for k in range(par.K):
@@ -145,8 +146,6 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist, yHi
     plt.xlabel("Iteration Index")
     plt.ylabel("Time in s")
     plt.title("Computation Time")
-
-    fig.canvas.draw()
 
 def plotPolicy(GP,thetaPredict,mu):
     fig = plt.figure(1)
@@ -202,10 +201,7 @@ def measurePerformance(gmrf,trueField):
     totalVar = np.sum(gmrf.covCond)
     return diffMean,totalVar
 
-def plotPerformance(diffMean,totalVar):
-    fig = plt.figure(3)
-    plt.clf()
-    plt.show()
+def plotPerformance(fig, diffMean,totalVar):
     plt.title('Performance Measurement')
     ax1 = fig.add_subplot(211)
     ax1.plot(diffMean)
@@ -215,4 +211,3 @@ def plotPerformance(diffMean,totalVar):
     ax2.plot(totalVar)
     plt.xlabel('Iteration Index')
     plt.ylabel('Total Belief Uncertainty')
-    fig.canvas.draw()
