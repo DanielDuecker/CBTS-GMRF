@@ -1,4 +1,5 @@
 .idea
+sim/
 __pycache__/main.cpython-36.pyc
 __pycache__/simulation.cpython-36.pyc
 __pycache__/functions.cpython-36.pyc
