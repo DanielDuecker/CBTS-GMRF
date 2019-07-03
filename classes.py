@@ -156,6 +156,8 @@ class GP:
 class gmrf:
     def __init__(self,par):
         """GMRF properties"""
+        self.par = par
+
         self.xMin = par.xMin
         self.xMax = par.xMax
 
@@ -229,7 +231,7 @@ class gmrf:
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
 
         "Update mean"
-        if par.truncation:
+        if self.par.belief == 'regBayesTrunc':
             self.meanCond = self.meanPrior + 1 / self.ov2 * np.dot(self.covCond,
                                                                    np.dot(Phi.T, zMeas - np.dot(Phi, self.meanPrior)))
         else:

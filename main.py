@@ -90,7 +90,7 @@ def main(par):
             auv.y = bestTraj[1, i % par.nTrajPoints]
             xMeas = auv.x
             yMeas = auv.y
-        elif par.control == 'randomWalk':
+        elif par.control == 'randomWalk': add
             # Get next measurement according to dynamics, stack under measurement vector
             xMeas, yMeas = functions.getNextState(par, xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
         else:
