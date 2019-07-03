@@ -23,6 +23,7 @@ par.control = 'cbts'  #'cbts', 'pi2', 'randomWalk'
 par.fieldType = 'predefined'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
 par.plot = False
+parSimList = [par.belief, par.control, par.fieldType, par.temporal]
 
 if par.belief != 'regBayesTrunc':
     par.nMeas = par.nIter
@@ -65,10 +66,12 @@ if saveToFile:
     # Create new directory
     index = 0
     dirpath = os.getcwd()
-    path = dirpath + "/sim/" + time.strftime("%Y%m%d") + "_" + str(index)
+    folderName = time.strftime("%Y%m%d") + "_" + str(index)
+    path = dirpath + "/sim/" + folderName
     while os.path.exists(path):
         index += 1
-        path = dirpath + "/sim/" + time.strftime("%Y%m%d") + "_" + str(index)
+        folderName = time.strftime("%Y%m%d") + "_" + str(index)
+        path = dirpath + "/sim/" + folderName
     try:
         os.mkdir(path)
     except:
@@ -76,7 +79,7 @@ if saveToFile:
     os.chdir(path)
 
     # Copy used parameters
-    shutil.copyfile(dirpath + '/parameters.py',path + time.strftime("/%Y%m%d") + "_" + str(index) + '_parameters.txt')
+    shutil.copyfile(dirpath + '/parameters.py',path + folderName + '_parameters.txt')
 
     """Save objects"""
     # Save objects
@@ -88,9 +91,10 @@ if saveToFile:
     #    x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList = pickle.load(f)
 
     # Save data as csv
-    with open(time.strftime("%Y%m%d") + "_" + str(index) + '_data.csv','w') as dataFile:
+    with open(folderName + '_data.csv','w') as dataFile:
         writer = csv.writer(dataFile)
         for i in range(nSim):
+            writer.writerow([i])
             writer.writerow(x[i])
             writer.writerow(y[i])
             writer.writerow(timeVec[i])
@@ -100,6 +104,7 @@ if saveToFile:
             writer.writerow(totalVar[i])
             writer.writerow(gmrf[i].meanCond)
             writer.writerow(gmrf[i].covCond)
+            writer.writerow(parSimList)
             writer.writerow(["-"])
     dataFile.close()
 
@@ -108,7 +113,7 @@ if saveToFile:
     print("Plotting..")
     for i in range(nSim):
         functions.plotFields(par,fig0, x[i], y[i], trueField[i], gmrf[i], controller[i], CBTS[i], timeVec[i], xHist[i], yHist[i])
-        fig0.savefig(time.strftime("%Y%m%d") + "_" + str(index) + '_' + str(i) + 'fields.svg', format='svg')
+        fig0.savefig(folderName + '_' + str(i) + '_' + par.belief + '_' + par.control + '_' + par.fieldType +'.svg', format='svg')
         plt.clf()
     plt.close(fig0)
 
@@ -124,7 +129,7 @@ if saveToFile:
         plt.plot(totalVar[i])
     plt.xlabel('Iteration Index')
     plt.ylabel('Total Belief Uncertainty')
-    fig1.savefig(time.strftime("%Y%m%d") + "_" + str(index) + '_fig.svg', format='svg')
+    fig1.savefig(folderName + '_performance.svg', format='svg')
 
 # TODO Enable loading of pickled data instead of simulating
 # TODO Enable changing of parameters while simulating

@@ -19,7 +19,7 @@ class par:
 
     exploitingRate = 0
 
-    nIter = 100  # number of iterations
+    nIter = 2  # number of iterations
     dt = 1  # timesteps per iteration
     nMeas = 10  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
     ov2 = 0.01  # measurement variance
