@@ -17,10 +17,10 @@ nSim = 2
 """Get and modify Simulation Parameters"""
 par = parameters.par
 
-par.belief = 'regBayesTrunc'  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-par.control = 'pi2'  #'cbts', 'pi2', 'randomWalk'
-par.fieldType = 'sine'  # 'peak','sine' or 'predefined'
-par.temporal = True  # True: time varying field
+par.belief = 'stkf'  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
+par.control = 'cbts'  #'cbts', 'pi2', 'randomWalk'
+par.fieldType = 'predefined'  # 'peak','sine' or 'predefined'
+par.temporal = False  # True: time varying field
 par.plot = False
 
 """Initialize"""
