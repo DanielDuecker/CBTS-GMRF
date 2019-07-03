@@ -38,7 +38,7 @@ class agent:
 
 
 class trueField:
-    def __init__(self,par, fieldType):
+    def __init__(self, par, fieldType):
         self.fieldType = fieldType
 
         """sine field"""
@@ -96,7 +96,7 @@ class trueField:
             Z = self.fPreDef(x - self.xShift,y + self.yShift)
         return Z
 
-    def updateField(self, t):
+    def updateField(self, par, t):
         if t < par.pulseTime:
             self.cScale = np.cos(10*math.pi * t / par.pulseTime)
 
@@ -109,7 +109,7 @@ class trueField:
 
 
 class GP:
-    def __init__(self,par):
+    def __init__(self, par):
         self.kernelPar = par.kernelPar
         self.emptyData = True
         self.trainInput = None

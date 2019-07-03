@@ -2,9 +2,6 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-import parameters as par
-
-
 def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
     noise = np.random.normal(0, math.sqrt(noiseVariance))
     return (trueField.getField(xMeas, yMeas) + noise)
@@ -59,7 +56,7 @@ def getPrecisionMatrix(gmrf):
     return Lambda
 
 
-def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
+def getNextState(par, x, y, xBefore, yBefore, maxStepsize, gmrf):
     xNext = xBefore
     yNext = yBefore
 
@@ -96,7 +93,7 @@ def getNextState(x, y, xBefore, yBefore, maxStepsize, gmrf):
     return xNext, yNext
 
 
-def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist, yHist):
+def plotFields(par, fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist, yHist):
     # Plotting ground truth
     ax1 = fig.add_subplot(221)
     Z = trueField.getField(x,y)
@@ -147,7 +144,7 @@ def plotFields(fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist, yHi
     plt.ylabel("Time in s")
     plt.title("Computation Time")
 
-def plotPolicy(GP,thetaPredict,mu):
+def plotPolicy(par, GP,thetaPredict,mu):
     fig = plt.figure(1)
     plt.clf()
     plt.show()
@@ -165,8 +162,8 @@ def plotPolicy(GP,thetaPredict,mu):
         ax.plot(thetaPredict[:, 0], mu[:, 0], "r.")
     fig.canvas.draw()
 
-def plotRewardFunction(gmrf):
-    fig = plt.figure(2)
+def plotRewardFunction(par,gmrf):
+    fig2 = plt.figure(2)
     plt.clf()
     plt.show()
     plt.title("Current Rewards for Each Position")
@@ -177,9 +174,9 @@ def plotRewardFunction(gmrf):
     X,Y = np.meshgrid(gmrf.x[gmrf.nEdge:-gmrf.nEdge],gmrf.y[gmrf.nEdge:-gmrf.nEdge])
     r = gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge] \
         + par.UCBRewardFactor * gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge]
-    ax = fig.add_subplot(111)
+    ax = fig2.add_subplot(111)
     ax.contourf(X,Y,r)
-    fig.canvas.draw()
+    fig2.canvas.draw()
 
 def sanityCheck(xVec,yVec,gmrf):
     for x in xVec:
@@ -201,7 +198,7 @@ def measurePerformance(gmrf,trueField):
     totalVar = np.sum(gmrf.covCond)
     return diffMean,totalVar
 
-def plotPerformance(fig, diffMean,totalVar):
+def plotPerformance(diffMean,totalVar):
     plt.title('Performance Measurement')
     plt.subplot(211)
     plt.plot(diffMean)

@@ -46,12 +46,12 @@ def main(par):
 
     """Initialize plot"""
     if par.plot:
-        fig = plt.figure(0)
+        fig0 = plt.figure(0)
         plt.clf()
         plt.ion()
         # plt.axis('equal')
-        functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
-        fig.canvas.draw()
+        functions.plotFields(par, fig0, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
+        fig0.canvas.draw()
         plt.show()
 
     """Get first measurement:"""
@@ -90,7 +90,7 @@ def main(par):
             yMeas = auv.y
         else:
             # Get next measurement according to dynamics, stack under measurement vector
-            xMeas, yMeas = functions.getNextState(xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
+            xMeas, yMeas = functions.getNextState(par, xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
 
         xHist.append(xMeas)
         yHist.append(yMeas)
@@ -114,36 +114,32 @@ def main(par):
         diffMeanVec.append(diffMean)
         totalVarVec.append(totalVar)
         if par.plotOptions.showPerformance:
-            fig = plt.figure(3)
+            fig3 = plt.figure(3)
             plt.clf()
             plt.show()
-            functions.plotPerformance(fig, diffMeanVec, totalVarVec)
-            fig.canvas.draw()
+            functions.plotPerformance(diffMeanVec, totalVarVec)
+            fig3.canvas.draw()
 
 
         """Plotting"""
         if par.plot:
-            if not par.fastCalc:
-                plt.figure(0)
-                plt.clf()
-                plt.ion()
-                functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
-                fig.canvas.draw()
+            plt.figure(0)
+            plt.clf()
+            plt.ion()
+            functions.plotFields(par,fig0, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
+            fig0.canvas.draw()
 
         """Update ground truth:"""
         if par.temporal:
-            trueField.updateField(i)
+            trueField.updateField(par, i)
 
     return x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist, diffMeanVec, totalVarVec
 #functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 #plt.show(block=True)
 
-# TODO Use function for rotating field
-# TODO Check first mean beliefs in STKF
 # TODO Learning circular field
 # TODO Try Car(2) precision matrix
 # TODO use of sparse commands
-# TODO Check again feasability of trajs
 # TODO Check computation time -> python library?
 # TODO -> Change implementation of belief update at each node
 # TODO tidy up code, consistent classes and paramater policy
@@ -151,10 +147,13 @@ def main(par):
 # TODO Compare to PI2
 # TODO Use generic gmrf implementation (also for action reward mapping)
 # TODO maybe use cubic splines or kernel trajs
-# TODO add outer grid
-# TODO boundary conditions
 
 # DONE
+# TODO Check again feasability of trajs
+# TODO add outer grid
+# TODO boundary conditions
+# TODO Use function for rotating field
+# TODO Check first mean beliefs in STKF
 # TODO maybe discount future rewards for exploration
 # TODO Check visit counter
 # TODO Improve negative rewards

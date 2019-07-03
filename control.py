@@ -196,7 +196,7 @@ class CBTS:
 
             # plot estimated reward over actions
             if self.par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor - 1):
-                functions.plotPolicy(v.GP, thetaPredict, mu)
+                functions.plotPolicy(self.par, v.GP, thetaPredict, mu)
 
         return bestTheta
 
@@ -232,7 +232,7 @@ class CBTS:
 
         # plot acquisition function
         if self.par.plotOptions.showAcquisitionFunction:
-            functions.plotRewardFunction(v0.gmrf)
+            functions.plotRewardFunction(self.par,v0.gmrf)
 
         return bestTraj, derivX, derivY
 

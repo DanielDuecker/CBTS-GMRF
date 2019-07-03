@@ -22,7 +22,7 @@ par = parameters.par
 #fastCalc = True  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
 #truncation = False
 
-nSim = 50
+nSim = 2
 nIter = par.nIter
 
 x = []
@@ -99,7 +99,7 @@ if saveToFile:
     fig0 = plt.figure(100, figsize=(19.2,10.8), dpi=100)
     print("Plotting..")
     for i in range(nSim):
-        functions.plotFields(fig0, x[i], y[i], trueField[i], gmrf[i], controller[i], CBTS[i], timeVec[i], xHist[i], yHist[i])
+        functions.plotFields(par,fig0, x[i], y[i], trueField[i], gmrf[i], controller[i], CBTS[i], timeVec[i], xHist[i], yHist[i])
         fig0.savefig(time.strftime("%Y%m%d") + "_" + str(index) + '_' + str(i) + 'fields.svg', format='svg')
         plt.clf()
     plt.close(fig0)
