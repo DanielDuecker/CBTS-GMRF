@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 import functions
 import main
 import os
+import csv
 import time
 import shutil
+import pickle
 
 saveToFile = True
 
@@ -66,14 +68,35 @@ if saveToFile:
     # Copy used parameters
     shutil.copyfile(dirpath + '/parameters.py',path + time.strftime("/%Y%m%d") + "_" + str(index) + '_parameters.txt')
 
-    # Save data
-    f = open(time.strftime("%Y%m%d") + "_" + str(index) + '_data.txt','w+')
-    f.close()
+    """Save objects"""
+    # Save objects
+    with open('objs.pkl', 'wb') as f:
+        pickle.dump([x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar], f)
 
-    # Plot data
+    # Getting back the objects:
+    #with open('objs.pkl','rb') as f:
+    #    x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar = pickle.load(f)
+
+    # Save data as csv
+    with open(time.strftime("%Y%m%d") + "_" + str(index) + '_data.csv','w') as dataFile:
+        writer = csv.writer(dataFile)
+        for i in range(nSim):
+            writer.writerow(x[i])
+            writer.writerow(y[i])
+            writer.writerow(timeVec[i])
+            writer.writerow(xHist[i])
+            writer.writerow(yHist[i])
+            writer.writerow(diffMean[i])
+            writer.writerow(totalVar[i])
+            writer.writerow(gmrf[i].meanCond)
+            writer.writerow(gmrf[i].covCond)
+            writer.writerow(["-"])
+    dataFile.close()
+
+    """Plot data"""
     fig0 = plt.figure(100, figsize=(19.2,10.8), dpi=100)
+    print("Plotting..")
     for i in range(nSim):
-        print("plot fields")
         functions.plotFields(fig0, x[i], y[i], trueField[i], gmrf[i], controller[i], CBTS[i], timeVec[i], xHist[i], yHist[i])
         fig0.savefig(time.strftime("%Y%m%d") + "_" + str(index) + '_' + str(i) + 'fields.svg', format='svg')
         plt.clf()
@@ -81,17 +104,16 @@ if saveToFile:
 
     fig1 = plt.figure(200,figsize=(19.2,10.8), dpi=100)
     plt.title('Performance Measurement')
-    ax1 = fig1.add_subplot(211)
+    plt.subplot(211)
     for i in range(nSim):
-        ax1.plot(diffMean[i])
+        plt.plot(diffMean[i])
     plt.xlabel('Iteration Index')
     plt.ylabel('Difference Between Ground Truth and Belief')
-    ax2 = fig1.add_subplot(212)
+    plt.subplot(212)
     for i in range(nSim):
-        ax2.plot(totalVar[i])
+        plt.plot(totalVar[i])
     plt.xlabel('Iteration Index')
     plt.ylabel('Total Belief Uncertainty')
-    plt.show()
     fig1.savefig(time.strftime("%Y%m%d") + "_" + str(index) + '_fig.svg', format='svg')
 
 

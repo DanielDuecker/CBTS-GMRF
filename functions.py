@@ -203,11 +203,11 @@ def measurePerformance(gmrf,trueField):
 
 def plotPerformance(fig, diffMean,totalVar):
     plt.title('Performance Measurement')
-    ax1 = fig.add_subplot(211)
-    ax1.plot(diffMean)
+    plt.subplot(211)
+    plt.plot(diffMean)
     plt.xlabel('Iteration Index')
     plt.ylabel('Difference Between Ground Truth and Belief')
-    ax2 = fig.add_subplot(212)
-    ax2.plot(totalVar)
+    plt.subplot(212)
+    plt.plot(totalVar)
     plt.xlabel('Iteration Index')
     plt.ylabel('Total Belief Uncertainty')
