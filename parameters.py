@@ -5,20 +5,20 @@ class par:
     """Parameters for all files"""
 
     """main.py"""
-    stkf = True
-    sequentialUpdate = True  # Does not work with truncation!
-    truncation = False
-    PIControl = False
+    belief = 'stkf'  # 'seqBayes', 'regBayes', 'regBayesTrunc'
+
+    control = 'cbts'  # 'pi2', 'randomWalk'
 
     fieldType = 'predefined'  # 'peak','sine' or 'predefined'
     temporal = False  # True: time varying field
 
     plot = False
 
-    if not PIControl:
-        CBTS = True
-    else:
-        CBTS = False
+    class plotOptions:
+        showExploredPaths = False
+        showActionRewardMapping = False
+        showAcquisitionFunction = False
+        showPerformance = False
 
     exploitingRate = 0
 
@@ -90,14 +90,8 @@ class par:
     kernelPar = 10  # used in exponential kernel to determine variance between to inputs
     nThetaSamples = 100  # number of samples thetas which are candidates for next theta
 
-    if not truncation:
+    if belief != 'regBayesTrunc':
         nMeas = nIter
 
-    if stkf:
+    if belief == 'stkf':
         nBeta = 0
-
-    class plotOptions:
-        showExploredPaths = False
-        showActionRewardMapping = False
-        showAcquisitionFunction = False
-        showPerformance = False

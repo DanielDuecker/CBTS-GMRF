@@ -122,12 +122,12 @@ def plotFields(par, fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist
                  levels=gmrf.covLevels)
     for a in CS.collections:
         a.set_edgecolor('face')
-    if par.PIControl:
+    if par.control == 'pi2':
         ax3.plot(controller.xTraj,controller.yTraj,'blue')
         for k in range(par.K):
             ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
 
-    elif par.CBTS:
+    elif par.control == 'cbts':
         for k in range(CBTS1.xTraj.shape[1]-1):
             ax3.plot(CBTS1.xTraj[:, k+1], CBTS1.yTraj[:, k+1],'grey')
     ax3.plot(xHist, yHist, 'black')

@@ -70,27 +70,31 @@ def main(par):
         timeBefore = time.time()
 
         """Update belief"""
-        if par.stkf:
+        if par.belief == 'stkf':
             stkf1.kalmanFilter(t, xMeas, yMeas, zMeas[i])
-        elif par.sequentialUpdate:
+        elif par.belief == 'seqBayes':
             gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])
-        else:
+        elif par.belief == 'regBayes' or par.belief == 'regBayesTrunc':
             gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
+        else:
+            return("Error! No update method selected")
 
         """Controller"""
-        if par.PIControl:
+        if par.control == 'pi2':
             # Get next state according to PI Controller
             xMeas, yMeas = controller.getNewState(auv, gmrf1)
-        elif par.CBTS:
+        elif par.control == 'cbts':
             if i % par.nTrajPoints == 0:
                 bestTraj, auv.derivX, auv.derivY = CBTS1.getNewTraj(auv, gmrf1)
             auv.x = bestTraj[0, i % par.nTrajPoints]
             auv.y = bestTraj[1, i % par.nTrajPoints]
             xMeas = auv.x
             yMeas = auv.y
-        else:
+        elif par.control == 'randomWalk':
             # Get next measurement according to dynamics, stack under measurement vector
             xMeas, yMeas = functions.getNextState(par, xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
+        else:
+            return("Error! No controller selected")
 
         xHist.append(xMeas)
         yHist.append(yMeas)
@@ -100,7 +104,7 @@ def main(par):
         Phi[(i + 1) % par.nMeas, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
 
         """If truncated measurements are used, set conditioned mean and covariance as prior"""
-        if par.truncation:
+        if par.belief == 'regBayesTrunc':
             if (i + 1) % par.nMeas == 0:
                 gmrf1.covPrior = gmrf1.covCond
                 gmrf1.meanPrior = gmrf1.meanCond

@@ -9,22 +9,21 @@ import time
 import shutil
 import pickle
 
+"""Simulation Parameters"""
 saveToFile = True
+nSim = 2
 
+
+"""Get and modify Simulation Parameters"""
 par = parameters.par
 
-"""Simulation Parameters"""
-#belief = 'stkf' # 'seqBayes', 'regBayes'
-#fieldType = 'predefined'  # 'peak','sine' or 'predefined'
-#control = 'cbts' # 'pi2'
-#temporal = False  # True: time varying field
+par.belief = 'stkf'  # 'seqBayes', 'regBayes', 'regBayesTrunc'
+par.control = 'cbts'  # 'pi2', 'randomWalk'
+fieldType = 'predefined'  # 'peak','sine' or 'predefined'
+temporal = False  # True: time varying field
+plot = False
 
-#fastCalc = True  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
-#truncation = False
-
-nSim = 2
-nIter = par.nIter
-
+"""Initialize"""
 x = []
 y = []
 trueField = []
