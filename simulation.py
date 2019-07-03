@@ -8,6 +8,7 @@ import csv
 import time
 import shutil
 import pickle
+import copy
 
 """Simulation Parameters"""
 saveToFile = True
@@ -15,13 +16,19 @@ nSim = 2
 
 
 """Get and modify Simulation Parameters"""
-par = parameters.par
+par = copy.deepcopy(parameters.par)
 
 par.belief = 'stkf'  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
 par.control = 'cbts'  #'cbts', 'pi2', 'randomWalk'
 par.fieldType = 'predefined'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
 par.plot = False
+
+if par.belief != 'regBayesTrunc':
+    par.nMeas = par.nIter
+
+if par.belief == 'stkf':
+    par.nBeta = 0
 
 """Initialize"""
 x = []
@@ -35,6 +42,7 @@ xHist = []
 yHist = []
 diffMean = []
 totalVar = []
+parList = []
 
 for i in range(nSim):
     print("Simulation ",i," of ",nSim)
@@ -51,6 +59,7 @@ for i in range(nSim):
     yHist.append(yHistR)
     diffMean.append(diffMeanR)
     totalVar.append(totalVarR)
+    parList.append(par)
 
 if saveToFile:
     # Create new directory
@@ -72,11 +81,11 @@ if saveToFile:
     """Save objects"""
     # Save objects
     with open('objs.pkl', 'wb') as f:
-        pickle.dump([x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar], f)
+        pickle.dump([x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList], f)
 
     # Getting back the objects:
     #with open('objs.pkl','rb') as f:
-    #    x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar = pickle.load(f)
+    #    x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList = pickle.load(f)
 
     # Save data as csv
     with open(time.strftime("%Y%m%d") + "_" + str(index) + '_data.csv','w') as dataFile:
@@ -117,6 +126,8 @@ if saveToFile:
     plt.ylabel('Total Belief Uncertainty')
     fig1.savefig(time.strftime("%Y%m%d") + "_" + str(index) + '_fig.svg', format='svg')
 
+# TODO Enable loading of pickled data instead of simulating
+# TODO Enable changing of parameters while simulating
 
 
 

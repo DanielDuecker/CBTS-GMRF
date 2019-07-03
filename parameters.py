@@ -2,17 +2,14 @@ class par:
     import math
     import numpy as np
 
-    """Parameters for all files"""
+    """Parameters"""
 
-    """main.py"""
-    belief = 'stkf'  # 'seqBayes', 'regBayes', 'regBayesTrunc'
-
-    control = 'cbts'  # 'pi2', 'randomWalk'
-
-    fieldType = 'predefined'  # 'peak','sine' or 'predefined'
-    temporal = False  # True: time varying field
-
-    plot = False
+    """Simulation parameters will be specified in simulation.py"""
+    belief = None
+    control = None
+    fieldType = None
+    temporal = None
+    plot = None
 
     class plotOptions:
         showExploredPaths = False
@@ -89,9 +86,3 @@ class par:
     # Gaussian Process for action reward mapping
     kernelPar = 10  # used in exponential kernel to determine variance between to inputs
     nThetaSamples = 100  # number of samples thetas which are candidates for next theta
-
-    if belief != 'regBayesTrunc':
-        nMeas = nIter
-
-    if belief == 'stkf':
-        nBeta = 0
