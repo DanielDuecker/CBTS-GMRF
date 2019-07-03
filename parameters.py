@@ -24,7 +24,7 @@ class par:
 
     nIter = 100  # number of iterations
     dt = 1  # timesteps per iteration
-    nMeas = 100  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
+    nMeas = 10  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
     ov2 = 0.01  # measurement variance
     ov2Real = ov2
     dX = dY = 0.01  # discretizaton in x and y for Plotting
