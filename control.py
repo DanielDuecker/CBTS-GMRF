@@ -4,12 +4,11 @@ import math
 import numpy as np
 
 import functions
-import parameters as par
 from classes import node
 
 
 class piControl:
-    def __init__(self):
+    def __init__(self,par):
         self.R = par.R  # input cost matrix
         self.g = par.g  # mapping from u to states
         self.lambd = par.lambd  # influences state costs and noise variance
@@ -108,7 +107,8 @@ class piControl:
 
 
 class CBTS:
-    def __init__(self):
+    def __init__(self,par):
+        self.par = par
         self.nIterations = par.CBTSIterations
         self.nTrajPoints = par.nTrajPoints
         self.trajOrder = par.trajOrder
@@ -132,7 +132,7 @@ class CBTS:
 
     def getNewTraj(self, auv, gmrf):
         print("calculating..")
-        v0 = node(gmrf, auv)  # create node with belief b and total reward 0
+        v0 = node(self.par, gmrf, auv)  # create node with belief b and total reward 0
         self.xTraj = np.zeros((self.nTrajPoints, 1))
         self.yTraj = np.zeros((self.nTrajPoints, 1))
         for i in range(self.nIterations):
@@ -161,7 +161,7 @@ class CBTS:
                 v.GP.update(theta, r)
 
                 # Create new node:
-                vNew = node(v.gmrf, v.auv)
+                vNew = node(self.par, v.gmrf, v.auv)
                 vNew.rewardToNode = v.rewardToNode + self.discountFactor ** v.depth * r
                 vNew.totalReward = vNew.rewardToNode
                 vNew.parent = v
@@ -195,7 +195,7 @@ class CBTS:
             bestTheta = thetaPredict[index, :]
 
             # plot estimated reward over actions
-            if par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor - 1):
+            if self.par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor - 1):
                 functions.plotPolicy(v.GP, thetaPredict, mu)
 
         return bestTheta
@@ -208,7 +208,7 @@ class CBTS:
             nextTraj, derivX, derivY = self.generateTrajectory(v, nextTheta)
 
             # add explored paths to collected trajectories for plotting:
-            if par.plotOptions.showExploredPaths:
+            if self.par.plotOptions.showExploredPaths:
                 self.xTraj = np.hstack((self.xTraj, nextTraj[0, :].reshape(self.nTrajPoints, 1)))
                 self.yTraj = np.hstack((self.yTraj, nextTraj[1, :].reshape(self.nTrajPoints, 1)))
 
@@ -231,7 +231,7 @@ class CBTS:
         bestTraj, derivX, derivY = self.generateTrajectory(v0, bestTheta)
 
         # plot acquisition function
-        if par.plotOptions.showAcquisitionFunction:
+        if self.par.plotOptions.showAcquisitionFunction:
             functions.plotRewardFunction(v0.gmrf)
 
         return bestTraj, derivX, derivY

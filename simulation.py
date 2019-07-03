@@ -1,4 +1,4 @@
-import parameters as par
+import parameters
 import numpy as np
 import matplotlib.pyplot as plt
 import functions
@@ -11,16 +11,18 @@ import pickle
 
 saveToFile = True
 
+par = parameters.par
+
 """Simulation Parameters"""
-belief = 'stkf' # 'seqBayes', 'regBayes'
-fieldType = 'predefined'  # 'peak','sine' or 'predefined'
-control = 'cbts' # 'pi2'
-temporal = False  # True: time varying field
+#belief = 'stkf' # 'seqBayes', 'regBayes'
+#fieldType = 'predefined'  # 'peak','sine' or 'predefined'
+#control = 'cbts' # 'pi2'
+#temporal = False  # True: time varying field
 
-fastCalc = True  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
-truncation = False
+#fastCalc = True  # True: Fast Calculation, only one plot in the end; False: Live updating and plotting
+#truncation = False
 
-nSim = 2
+nSim = 50
 nIter = par.nIter
 
 x = []
@@ -37,7 +39,7 @@ totalVar = []
 
 for i in range(nSim):
     print("Simulation ",i," of ",nSim)
-    xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = main.main()
+    xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = main.main(par)
 
     x.append(xR)
     y.append(yR)

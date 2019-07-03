@@ -9,11 +9,10 @@ from scipy import integrate
 from scipy import interpolate
 
 import functions
-import parameters as par
 
 
 class agent:
-    def __init__(self, x0, y0, alpha0):
+    def __init__(self,par, x0, y0, alpha0):
         self.x = x0
         self.y = y0
         self.alpha = alpha0  # angle of direction of movement
@@ -39,7 +38,7 @@ class agent:
 
 
 class trueField:
-    def __init__(self, fieldType):
+    def __init__(self,par, fieldType):
         self.fieldType = fieldType
 
         """sine field"""
@@ -110,7 +109,7 @@ class trueField:
 
 
 class GP:
-    def __init__(self):
+    def __init__(self,par):
         self.kernelPar = par.kernelPar
         self.emptyData = True
         self.trainInput = None
@@ -155,7 +154,7 @@ class GP:
 
 
 class gmrf:
-    def __init__(self):
+    def __init__(self,par):
         """GMRF properties"""
         self.xMin = par.xMin
         self.xMax = par.xMax
@@ -253,7 +252,7 @@ class gmrf:
 
 
 class stkf:
-    def __init__(self, gmrf1):
+    def __init__(self,par, gmrf1):
         self.gmrf = gmrf1
         self.dt = par.dt
         self.sigmaT = par.sigmaT
@@ -310,7 +309,7 @@ class stkf:
 
 
 class node:
-    def __init__(self, gmrf1, auv):
+    def __init__(self, par, gmrf1, auv):
         self.gmrf = copy.deepcopy(gmrf1)
         self.auv = copy.deepcopy(auv)
         self.rewardToNode = 0
@@ -321,4 +320,4 @@ class node:
         self.children = []
         self.visits = 1
         self.D = []
-        self.GP = GP()
+        self.GP = GP(par)

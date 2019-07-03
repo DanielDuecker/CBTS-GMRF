@@ -1,21 +1,19 @@
 # First 2D-GMRF Implementation
 
-def main():
+def main(par):
     import time
 
     import matplotlib.pyplot as plt
     import numpy as np
-
     import control
     import functions
-    import parameters as par
     from classes import agent
     from classes import gmrf
     from classes import stkf
     from classes import trueField
 
     """Agent"""
-    auv = agent(par.x0, par.y0, par.alpha0)
+    auv = agent(par, par.x0, par.y0, par.alpha0)
     xHist = [par.x0]  # x-state history vector
     yHist = [par.y0]  # y-state history vector
 
@@ -31,19 +29,19 @@ def main():
     totalVarVec = []
 
     """GMRF representation"""
-    gmrf1 = gmrf()
+    gmrf1 = gmrf(par)
 
     """PI2 Controller"""
-    controller = control.piControl()
+    controller = control.piControl(par,)
 
     """Ground Truth"""
-    trueField = trueField(par.fieldType)
+    trueField = trueField(par,par.fieldType)
 
     """STKF extension of gmrf"""
-    stkf1 = stkf(gmrf1)
+    stkf1 = stkf(par,gmrf1)
 
     """"Continuous Belief Tree Search"""
-    CBTS1 = control.CBTS()
+    CBTS1 = control.CBTS(par,)
     bestTraj = np.zeros((2, 1))
 
     """Initialize plot"""
