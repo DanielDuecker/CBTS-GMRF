@@ -12,8 +12,7 @@ import copy
 
 """Simulation Parameters"""
 saveToFile = True
-nSim = 2
-
+nSim = 50
 
 """Get and modify Simulation Parameters"""
 par = copy.deepcopy(parameters.par)
@@ -79,7 +78,7 @@ if saveToFile:
     os.chdir(path)
 
     # Copy used parameters
-    shutil.copyfile(dirpath + '/parameters.py',path + folderName + '_parameters.txt')
+    shutil.copyfile(dirpath + '/parameters.py',path + '/' + folderName + '_parameters.txt')
 
     """Save objects"""
     # Save objects
