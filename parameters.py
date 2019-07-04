@@ -40,10 +40,10 @@ class par:
     """GMRF class"""
     xMin = 0  # GMRF dimensions
     xMax = 10
-    nGridX = 10
+    nGridX = 20
     yMin = 0
     yMax = 10
-    nGridY = 10
+    nGridY = 30
     nBeta = 1  # regression coefficients
     nEdge = 3 # needs to be at least 1
     valueT = 1e-3  # Prior precision value for regression vector bet
@@ -65,8 +65,8 @@ class par:
     outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative reward
 
     """CBTS controller"""
-    nGridXred = 15 # reduced grid size for nodes
-    nGridYred = 20
+    nGridXred = 10 # reduced grid size for nodes
+    nGridYred = 10
     trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
     trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
     CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
