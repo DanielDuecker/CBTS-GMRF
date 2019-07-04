@@ -18,7 +18,7 @@ class par:
         showExploredPaths = False
         showActionRewardMapping = False
         showAcquisitionFunction = False
-        showPerformance = True
+        showPerformance = False
 
     exploitingRate = 0
 
@@ -65,8 +65,6 @@ class par:
     outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative reward
 
     """CBTS controller"""
-    nGridXred = 10 # reduced grid size for nodes
-    nGridYred = 10
     trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
     trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
     CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit

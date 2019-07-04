@@ -1,7 +1,6 @@
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy import interpolate
 
 def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
     noise = np.random.normal(0, math.sqrt(noiseVariance))
@@ -92,31 +91,6 @@ def getNextState(par, x, y, xBefore, yBefore, maxStepsize, gmrf):
         yNext = y - par.yVel
 
     return xNext, yNext
-
-def sampleGMRF(gmrfOrig,gmrf):
-    X,Y = np.meshgrid(gmrfOrig.x,gmrfOrig.y)
-    fbSeq = interpolate.interp2d(X,Y,gmrfOrig.bSeq.reshape(gmrfOrig.nY, gmrfOrig.nX))
-    fprecCond = interpolate.interp2d(X,Y,gmrfOrig.precCond.diagonal().reshape(gmrfOrig.nY, gmrfOrig.nX))
-
-    gmrf.bSeq = fbSeq(gmrf.y,gmrf.x).reshape((gmrf.nP,1))
-    for i in range(gmrf.nX):
-        for j in range(gmrf.nY):
-            gmrf.precCond[gmrf.nX*j + i,gmrf.nX*j + i] = fprecCond(gmrf.y[i],gmrf.x[j]).flatten().T
-    #for i in range(gmrf.nX):
-    #    for j in range(gmrf.nY):
-    #        Phi = mapConDis(gmrfOrig,gmrf.x[i],gmrf.y[j])
-    #        gmrf.bSeq[gmrf.nX*j + i] = np.dot(Phi,gmrfOrig.bSeq)
-    #        gmrf.precCond[gmrf.nX*j + i,gmrf.nX*j + i] = np.dot(Phi,np.dot(gmrfOrig.precCond,Phi.T))
-    plt.figure(99)
-    plt.subplot(1,2,1)
-    plt.contourf(gmrf.x, gmrf.y,gmrf.bSeq[0:gmrf.nP].reshape(gmrf.nX, gmrf.nY))
-    X,Y = np.meshgrid(gmrf.x,gmrf.y)
-    plt.scatter(X,Y,s=0.2)
-    plt.subplot(1,2,2)
-    plt.contourf(gmrfOrig.x, gmrfOrig.y,gmrfOrig.bSeq[0:gmrfOrig.nP].reshape(gmrfOrig.nY, gmrfOrig.nX))
-    X,Y = np.meshgrid(gmrfOrig.x,gmrfOrig.y)
-    plt.scatter(X,Y,s=0.2)
-    plt.show()
 
 def plotFields(par, fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist, yHist):
     # Plotting ground truth

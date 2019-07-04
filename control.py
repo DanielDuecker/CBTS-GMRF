@@ -131,13 +131,10 @@ class CBTS:
         self.xTraj = np.zeros((self.nTrajPoints, 1))
         self.yTraj = np.zeros((self.nTrajPoints, 1))
 
-    def getNewTraj(self, auv, gmrfOrig):
-        gmrfRed = gmrf(self.par,self.par.nGridXred,self.par.nGridYred)
-        functions.sampleGMRF(gmrfOrig,gmrfRed)
-
+    def getNewTraj(self, auv, gmrf):
         # Get gmrf with less grid points
         print("calculating..")
-        v0 = node(self.par, gmrfRed, auv)  # create node with belief b and total reward 0
+        v0 = node(self.par, gmrf, auv)  # create node with belief b and total reward 0
         self.xTraj = np.zeros((self.nTrajPoints, 1))
         self.yTraj = np.zeros((self.nTrajPoints, 1))
         for i in range(self.nIterations):
@@ -166,7 +163,7 @@ class CBTS:
                 v.GP.update(theta, r)
 
                 # Create new node:
-                vNew = node(self.par, v.gmrfRed, v.auv)
+                vNew = node(self.par, v.gmrf, v.auv)
                 vNew.rewardToNode = v.rewardToNode + self.discountFactor ** v.depth * r
                 vNew.totalReward = vNew.rewardToNode
                 vNew.parent = v
@@ -179,8 +176,8 @@ class CBTS:
                 for i in range(len(o)):
                     vNew.auv.x = traj[0, i + 1]
                     vNew.auv.y = traj[1, i + 1]
-                    Phi = functions.mapConDis(vNew.gmrfRed, vNew.auv.x, vNew.auv.y)
-                    vNew.gmrfRed.seqBayesianUpdate(o[i], Phi)
+                    Phi = functions.mapConDis(vNew.gmrf, vNew.auv.x, vNew.auv.y)
+                    vNew.gmrf.seqBayesianUpdate(o[i], Phi)
 
                 vNew.auv.derivX = derivX
                 vNew.auv.derivY = derivY
@@ -237,7 +234,7 @@ class CBTS:
 
         # plot acquisition function
         if self.par.plotOptions.showAcquisitionFunction:
-            functions.plotRewardFunction(self.par,v0.gmrfRed)
+            functions.plotRewardFunction(self.par,v0.gmrf)
 
         return bestTraj, derivX, derivY
 
@@ -283,11 +280,11 @@ class CBTS:
         r = - self.controlCost * theta
         o = []
         for i in range(self.nTrajPoints - 1):
-            Phi = functions.mapConDis(v.gmrfRed, tau[0, i + 1], tau[1, i + 1])
-            r += (np.dot(Phi, v.gmrfRed.covCond.diagonal()) + self.UCBRewardFactor * np.dot(Phi, v.gmrfRed.meanCond))[0]
-            o.append(np.dot(Phi, v.gmrfRed.meanCond))
+            Phi = functions.mapConDis(v.gmrf, tau[0, i + 1], tau[1, i + 1])
+            r += (np.dot(Phi, v.gmrf.covCond.diagonal()) + self.UCBRewardFactor * np.dot(Phi, v.gmrf.meanCond))[0]
+            o.append(np.dot(Phi, v.gmrf.meanCond))
             # lower reward if agent is out of bound
-            if not functions.sanityCheck(tau[0, i + 1] * np.eye(1), tau[1, i + 1] * np.eye(1), v.gmrfRed):
+            if not functions.sanityCheck(tau[0, i + 1] * np.eye(1), tau[1, i + 1] * np.eye(1), v.gmrf):
                 r -= self.outOfGridPenaltyCBTS
 
         return r, o

@@ -320,8 +320,8 @@ class stkf:
         self.gmrf.precCond = np.linalg.inv(self.gmrf.covCond)
 
 class node:
-    def __init__(self, par, gmrfRed, auv):
-        self.gmrfRed = copy.deepcopy(gmrfRed)
+    def __init__(self, par, gmrf, auv):
+        self.gmrf = copy.deepcopy(gmrf)
         self.auv = copy.deepcopy(auv)
         self.rewardToNode = 0
         self.accReward = 0
