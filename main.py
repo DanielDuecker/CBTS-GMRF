@@ -1,10 +1,9 @@
 # First 2D-GMRF Implementation
 
 def main(par):
-    import cProfile
-
-    pr = cProfile.Profile()
-    pr.enable()
+    #import cProfile
+    #pr = cProfile.Profile()
+    #pr.enable()
 
     import time
 
@@ -142,14 +141,15 @@ def main(par):
         if par.temporal:
             trueField.updateField(par, i)
 
-    pr.disable()
-
-    pr.print_stats(sort='cumtime')
+    #pr.disable()
+    #pr.print_stats(sort='cumtime')
 
     return x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist, diffMeanVec, totalVarVec
 #functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 #plt.show(block=True)
 
+# TODO use stkf in controller update
+# TODO Fix distance between measurements on trajectory
 # TODO Learning circular field
 # TODO Try Car(2) precision matrix
 # TODO use of sparse commands

@@ -57,28 +57,29 @@ def getPrecisionMatrix(gmrf):
 
 
 def getNextState(par, x, y, xBefore, yBefore, maxStepsize, gmrf):
-    xNext = xBefore
-    yNext = yBefore
+    alpha = 2*math.pi*np.random.rand()
+    #xNext = xBefore
+    #yNext = yBefore
 
-    stepsize = maxStepsize * np.random.rand()
+    #stepsize = maxStepsize * np.random.rand()
 
-    # avoid going back to former location:
-    while xNext == xBefore and yNext == yBefore:
-        xNext = np.random.choice([x - stepsize, x + stepsize])
-        yNext = np.random.choice([y - stepsize, y + stepsize])
+    ## avoid going back to former location:
+    #while xNext == xBefore and yNext == yBefore:
+    #    xNext = np.random.choice([x - stepsize, x + stepsize])
+    #    yNext = np.random.choice([y - stepsize, y + stepsize])
 
     # x and y are switched because of matrix/plot relation
-    (yUncertain, xUncertain) = np.unravel_index(
-        np.argmax(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX), axis=None), (gmrf.nY, gmrf.nX))
+    #(yUncertain, xUncertain) = np.unravel_index(
+    #    np.argmax(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX), axis=None), (gmrf.nY, gmrf.nX))
 
-    dist = np.sqrt((xUncertain - x) ** 2 + (yUncertain - y) ** 2)
+    #dist = np.sqrt((xUncertain - x) ** 2 + (yUncertain - y) ** 2)
 
-    if np.random.rand() < par.exploitingRate:
-        xNext = x + par.xVel * (xUncertain - x) / dist
-        yNext = y + par.yVel * (yUncertain - y) / dist
-        if dist == 0:
-            xNext = x
-            yNext = y
+    #if np.random.rand() < par.exploitingRate:
+    #    xNext = x + par.xVel * (xUncertain - x) / dist
+    #    yNext = y + par.yVel * (yUncertain - y) / dist
+    #    if dist == 0:
+    #        xNext = x
+    #        yNext = y
 
     if xNext < gmrf.xMin:
         xNext = x + par.xVel

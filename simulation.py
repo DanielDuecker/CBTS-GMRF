@@ -1,6 +1,7 @@
 import parameters
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import stats
 import functions
 import main
 import os
@@ -12,7 +13,7 @@ import copy
 
 """Simulation Parameters"""
 saveToFile = True
-nSim = 1
+nSim = 5
 
 """Get and modify Simulation Parameters"""
 par = copy.deepcopy(parameters.par)
@@ -20,7 +21,7 @@ par = copy.deepcopy(parameters.par)
 par.nIter = 100
 
 par.belief = 'stkf'  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-par.control = 'cbts'  #'cbts', 'pi2', 'randomWalk'
+par.control = 'pi2'  #'cbts', 'pi2', 'randomWalk'
 par.fieldType = 'predefined'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
 par.plot = False
@@ -31,6 +32,9 @@ if par.belief != 'regBayesTrunc':
 
 if par.belief == 'stkf':
     par.nBeta = 0
+
+"""Simulate different settings:"""
+controlVec = ['cbts','pi2']
 
 """Initialize"""
 x = []
@@ -46,22 +50,24 @@ diffMean = []
 totalVar = []
 parList = []
 
-for i in range(nSim):
-    print("Simulation ",i," of ",nSim)
-    xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = main.main(par)
+for control in controlVec:
+    par.control = control
+    for i in range(nSim):
+        print("Simulation ",i," of ",nSim," with ",control)
+        xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = main.main(par)
 
-    x.append(xR)
-    y.append(yR)
-    trueField.append(trueFieldR)
-    gmrf.append(gmrfR)
-    controller.append(controllerR)
-    CBTS.append(CBTSR)
-    timeVec.append(timeVecR)
-    xHist.append(xHistR)
-    yHist.append(yHistR)
-    diffMean.append(diffMeanR)
-    totalVar.append(totalVarR)
-    parList.append(par)
+        x.append(xR)
+        y.append(yR)
+        trueField.append(trueFieldR)
+        gmrf.append(gmrfR)
+        controller.append(controllerR)
+        CBTS.append(CBTSR)
+        timeVec.append(timeVecR)
+        xHist.append(xHistR)
+        yHist.append(yHistR)
+        diffMean.append(diffMeanR)
+        totalVar.append(totalVarR)
+        parList.append(par)
 
 if saveToFile:
     # Create new directory
@@ -119,18 +125,28 @@ if saveToFile:
     plt.close(fig0)
 
     fig1 = plt.figure(200,figsize=(19.2,10.8), dpi=100)
+    x = np.linspace(0,par.nIter-1,par.nIter-1)
     plt.title('Performance Measurement')
     plt.subplot(211)
-    for i in range(nSim):
-        plt.plot(diffMean[i])
+    meanDiff = np.mean(diffMean,axis=0)
+    iqrDiff = stats.iqr(diffMean,axis=0)
+    plt.plot(x,meanDiff,'red')
+    plt.plot(x,meanDiff - iqrDiff,'gray')
+    plt.plot(x,meanDiff + iqrDiff,'gray')
+    plt.fill_between(x,meanDiff - iqrDiff,meanDiff + iqrDiff)
     plt.xlabel('Iteration Index')
     plt.ylabel('Difference Between Ground Truth and Belief')
     plt.subplot(212)
-    for i in range(nSim):
-        plt.plot(totalVar[i])
+    meanVar = np.mean(totalVar,axis=0)
+    iqrVar = stats.iqr(totalVar,axis=0)
+    plt.plot(x,meanVar,'red')
+    plt.plot(x,meanVar - iqrVar,'gray')
+    plt.plot(x,meanVar + iqrVar,'gray')
+    plt.fill_between(x,meanVar - iqrVar,meanVar + iqrVar)
     plt.xlabel('Iteration Index')
     plt.ylabel('Total Belief Uncertainty')
     fig1.savefig(folderName + '_performance.svg', format='svg')
+    plt.show()
 
 # TODO Enable loading of pickled data instead of simulating
 # TODO Enable changing of parameters while simulating
