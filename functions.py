@@ -92,6 +92,18 @@ def getNextState(par, x, y, xBefore, yBefore, maxStepsize, gmrf):
 
     return xNext, yNext
 
+def sampleGMRF(gmrfOrig,gmrf):
+    for i in range(gmrf.nX):
+        for j in range(gmrf.nY):
+            Phi = mapConDis(gmrfOrig,gmrf.x[i],gmrf.y[j])
+            gmrf.bSeq[gmrf.nX*i + j] = np.dot(Phi,gmrfOrig.bSeq)
+            gmrf.precCond[i,j] = np.dot(Phi,np.dot(gmrfOrig.precCond,Phi.T))
+    plt.figure(99)
+    plt.subplot(1,2,1)
+    plt.contourf(gmrf.x, gmrf.y,gmrf.bSeq[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
+    plt.subplot(1,2,2)
+    plt.contourf(gmrfOrig.x, gmrfOrig.y,gmrfOrig.bSeq[0:gmrfOrig.nP].reshape(gmrfOrig.nY, gmrfOrig.nX))
+    plt.show()
 
 def plotFields(par, fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist, yHist):
     # Plotting ground truth

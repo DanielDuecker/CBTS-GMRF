@@ -29,7 +29,7 @@ def main(par):
     totalVarVec = []
 
     """GMRF representation"""
-    gmrf1 = gmrf(par)
+    gmrf1 = gmrf(par,par.nGridX,par.nGridY)
 
     """PI2 Controller"""
     controller = control.piControl(par,)

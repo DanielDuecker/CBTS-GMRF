@@ -154,7 +154,7 @@ class GP:
 
 
 class gmrf:
-    def __init__(self,par):
+    def __init__(self,par,nGridX,nGridY):
         """GMRF properties"""
         self.par = par
 
@@ -164,8 +164,8 @@ class gmrf:
         self.yMin = par.yMin
         self.yMax = par.yMax
 
-        self.nGridX = par.nGridX
-        self.nGridY = par.nGridY
+        self.nGridX = nGridX
+        self.nGridY = nGridY
 
         self.nEdge = par.nEdge
 
@@ -237,6 +237,11 @@ class gmrf:
         else:
             self.meanCond = np.dot(self.covPrior, np.dot(Phi.T, np.dot(np.linalg.inv(R), zMeas)))
 
+        # Also update bSeq and precCond in case seq. belief update is used for planning
+        self.bSeq = self.bSeq + 1 / self.ov2 * Phi[-1] * zMeas[-1]
+        self.precCond = np.linalg.inv(self.covCond)
+
+
     def seqBayesianUpdate(self, zMeas_k, Phi_k):
         Phi_k = Phi_k.reshape(1, self.nP + self.nBeta)
         zMeas_k = zMeas_k.reshape(1, 1)
@@ -255,6 +260,7 @@ class gmrf:
 
 class stkf:
     def __init__(self,par, gmrf1):
+        self.par = par
         self.gmrf = gmrf1
         self.dt = par.dt
         self.sigmaT = par.sigmaT
@@ -309,10 +315,13 @@ class stkf:
         self.gmrf.covCond = np.dot(self.Cs, np.dot(covt, self.Cs.T))
         self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
 
+        # Also update bSeq and precCond in case seq. belief update is used for planning
+        self.gmrf.bSeq = self.gmrf.bSeq + 1 / self.par.ov2 * Phi.T * zMeas  # sequential update canonical mean
+        self.gmrf.precCond = np.linalg.inv(self.gmrf.covCond)
 
 class node:
-    def __init__(self, par, gmrf1, auv):
-        self.gmrf = copy.deepcopy(gmrf1)
+    def __init__(self, par, gmrfRed, auv):
+        self.gmrfRed = copy.deepcopy(gmrfRed)
         self.auv = copy.deepcopy(auv)
         self.rewardToNode = 0
         self.accReward = 0

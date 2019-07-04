@@ -11,15 +11,17 @@ class par:
     temporal = None
     plot = None
 
+    nIter = None  # number of iterations
+
+
     class plotOptions:
         showExploredPaths = False
         showActionRewardMapping = False
         showAcquisitionFunction = False
-        showPerformance = False
+        showPerformance = True
 
     exploitingRate = 0
 
-    nIter = 500  # number of iterations
     dt = 1  # timesteps per iteration
     nMeas = 10  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
     ov2 = 0.01  # measurement variance
@@ -63,6 +65,8 @@ class par:
     outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative reward
 
     """CBTS controller"""
+    nGridXred = 10 # reduced grid size for nodes
+    nGridYred = 10
     trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
     trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
     CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit

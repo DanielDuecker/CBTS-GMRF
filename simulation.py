@@ -12,16 +12,18 @@ import copy
 
 """Simulation Parameters"""
 saveToFile = True
-nSim = 50
+nSim = 1
 
 """Get and modify Simulation Parameters"""
 par = copy.deepcopy(parameters.par)
+
+par.nIter = 1000
 
 par.belief = 'stkf'  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
 par.control = 'cbts'  #'cbts', 'pi2', 'randomWalk'
 par.fieldType = 'predefined'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
-par.plot = False
+par.plot = True
 parSimList = [par.belief, par.control, par.fieldType, par.temporal]
 
 if par.belief != 'regBayesTrunc':
