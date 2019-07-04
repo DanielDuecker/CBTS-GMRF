@@ -1,6 +1,11 @@
 # First 2D-GMRF Implementation
 
 def main(par):
+    import cProfile
+
+    pr = cProfile.Profile()
+    pr.enable()
+
     import time
 
     import matplotlib.pyplot as plt
@@ -136,6 +141,10 @@ def main(par):
         """Update ground truth:"""
         if par.temporal:
             trueField.updateField(par, i)
+
+    pr.disable()
+
+    pr.print_stats(sort='cumtime')
 
     return x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist, diffMeanVec, totalVarVec
 #functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)

@@ -23,7 +23,7 @@ par.belief = 'stkf'  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
 par.control = 'cbts'  #'cbts', 'pi2', 'randomWalk'
 par.fieldType = 'predefined'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
-par.plot = True
+par.plot = False
 parSimList = [par.belief, par.control, par.fieldType, par.temporal]
 
 if par.belief != 'regBayesTrunc':
