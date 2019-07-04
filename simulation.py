@@ -17,7 +17,7 @@ nSim = 1
 """Get and modify Simulation Parameters"""
 par = copy.deepcopy(parameters.par)
 
-par.nIter = 1000
+par.nIter = 100
 
 par.belief = 'stkf'  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
 par.control = 'cbts'  #'cbts', 'pi2', 'randomWalk'
