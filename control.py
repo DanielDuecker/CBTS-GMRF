@@ -175,6 +175,8 @@ class CBTS:
 
                 v.children.append(vNew)
 
+                # simulate regular GP update:
+
                 # simulate GP update of belief
                 for i in range(len(o)):
                     vNew.auv.x = traj[0, i + 1]
