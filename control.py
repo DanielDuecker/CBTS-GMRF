@@ -132,9 +132,8 @@ class CBTS:
         self.yTraj = np.zeros((self.nTrajPoints, 1))
 
     def getNewTraj(self, auv, gmrfOrig):
-        gmrfRed = gmrfOrig
-        #gmrfRed = gmrf(self.par,self.par.nGridXred,self.par.nGridYred)
-        #functions.sampleGMRF(gmrfOrig,gmrfRed)
+        gmrfRed = gmrf(self.par,self.par.nGridXred,self.par.nGridYred)
+        functions.sampleGMRF(gmrfOrig,gmrfRed)
 
         # Get gmrf with less grid points
         print("calculating..")
