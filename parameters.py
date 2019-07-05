@@ -71,7 +71,8 @@ class par:
     branchingFactor = 6  # number of actions that can be evaluated at max for each path segment
     maxDepth = 3  # depth of search tree
     kappa = 50  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
-    nTrajPoints = int(trajStepSize / maxStepsize)  # number of measurement points along trajectory
+    nMeasPoints = int(trajStepSize / maxStepsize) # number of measurement points along trajectory
+    nTrajPoints = nMeasPoints + 1 # length of trajectories (including starting position)
     kappaChildSelection = 1  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
     UCBRewardFactor = 0.05  # reward = variance + UCBRewardFactor*mean
     outOfGridPenaltyCBTS = 1

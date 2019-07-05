@@ -48,6 +48,7 @@ def main(par):
     """"Continuous Belief Tree Search"""
     CBTS1 = control.CBTS(par,)
     bestTraj = np.zeros((2, 1))
+    trajIndex = 1 # current position in trajectory vector (0 is initial position)
 
     """Initialize plot"""
     if par.plot:
@@ -88,12 +89,15 @@ def main(par):
             # Get next state according to PI Controller
             xMeas, yMeas = controller.getNewState(auv, gmrf1)
         elif par.control == 'cbts':
-            if i % par.nTrajPoints == 0:
+            if i % par.nMeasPoints == 0:
                 bestTraj, auv.derivX, auv.derivY = CBTS1.getNewTraj(auv, gmrf1)
-            auv.x = bestTraj[0, i % par.nTrajPoints]
-            auv.y = bestTraj[1, i % par.nTrajPoints]
+                trajIndex = 1
+            auv.x = bestTraj[0, trajIndex]
+            auv.y = bestTraj[1, trajIndex]
             xMeas = auv.x
             yMeas = auv.y
+            trajIndex += 1
+            test  = True
         elif par.control == 'randomWalk':
             # Get next measurement according to dynamics, stack under measurement vector
             xMeas, yMeas = functions.randomWalk(par, xMeas, yMeas, gmrf1)
