@@ -22,7 +22,7 @@ controlOptions = ['pi2','cbts']  #'cbts', 'pi2', 'randomWalk'
 
 saveToFile = True
 nSim = 5
-par.nIter = 500
+par.nIter = 100
 par.fieldType = 'sine'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
 par.plot = False
@@ -168,6 +168,8 @@ if saveToFile:
 plt.show()
 
 # TODO Enable loading of pickled data instead of simulating
+
+# DONE
 # TODO Enable changing of parameters while simulating
 
 

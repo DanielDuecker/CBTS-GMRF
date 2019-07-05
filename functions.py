@@ -172,9 +172,9 @@ def sanityCheck(xVec,yVec,gmrf):
     return True
 
 def measurePerformance(gmrf,trueField):
-    diffMean = np.sum(trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge],gmrf.y[gmrf.nEdge:-gmrf.nEdge])
-                      -gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge])
-    totalVar = np.sum(gmrf.covCond)
+    diffMean = np.sum(abs(trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge],gmrf.y[gmrf.nEdge:-gmrf.nEdge])
+                      -gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge]))
+    totalVar = np.sum(abs(gmrf.covCond))
     return diffMean,totalVar
 
 def plotPerformance(diffMean,totalVar):
