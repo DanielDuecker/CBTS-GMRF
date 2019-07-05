@@ -57,8 +57,7 @@ def getPrecisionMatrix(gmrf):
 
 
 def randomWalk(par, x, y, gmrf):
-    #alpha = 2*math.pi*np.random.rand()
-    alpha = 1/4*math.pi*np.random.rand()
+    alpha = 2*math.pi*np.random.rand()
     xNext = x + par.maxStepsize*math.cos(alpha)
     yNext = y + par.maxStepsize*math.sin(alpha)
 

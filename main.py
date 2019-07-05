@@ -15,6 +15,7 @@ def main(par):
     from classes import gmrf
     from classes import stkf
     from classes import trueField
+    import math
 
     """Agent"""
     auv = agent(par, par.x0, par.y0, par.alpha0)
@@ -55,7 +56,6 @@ def main(par):
         plt.ion()
         # plt.axis('equal')
         functions.plotFields(par, fig0, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
-        print("done")
         fig0.canvas.draw()
         plt.show()
 
@@ -100,6 +100,7 @@ def main(par):
         else:
             return("Error! No controller selected")
 
+        print(math.sqrt((yMeas-yHist[-1])**2+(xMeas-xHist[-1])**2))
         xHist.append(xMeas)
         yHist.append(yMeas)
         zMeas[(i + 1) % par.nMeas] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
