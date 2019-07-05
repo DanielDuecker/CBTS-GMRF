@@ -19,7 +19,7 @@ controlOptions = ['cbts', 'pi2']  #'cbts', 'pi2', 'randomWalk'
 
 saveToFile = True
 nSim = 2
-par.nIter = 20
+par.nIter = 10
 par.fieldType = 'predefined'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
 par.plot = False
@@ -128,7 +128,7 @@ for belief in beliefOptions:
         print("Plotting..")
         for i in range(nSim):
             functions.plotFields(par,fig0, x[i], y[i], trueField[i], gmrf[i], controller[i], CBTS[i], timeVec[i], xHist[i], yHist[i])
-            fig0.savefig(folderName + '_' + str(i) + '_' + simCase + '_' + par.fieldType +'.svg', format='svg')
+            fig0.savefig(folderName + '_' + str(i) + '_' + simCase + '_' + par.fieldType + '.svg', format='svg')
             plt.clf()
         plt.close(fig0)
 
@@ -139,20 +139,22 @@ plt.subplot(211)
 for sim in simList:
     meanDiff = np.mean(diffMeanDict[sim],axis=0)
     iqrDiff = stats.iqr(diffMeanDict[sim],axis=0)
-    plt.plot(x,meanDiff,'red')
+    plt.plot(x,meanDiff,label = sim)
     plt.plot(x,meanDiff - iqrDiff,'gray')
     plt.plot(x,meanDiff + iqrDiff,'gray')
-    plt.fill_between(x,meanDiff - iqrDiff,meanDiff + iqrDiff)
+    plt.fill_between(x,meanDiff - iqrDiff,meanDiff + iqrDiff, cmap='twilight',alpha=0.4)
+    plt.legend()
 plt.xlabel('Iteration Index')
 plt.ylabel('Difference Between Ground Truth and Belief')
 plt.subplot(212)
 for sim in simList:
     meanVar = np.mean(totalVarDict[sim],axis=0)
     iqrVar = stats.iqr(totalVarDict[sim],axis=0)
-    plt.plot(x,meanVar,'red')
+    plt.plot(x,meanVar,label = sim)
     plt.plot(x,meanVar - iqrVar,'gray')
     plt.plot(x,meanVar + iqrVar,'gray')
-    plt.fill_between(x,meanVar - iqrVar,meanVar + iqrVar)
+    plt.fill_between(x,meanVar - iqrVar,meanVar + iqrVar, cmap='twilight',alpha=0.4)
+    plt.legend()
 plt.xlabel('Iteration Index')
 plt.ylabel('Total Belief Uncertainty')
 fig1.savefig(folderName + '_performance.svg', format='svg')
