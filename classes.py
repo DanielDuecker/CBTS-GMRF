@@ -31,7 +31,7 @@ class agent:
         xTraj = np.zeros((len(u), 1))
         yTraj = np.zeros((len(u), 1))
         alphaTraj = np.zeros((len(u), 1))
-        (xTraj[0], yTraj[0], alphaTraj[0]) = self.stateDynamics(self.x, yTraj[i], self.y,, self.alpha)
+        (xTraj[0], yTraj[0], alphaTraj[0]) = (self.x, self.y, self.alpha)
         for i in range(len(u) - 1):
             (xTraj[i + 1], yTraj[i + 1], alphaTraj[i + 1]) = self.stateDynamics(xTraj[i], yTraj[i], alphaTraj[i], u[i])
         return xTraj, yTraj, alphaTraj

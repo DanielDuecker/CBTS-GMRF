@@ -92,7 +92,7 @@ class piControl:
 
         self.xTraj, self.yTraj, self.alphaTraj = auv.trajectoryFromControl(self.u)
 
-        auv.x, auv.y, auv.alpha = (self.xTraj[0], self.yTraj[0], self.alphaTraj[0])
+        auv.x, auv.y, auv.alpha = (self.xTraj[1], self.yTraj[1], self.alphaTraj[1])
 
         if auv.x < gmrf.xMin:
             auv.x = gmrf.xMin
