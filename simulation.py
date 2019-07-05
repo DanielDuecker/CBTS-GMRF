@@ -15,14 +15,14 @@ import copy
 par = copy.deepcopy(parameters.par)
 """Simulation Options"""
 beliefOptions = ['stkf']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['cbts', 'pi2']  #'cbts', 'pi2', 'randomWalk'
+controlOptions = ['randomWalk']  #'cbts', 'pi2', 'randomWalk'
 
-saveToFile = True
-nSim = 2
-par.nIter = 10
+saveToFile = False
+nSim = 1
+par.nIter = 100
 par.fieldType = 'predefined'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
-par.plot = False
+par.plot = True
 
 parSimList = [nSim, par.nIter, par.belief, par.control, par.fieldType, par.temporal]
 simList = []
@@ -50,7 +50,6 @@ for belief in beliefOptions:
     par.belief = belief
     for control in controlOptions:
         par.control = control
-
         simCase = belief + '_' + control
         simList.append(simCase)
 
@@ -93,42 +92,46 @@ for belief in beliefOptions:
         diffMeanDict[simCase] = diffMean
         totalVarDict[simCase] = totalVar
 
-        # Copy used parameters
-        shutil.copyfile(dirpath + '/parameters.py',path + '/' + folderName + '_' + simCase + '_parameters.txt')
+        if saveToFile:
+            # Copy used parameters
+            shutil.copyfile(dirpath + '/parameters.py',path + '/' + folderName + '_' + simCase + '_parameters.txt')
 
-        """Save objects"""
-        # Save objects
-        with open('objs' + '_' + simCase + '.pkl', 'wb') as f:
-            pickle.dump([x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList], f)
+            """Save objects"""
+            # Save objects
+            with open('objs' + '_' + simCase + '.pkl', 'wb') as f:
+                pickle.dump([x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList], f)
 
-        # Getting back the objects:
-        # with open('objs.pkl','rb') as f:
-        #    x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList = pickle.load(f)
+            # Getting back the objects:
+            # with open('objs.pkl','rb') as f:
+            #    x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList = pickle.load(f)
 
-        # Save data as csv
-        with open(folderName + '_' + simCase + '_data.csv','w') as dataFile:
-            writer = csv.writer(dataFile)
-            for i in range(nSim):
-                writer.writerow([i])
-                writer.writerow(x[i])
-                writer.writerow(y[i])
-                writer.writerow(timeVec[i])
-                writer.writerow(xHist[i])
-                writer.writerow(yHist[i])
-                writer.writerow(diffMean[i])
-                writer.writerow(totalVar[i])
-                writer.writerow(gmrf[i].meanCond)
-                writer.writerow(gmrf[i].covCond)
-                writer.writerow(parSimList)
-                writer.writerow(["-"])
-            dataFile.close()
+            # Save data as csv
+            with open(folderName + '_' + simCase + '_data.csv','w') as dataFile:
+                writer = csv.writer(dataFile)
+                for i in range(nSim):
+                    writer.writerow([i])
+                    writer.writerow(x[i])
+                    writer.writerow(y[i])
+                    writer.writerow(timeVec[i])
+                    writer.writerow(xHist[i])
+                    writer.writerow(yHist[i])
+                    writer.writerow(diffMean[i])
+                    writer.writerow(totalVar[i])
+                    writer.writerow(gmrf[i].meanCond)
+                    writer.writerow(gmrf[i].covCond)
+                    writer.writerow(parSimList)
+                    writer.writerow(["-"])
+                dataFile.close()
 
         """Plot fields"""
         fig0 = plt.figure(100, figsize=(19.2,10.8), dpi=100)
         print("Plotting..")
         for i in range(nSim):
             functions.plotFields(par,fig0, x[i], y[i], trueField[i], gmrf[i], controller[i], CBTS[i], timeVec[i], xHist[i], yHist[i])
-            fig0.savefig(folderName + '_' + str(i) + '_' + simCase + '_' + par.fieldType + '.svg', format='svg')
+            if saveToFile:
+                fig0.savefig(folderName + '_' + str(i) + '_' + simCase + '_' + par.fieldType + '.svg', format='svg')
+            else:
+                plt.show()
             plt.clf()
         plt.close(fig0)
 
@@ -157,7 +160,8 @@ for sim in simList:
     plt.legend()
 plt.xlabel('Iteration Index')
 plt.ylabel('Total Belief Uncertainty')
-fig1.savefig(folderName + '_performance.svg', format='svg')
+if saveToFile:
+    fig1.savefig(folderName + '_performance.svg', format='svg')
 plt.show()
 
 # TODO Enable loading of pickled data instead of simulating

@@ -56,30 +56,10 @@ def getPrecisionMatrix(gmrf):
     return Lambda
 
 
-def getNextState(par, x, y, xBefore, yBefore, maxStepsize, gmrf):
+def randomWalk(par, x, y, gmrf):
     alpha = 2*math.pi*np.random.rand()
-    #xNext = xBefore
-    #yNext = yBefore
-
-    #stepsize = maxStepsize * np.random.rand()
-
-    ## avoid going back to former location:
-    #while xNext == xBefore and yNext == yBefore:
-    #    xNext = np.random.choice([x - stepsize, x + stepsize])
-    #    yNext = np.random.choice([y - stepsize, y + stepsize])
-
-    # x and y are switched because of matrix/plot relation
-    #(yUncertain, xUncertain) = np.unravel_index(
-    #    np.argmax(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX), axis=None), (gmrf.nY, gmrf.nX))
-
-    #dist = np.sqrt((xUncertain - x) ** 2 + (yUncertain - y) ** 2)
-
-    #if np.random.rand() < par.exploitingRate:
-    #    xNext = x + par.xVel * (xUncertain - x) / dist
-    #    yNext = y + par.yVel * (yUncertain - y) / dist
-    #    if dist == 0:
-    #        xNext = x
-    #        yNext = y
+    xNext = x + par.maxStepsize*math.cos(alpha)
+    yNext = y + par.maxStepsize*math.sin(alpha)
 
     if xNext < gmrf.xMin:
         xNext = x + par.xVel
@@ -100,6 +80,7 @@ def plotFields(par, fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist
     CS = ax1.contourf(x, y, Z, levels=trueField.fieldLevels)
     for a in CS.collections:
         a.set_edgecolor('face')
+
     ax1.plot(xHist, yHist, 'black')
     plt.title("True Field")
 
@@ -126,12 +107,10 @@ def plotFields(par, fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist
         ax3.plot(controller.xTraj,controller.yTraj,'blue')
         for k in range(par.K):
             ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
-
     elif par.control == 'cbts':
         for k in range(CBTS1.xTraj.shape[1]-1):
             ax3.plot(CBTS1.xTraj[:, k+1], CBTS1.yTraj[:, k+1],'grey')
     ax3.plot(xHist, yHist, 'black')
-
     plt.xlabel("x in m")
     plt.ylabel("y in m")
     plt.title("Uncertainty Belief")

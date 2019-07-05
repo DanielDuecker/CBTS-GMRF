@@ -55,6 +55,7 @@ def main(par):
         plt.ion()
         # plt.axis('equal')
         functions.plotFields(par, fig0, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
+        print("done")
         fig0.canvas.draw()
         plt.show()
 
@@ -65,7 +66,6 @@ def main(par):
     Phi = np.zeros((par.nMeas, gmrf1.nP + gmrf1.nBeta))
     zMeas[0] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
     Phi[0, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
-
     """Update and plot field belief"""
     for i in range(par.nIter - 1):
         print("Iteration ", i, " of ", par.nIter, ".")
@@ -96,7 +96,7 @@ def main(par):
             yMeas = auv.y
         elif par.control == 'randomWalk':
             # Get next measurement according to dynamics, stack under measurement vector
-            xMeas, yMeas = functions.getNextState(par, xMeas, yMeas, xHist[-2], yHist[-2], par.maxStepsize, gmrf1)
+            xMeas, yMeas = functions.randomWalk(par, xMeas, yMeas, gmrf1)
         else:
             return("Error! No controller selected")
 
