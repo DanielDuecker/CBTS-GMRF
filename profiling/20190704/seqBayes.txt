@@ -1,0 +1,1056 @@
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+       10    0.008    0.001   44.515    4.452 control.py:134(getNewTraj)
+      200    0.059    0.000   40.991    0.205 control.py:151(treePolicy)
+     1899    0.608    0.000   23.894    0.013 classes.py:245(seqBayesianUpdate)
+     3803   22.171    0.006   22.386    0.006 linalg.py:486(inv)
+      200    0.005    0.000   17.437    0.087 control.py:188(getNextTheta)
+      120    0.005    0.000   17.429    0.145 classes.py:140(predict)
+      360    1.955    0.005   17.365    0.048 classes.py:122(getKernelMatrix)
+  1233213    5.288    0.000   15.408    0.000 classes.py:118(kernel)
+  1233214    5.636    0.000   10.121    0.000 linalg.py:2293(norm)
+      200    0.017    0.000    3.499    0.017 control.py:205(exploreNode)
+302260/620    0.662    0.000    3.382    0.005 copy.py:132(deepcopy)
+ 9620/620    0.092    0.000    3.362    0.005 copy.py:268(_reconstruct)
+ 9620/620    0.240    0.000    3.342    0.005 copy.py:236(_deepcopy_dict)
+  1252725    2.453    0.000    2.453    0.000 {built-in method numpy.dot}
+5000/1576    0.012    0.000    2.371    0.002 copy.py:210(_deepcopy_list)
+    39234    1.804    0.000    1.804    0.000 {method '__deepcopy__' of 'numpy.ndarray' objects}
+  1233238    1.161    0.000    1.161    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+  1237852    0.422    0.000    0.919    0.000 numeric.py:469(asarray)
+  1241781    0.419    0.000    0.637    0.000 linalg.py:121(isComplexType)
+  1256868    0.535    0.000    0.535    0.000 {built-in method numpy.array}
+  2537550    0.511    0.000    0.511    0.000 {built-in method builtins.issubclass}
+      412    0.134    0.000    0.432    0.001 control.py:279(evaluateTrajectory)
+     5608    0.147    0.000    0.366    0.000 functions.py:10(mapConDis)
+      210    0.003    0.000    0.212    0.001 classes.py:323(__init__)
+     6012    0.027    0.000    0.197    0.000 shape_base.py:286(hstack)
+   612414    0.153    0.000    0.153    0.000 {method 'get' of 'dict' objects}
+    74861    0.078    0.000    0.115    0.000 copy.py:252(_keep_alive)
+     6012    0.015    0.000    0.087    0.000 shape_base.py:335(<listcomp>)
+    243/1    0.001    0.000    0.082    0.082 <frozen importlib._bootstrap>:966(_find_and_load)
+    243/1    0.001    0.000    0.082    0.082 <frozen importlib._bootstrap>:936(_find_and_load_unlocked)
+    230/1    0.001    0.000    0.082    0.082 <frozen importlib._bootstrap>:651(_load_unlocked)
+    179/1    0.000    0.000    0.082    0.082 <frozen importlib._bootstrap_external>:672(exec_module)
+    334/1    0.000    0.000    0.082    0.082 <frozen importlib._bootstrap>:211(_call_with_frames_removed)
+    200/1    0.002    0.000    0.082    0.082 {built-in method builtins.exec}
+        1    0.000    0.000    0.082    0.082 control.py:1(<module>)
+        1    0.000    0.000    0.081    0.081 classes.py:3(<module>)
+    12820    0.047    0.000    0.080    0.000 shape_base.py:25(atleast_1d)
+   882/26    0.001    0.000    0.079    0.003 <frozen importlib._bootstrap>:997(_handle_fromlist)
+     63/5    0.000    0.000    0.079    0.016 {built-in method builtins.__import__}
+   404088    0.072    0.000    0.072    0.000 {built-in method builtins.id}
+        1    0.000    0.000    0.072    0.072 __init__.py:86(<module>)
+     3708    0.066    0.000    0.066    0.000 functions.py:180(sanityCheck)
+      422    0.033    0.000    0.064    0.000 control.py:241(generateTrajectory)
+     4170    0.063    0.000    0.063    0.000 {method 'astype' of 'numpy.ndarray' objects}
+     6263    0.060    0.000    0.060    0.000 {built-in method numpy.concatenate}
+     4164    0.035    0.000    0.058    0.000 linalg.py:144(_commonType)
+    19496    0.053    0.000    0.053    0.000 {built-in method numpy.zeros}
+     7436    0.032    0.000    0.052    0.000 twodim_base.py:154(eye)
+        1    0.000    0.000    0.050    0.050 _bvp.py:1(<module>)
+     4404    0.025    0.000    0.050    0.000 linalg.py:116(_makearray)
+    74531    0.045    0.000    0.045    0.000 {built-in method builtins.getattr}
+      240    0.037    0.000    0.045    0.000 linalg.py:327(solve)
+    19240    0.013    0.000    0.042    0.000 copy.py:273(<genexpr>)
+     2100    0.014    0.000    0.037    0.000 copy.py:219(_deepcopy_tuple)
+   220585    0.034    0.000    0.034    0.000 copy.py:190(_deepcopy_atomic)
+     9287    0.034    0.000    0.034    0.000 {method '__deepcopy__' of 'numpy.generic' objects}
+     9620    0.032    0.000    0.032    0.000 {method '__reduce_ex__' of 'object' objects}
+        1    0.000    0.000    0.031    0.031 classes.py:262(__init__)
+        1    0.000    0.000    0.030    0.030 __init__.py:382(<module>)
+     6253    0.013    0.000    0.030    0.000 shape_base.py:220(_warn_for_nonsequence)
+      199    0.004    0.000    0.029    0.000 classes.py:88(getField)
+       99    0.004    0.000    0.028    0.000 functions.py:194(measurePerformance)
+      188    0.012    0.000    0.027    0.000 control.py:299(bestChild)
+    98276    0.026    0.000    0.026    0.000 {method 'append' of 'list' objects}
+    18846    0.026    0.000    0.026    0.000 {built-in method builtins.hasattr}
+      199    0.004    0.000    0.025    0.000 interpolate.py:260(__call__)
+      100    0.002    0.000    0.025    0.000 functions.py:5(getMeasurement)
+      179    0.001    0.000    0.024    0.000 <frozen importlib._bootstrap_external>:743(get_code)
+    14091    0.010    0.000    0.024    0.000 numeric.py:541(asanyarray)
+     2100    0.004    0.000    0.023    0.000 copy.py:220(<listcomp>)
+     6796    0.022    0.000    0.022    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+     9654    0.019    0.000    0.019    0.000 {method 'update' of 'dict' objects}
+     4164    0.017    0.000    0.017    0.000 linalg.py:111(get_linalg_error_extobj)
+        1    0.000    0.000    0.017    0.017 quadrature.py:1(<module>)
+     4164    0.017    0.000    0.017    0.000 linalg.py:209(_assertNdSquareness)
+        1    0.000    0.000    0.017    0.017 __init__.py:635(<module>)
+     9620    0.012    0.000    0.016    0.000 copyreg.py:87(__newobj__)
+     6253    0.009    0.000    0.016    0.000 shape_base.py:209(_arrays_for_stack_dispatcher)
+        6    0.000    0.000    0.016    0.003 __init__.py:1(<module>)
+       43    0.000    0.000    0.015    0.000 matfuncs.py:211(expm)
+       43    0.000    0.000    0.015    0.000 matfuncs.py:561(expm)
+       43    0.000    0.000    0.015    0.000 matfuncs.py:609(_expm)
+      179    0.000    0.000    0.015    0.000 <frozen importlib._bootstrap_external>:485(_compile_bytecode)
+      312    0.001    0.000    0.015    0.000 fromnumeric.py:1041(argmax)
+      513    0.002    0.000    0.015    0.000 fromnumeric.py:54(_wrapfunc)
+      179    0.014    0.000    0.014    0.000 {built-in method marshal.loads}
+        1    0.000    0.000    0.014    0.014 basic.py:5(<module>)
+     4164    0.014    0.000    0.014    0.000 linalg.py:203(_assertRankAtLeast2)
+      202    0.001    0.000    0.014    0.000 fromnumeric.py:1966(sum)
+      239    0.001    0.000    0.013    0.000 <frozen importlib._bootstrap>:870(_find_spec)
+        1    0.000    0.000    0.013    0.013 orthogonal.py:72(<module>)
+      223    0.001    0.000    0.013    0.000 fromnumeric.py:69(_wrapreduction)
+     5728    0.013    0.000    0.013    0.000 {method 'diagonal' of 'numpy.ndarray' objects}
+        1    0.000    0.000    0.012    0.012 __init__.py:184(<module>)
+      230    0.000    0.000    0.012    0.000 <frozen importlib._bootstrap>:564(module_from_spec)
+     4404    0.007    0.000    0.012    0.000 linalg.py:134(_realType)
+        1    0.000    0.000    0.011    0.011 classes.py:157(__init__)
+      238    0.000    0.000    0.011    0.000 <frozen importlib._bootstrap_external>:1149(find_spec)
+      233    0.011    0.000    0.011    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+      238    0.001    0.000    0.011    0.000 <frozen importlib._bootstrap_external>:1117(_get_spec)
+      188    0.006    0.000    0.011    0.000 fromnumeric.py:41(_wrapit)
+    21889    0.010    0.000    0.010    0.000 {built-in method builtins.isinstance}
+        1    0.000    0.000    0.010    0.010 __init__.py:110(<module>)
+      121    0.006    0.000    0.010    0.000 linalg.py:678(cholesky)
+        1    0.000    0.000    0.010    0.010 __init__.py:220(<module>)
+      262    0.002    0.000    0.009    0.000 <frozen importlib._bootstrap_external>:1233(find_spec)
+        1    0.000    0.000    0.008    0.008 _shgo.py:3(<module>)
+        1    0.000    0.000    0.008    0.008 _minimize.py:8(<module>)
+       50    0.000    0.000    0.008    0.000 <frozen importlib._bootstrap_external>:919(create_module)
+      332    0.008    0.000    0.008    0.000 {method 'uniform' of 'mtrand.RandomState' objects}
+       50    0.007    0.000    0.008    0.000 {built-in method _imp.create_dynamic}
+        1    0.000    0.000    0.007    0.007 _root.py:7(<module>)
+      199    0.003    0.000    0.007    0.000 _fitpack_impl.py:991(bisplev)
+    50/45    0.000    0.000    0.007    0.000 <frozen importlib._bootstrap_external>:927(exec_module)
+    50/45    0.005    0.000    0.007    0.000 {built-in method _imp.exec_dynamic}
+        1    0.000    0.000    0.007    0.007 __init__.py:94(<module>)
+     9855    0.007    0.000    0.007    0.000 {method 'items' of 'dict' objects}
+        4    0.000    0.000    0.006    0.001 shape_base.py:1050(kron)
+       12    0.005    0.000    0.006    0.000 matfuncs.py:145(_smart_matrix_product)
+        1    0.000    0.000    0.006    0.006 __init__.py:172(<module>)
+      200    0.001    0.000    0.005    0.000 classes.py:131(update)
+     9667    0.005    0.000    0.005    0.000 {built-in method __new__ of type object at 0x9cff80}
+16646/16640    0.005    0.000    0.005    0.000 {built-in method builtins.len}
+      398    0.001    0.000    0.005    0.000 fromnumeric.py:815(sort)
+        2    0.000    0.000    0.005    0.002 matfuncs.py:270(_onenormest_matrix_power)
+        2    0.000    0.000    0.005    0.002 _onenormest.py:13(onenormest)
+  231/228    0.004    0.000    0.005    0.000 {built-in method builtins.__build_class__}
+        1    0.000    0.000    0.005    0.005 misc.py:1(<module>)
+        1    0.000    0.000    0.004    0.004 minpack.py:1(<module>)
+        2    0.000    0.000    0.004    0.002 _onenormest.py:325(_onenormest_core)
+     4167    0.004    0.000    0.004    0.000 {method '__array_prepare__' of 'numpy.ndarray' objects}
+      109    0.004    0.000    0.004    0.000 {built-in method builtins.print}
+        1    0.002    0.002    0.004    0.004 matfuncs.py:503(pade3)
+        1    0.000    0.000    0.004    0.004 matfuncs.py:455(d4_loose)
+      179    0.002    0.000    0.004    0.000 <frozen importlib._bootstrap_external>:830(get_data)
+        1    0.000    0.000    0.004    0.004 interpolate.py:2(<module>)
+      230    0.001    0.000    0.004    0.000 <frozen importlib._bootstrap>:504(_init_module_attrs)
+      762    0.000    0.000    0.004    0.000 <frozen importlib._bootstrap_external>:75(_path_stat)
+      100    0.004    0.000    0.004    0.000 {method 'normal' of 'mtrand.RandomState' objects}
+        1    0.000    0.000    0.004    0.004 lapack.py:544(<module>)
+        1    0.000    0.000    0.004    0.004 iterative.py:1(<module>)
+      762    0.003    0.000    0.003    0.000 {built-in method posix.stat}
+        1    0.000    0.000    0.003    0.003 minimize_trustregion_constr.py:1(<module>)
+        1    0.000    0.000    0.003    0.003 __init__.py:57(<module>)
+      241    0.000    0.000    0.003    0.000 shape_base.py:229(vstack)
+        6    0.000    0.000    0.003    0.000 interface.py:293(matmat)
+      683    0.002    0.000    0.003    0.000 shape_base.py:83(atleast_2d)
+        1    0.000    0.000    0.003    0.003 lsq_linear.py:1(<module>)
+        1    0.001    0.001    0.003    0.003 matfuncs.py:691(_solve_P_Q)
+     1312    0.001    0.000    0.002    0.000 <frozen importlib._bootstrap_external>:57(_path_join)
+      358    0.001    0.000    0.002    0.000 <frozen importlib._bootstrap_external>:263(cache_from_source)
+        1    0.000    0.000    0.002    0.002 _spherical_voronoi.py:6(<module>)
+        1    0.000    0.000    0.002    0.002 _util.py:1(<module>)
+        4    0.000    0.000    0.002    0.001 matfuncs.py:213(_matmat)
+        1    0.000    0.000    0.002    0.002 matfuncs.py:467(d6_loose)
+      200    0.002    0.000    0.002    0.000 control.py:292(backUp)
+       10    0.000    0.000    0.002    0.000 control.py:226(getBestTheta)
+       11    0.000    0.000    0.002    0.000 decorator.py:202(create)
+      408    0.000    0.000    0.002    0.000 <frozen importlib._bootstrap>:403(cached)
+        2    0.001    0.001    0.002    0.001 functions.py:41(getPrecisionMatrix)
+        1    0.000    0.000    0.002    0.002 __init__.py:151(<module>)
+      243    0.000    0.000    0.002    0.000 <frozen importlib._bootstrap>:147(__enter__)
+        1    0.002    0.002    0.002    0.002 basic.py:261(solve_triangular)
+      199    0.002    0.000    0.002    0.000 {built-in method scipy.interpolate._fitpack._bispev}
+      229    0.000    0.000    0.002    0.000 <frozen importlib._bootstrap_external>:361(_get_cached)
+        1    0.000    0.000    0.002    0.002 ivp.py:1(<module>)
+        9    0.000    0.000    0.002    0.000 decorator.py:225(decorate)
+      179    0.001    0.000    0.002    0.000 <frozen importlib._bootstrap_external>:430(_validate_bytecode_header)
+      312    0.002    0.000    0.002    0.000 {method 'argmax' of 'numpy.ndarray' objects}
+      298    0.000    0.000    0.002    0.000 <frozen importlib._bootstrap_external>:94(_path_isfile)
+      179    0.002    0.000    0.002    0.000 {method 'read' of '_io.FileIO' objects}
+      404    0.002    0.000    0.002    0.000 {method 'copy' of 'numpy.ndarray' objects}
+        1    0.000    0.000    0.002    0.002 __init__.py:8(<module>)
+      321    0.000    0.000    0.002    0.000 <frozen importlib._bootstrap_external>:85(_path_is_mode_type)
+        1    0.000    0.000    0.002    0.002 nonlin.py:106(<module>)
+      398    0.002    0.000    0.002    0.000 {method 'sort' of 'numpy.ndarray' objects}
+        4    0.000    0.000    0.002    0.000 matfuncs.py:396(A2)
+        1    0.000    0.000    0.002    0.002 __init__.py:15(<module>)
+      241    0.000    0.000    0.002    0.000 shape_base.py:283(<listcomp>)
+        1    0.000    0.000    0.002    0.002 _root_scalar.py:8(<module>)
+        1    0.000    0.000    0.002    0.002 fitpack.py:1(<module>)
+        3    0.000    0.000    0.002    0.001 __init__.py:357(namedtuple)
+        1    0.000    0.000    0.002    0.002 lil.py:2(<module>)
+      160    0.001    0.000    0.002    0.000 shape_base.py:513(expand_dims)
+        1    0.000    0.000    0.002    0.002 distance.py:73(<module>)
+      199    0.000    0.000    0.001    0.000 fromnumeric.py:592(transpose)
+        1    0.000    0.000    0.001    0.001 basic.py:7(<module>)
+      345    0.001    0.000    0.001    0.000 <frozen importlib._bootstrap>:157(_get_module_lock)
+        2    0.000    0.000    0.001    0.001 __init__.py:19(<module>)
+        7    0.000    0.000    0.001    0.000 nonlin.py:1498(_nonlin_wrapper)
+        1    0.000    0.000    0.001    0.001 csr.py:1(<module>)
+        1    0.000    0.000    0.001    0.001 _threadsafety.py:1(<module>)
+     1312    0.001    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:59(<listcomp>)
+        1    0.000    0.000    0.001    0.001 _trustregion_krylov.py:1(<module>)
+        1    0.000    0.000    0.001    0.001 context.py:1(<module>)
+        1    0.000    0.000    0.001    0.001 _plotutils.py:1(<module>)
+        1    0.000    0.000    0.001    0.001 __init__.py:52(<module>)
+      229    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:1228(_get_spec)
+       18    0.000    0.000    0.001    0.000 blas.py:297(_get_funcs)
+       41    0.000    0.000    0.001    0.000 re.py:286(_compile)
+        1    0.000    0.000    0.001    0.001 quadpack.py:44(quad)
+        2    0.000    0.000    0.001    0.001 base.py:1(<module>)
+        1    0.000    0.000    0.001    0.001 quadpack.py:430(_quad)
+        1    0.000    0.000    0.001    0.001 {built-in method scipy.integrate._quadpack._qagse}
+        6    0.000    0.000    0.001    0.000 _threadsafety.py:54(decorator)
+        1    0.000    0.000    0.001    0.001 _differentiable_functions.py:1(<module>)
+        1    0.000    0.000    0.001    0.001 _linprog.py:16(<module>)
+        6    0.000    0.000    0.001    0.000 _threadsafety.py:43(decorate)
+       21    0.000    0.000    0.001    0.000 classes.py:284(<lambda>)
+        7    0.000    0.000    0.001    0.000 sre_compile.py:557(compile)
+       11    0.000    0.000    0.001    0.000 decorator.py:95(__init__)
+        1    0.000    0.000    0.001    0.001 decorator.py:33(<module>)
+       11    0.000    0.000    0.001    0.000 decorator.py:169(make)
+       15    0.000    0.000    0.001    0.000 blas.py:343(get_blas_funcs)
+       17    0.000    0.000    0.001    0.000 inspect.py:2181(_signature_from_callable)
+      230    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap>:318(__exit__)
+      179    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:840(path_stats)
+        1    0.000    0.000    0.001    0.001 _ode.py:39(<module>)
+       18    0.000    0.000    0.001    0.000 blas.py:236(find_best_blas_type)
+        1    0.000    0.000    0.001    0.001 matfuncs.py:5(<module>)
+       10    0.000    0.000    0.001    0.000 inspect.py:1087(getfullargspec)
+        1    0.000    0.000    0.001    0.001 matfuncs.py:827(_ell)
+        1    0.000    0.000    0.001    0.001 least_squares.py:1(<module>)
+        3    0.000    0.000    0.001    0.000 <decorator-gen-7>:1(_held_figure)
+      229    0.001    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:524(spec_from_file_location)
+       17    0.000    0.000    0.001    0.000 inspect.py:2100(_signature_from_function)
+       23    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:1281(_fill_cache)
+       16    0.000    0.000    0.001    0.000 _version.py:55(__init__)
+      266    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:1080(_path_importer_cache)
+     1128    0.001    0.000    0.001    0.000 {built-in method math.log}
+      243    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap>:151(__exit__)
+      345    0.001    0.000    0.001    0.000 <frozen importlib._bootstrap>:78(acquire)
+        1    0.000    0.000    0.001    0.001 equality_constrained_sqp.py:1(<module>)
+        1    0.000    0.000    0.001    0.001 optimize.py:17(<module>)
+        1    0.000    0.000    0.001    0.001 compressed.py:1(<module>)
+      102    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap>:194(_lock_unlock_module)
+        3    0.000    0.000    0.001    0.000 re.py:231(compile)
+      345    0.001    0.000    0.001    0.000 <frozen importlib._bootstrap>:103(release)
+       15    0.000    0.000    0.001    0.000 numerictypes.py:602(find_common_type)
+        1    0.000    0.000    0.001    0.001 _solvers.py:110(solve_continuous_lyapunov)
+       23    0.001    0.000    0.001    0.000 {built-in method posix.listdir}
+        1    0.000    0.000    0.001    0.001 classes.py:41(__init__)
+        1    0.000    0.000    0.001    0.001 linsolve.py:1(<module>)
+      248    0.000    0.000    0.001    0.000 {built-in method builtins.any}
+       11    0.001    0.000    0.001    0.000 {built-in method builtins.compile}
+       23    0.000    0.000    0.001    0.000 <frozen importlib._bootstrap_external>:1067(_path_hooks)
+        1    0.000    0.000    0.001    0.001 blas.py:202(<module>)
+        1    0.000    0.000    0.001    0.001 _fitpack_impl.py:22(<module>)
+        1    0.000    0.000    0.001    0.001 arpack.py:7(<module>)
+       30    0.000    0.000    0.001    0.000 numerictypes.py:578(_can_coerce_all)
+        1    0.000    0.000    0.001    0.001 bdf.py:1(<module>)
+        1    0.000    0.000    0.001    0.001 _linprog_simplex.py:3(<module>)
+        7    0.000    0.000    0.001    0.000 _util.py:270(getargspec_no_self)
+        1    0.000    0.000    0.001    0.001 _ccallback.py:1(<module>)
+     1744    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 interface.py:467(_matmat)
+        7    0.000    0.000    0.000    0.000 sre_compile.py:542(_code)
+        2    0.000    0.000    0.000    0.000 interface.py:170(_matmat)
+       22    0.000    0.000    0.000    0.000 re.py:169(match)
+        1    0.000    0.000    0.000    0.000 _bsplines.py:1(<module>)
+        2    0.000    0.000    0.000    0.000 decorator.py:240(decorator)
+        3    0.000    0.000    0.000    0.000 numeric.py:1121(outer)
+        1    0.000    0.000    0.000    0.000 _numpy_compat.py:3(<module>)
+     1527    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:222(_verbose_message)
+      602    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:416(parent)
+      243    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:176(cb)
+        4    0.000    0.000    0.000    0.000 function_base.py:37(linspace)
+     1230    0.000    0.000    0.000    0.000 {built-in method math.sqrt}
+        1    0.000    0.000    0.000    0.000 matfuncs.py:134(_is_upper_triangular)
+        7    0.000    0.000    0.000    0.000 sre_parse.py:844(parse)
+     1897    0.000    0.000    0.000    0.000 {method 'rpartition' of 'str' objects}
+      358    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:63(_path_split)
+        4    0.000    0.000    0.000    0.000 _util.py:193(_asarray_validated)
+       21    0.000    0.000    0.000    0.000 {method 'dot' of 'numpy.ndarray' objects}
+     2982    0.000    0.000    0.000    0.000 {method 'rstrip' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 warnings.py:119(filterwarnings)
+      243    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:58(__init__)
+        2    0.000    0.000    0.000    0.000 interface.py:177(<listcomp>)
+        8    0.000    0.000    0.000    0.000 _version.py:114(_compare)
+       23    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1322(path_hook_for_FileFinder)
+      210    0.000    0.000    0.000    0.000 classes.py:112(__init__)
+        4    0.000    0.000    0.000    0.000 interface.py:191(matvec)
+        7    0.000    0.000    0.000    0.000 inspect.py:3055(signature)
+        1    0.000    0.000    0.000    0.000 zeros.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 _version.py:7(<module>)
+     14/7    0.000    0.000    0.000    0.000 sre_compile.py:64(_compile)
+        7    0.000    0.000    0.000    0.000 inspect.py:2803(from_callable)
+        1    0.000    0.000    0.000    0.000 trf_linear.py:2(<module>)
+        5    0.000    0.000    0.000    0.000 function_base.py:434(asarray_chkfinite)
+      223    0.000    0.000    0.000    0.000 fromnumeric.py:70(<dictcomp>)
+      8/7    0.000    0.000    0.000    0.000 sre_parse.py:407(_parse_sub)
+        2    0.000    0.000    0.000    0.000 _version.py:148(__gt__)
+        4    0.000    0.000    0.000    0.000 interface.py:473(_matvec)
+        1    0.000    0.000    0.000    0.000 _numdiff.py:1(<module>)
+        4    0.000    0.000    0.000    0.000 interface.py:238(rmatvec)
+        1    0.000    0.000    0.000    0.000 lbfgsb.py:9(<module>)
+        1    0.000    0.000    0.000    0.000 twodim_base.py:402(tril)
+      358    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:52(_r_long)
+        1    0.000    0.000    0.000    0.000 trf.py:95(<module>)
+        1    0.000    0.000    0.000    0.000 reduction.py:10(<module>)
+      8/7    0.000    0.000    0.000    0.000 sre_parse.py:470(_parse)
+        1    0.000    0.000    0.000    0.000 quadpack.py:3(<module>)
+        1    0.000    0.000    0.000    0.000 __init__.py:9(<module>)
+      724    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:847(__exit__)
+        1    0.000    0.000    0.000    0.000 _linprog_util.py:3(<module>)
+        1    0.000    0.000    0.000    0.000 matfuncs.py:82(_onenorm_matrix_power_nnm)
+        1    0.000    0.000    0.000    0.000 __init__.py:11(<module>)
+        1    0.000    0.000    0.000    0.000 fitpack2.py:7(<module>)
+        1    0.000    0.000    0.000    0.000 linesearch.py:13(<module>)
+        1    0.000    0.000    0.000    0.000 projections.py:1(<module>)
+       11    0.000    0.000    0.000    0.000 fromnumeric.py:2397(amax)
+        1    0.000    0.000    0.000    0.000 decomp_schur.py:20(schur)
+        1    0.000    0.000    0.000    0.000 interpolate.py:205(__init__)
+        4    0.000    0.000    0.000    0.000 matfuncs.py:206(_rmatvec)
+        1    0.000    0.000    0.000    0.000 flinalg.py:5(<module>)
+        1    0.000    0.000    0.000    0.000 matfuncs.py:115(_onenorm)
+        3    0.000    0.000    0.000    0.000 lapack.py:603(get_lapack_funcs)
+        1    0.000    0.000    0.000    0.000 _ellip_harm.py:1(<module>)
+       88    0.000    0.000    0.000    0.000 inspect.py:2450(__init__)
+        1    0.000    0.000    0.000    0.000 odepack.py:2(<module>)
+        1    0.000    0.000    0.000    0.000 _validation.py:1(<module>)
+      199    0.000    0.000    0.000    0.000 {method 'transpose' of 'numpy.ndarray' objects}
+      387    0.000    0.000    0.000    0.000 {built-in method builtins.setattr}
+      724    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:843(__enter__)
+        1    0.000    0.000    0.000    0.000 _trustregion_dogleg.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 slsqp.py:14(<module>)
+        1    0.000    0.000    0.000    0.000 lgmres.py:4(<module>)
+      179    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:393(_check_name_wrapper)
+        6    0.000    0.000    0.000    0.000 _onenormest.py:129(wrapper)
+        1    0.000    0.000    0.000    0.000 nnls.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 cobyla.py:11(<module>)
+      198    0.000    0.000    0.000    0.000 {built-in method time.time}
+      179    0.000    0.000    0.000    0.000 {built-in method _imp._fix_co_filename}
+       69    0.000    0.000    0.000    0.000 enum.py:803(__and__)
+        1    0.000    0.000    0.000    0.000 tnc.py:33(<module>)
+      232    0.000    0.000    0.000    0.000 enum.py:267(__call__)
+       23    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1196(__init__)
+        1    0.000    0.000    0.000    0.000 control.py:12(__init__)
+        4    0.000    0.000    0.000    0.000 _onenormest.py:165(_sum_abs_axis0)
+      920    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:321(<genexpr>)
+      238    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:780(find_spec)
+       13    0.000    0.000    0.000    0.000 {built-in method builtins.dir}
+     1312    0.000    0.000    0.000    0.000 {built-in method _imp.release_lock}
+      230    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:311(__enter__)
+      179    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:35(_new_module)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.abs}
+     1312    0.000    0.000    0.000    0.000 {built-in method _imp.acquire_lock}
+        2    0.000    0.000    0.000    0.000 interface.py:417(adjoint)
+        2    0.000    0.000    0.000    0.000 interface.py:445(_adjoint)
+      239    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:369(__init__)
+       17    0.000    0.000    0.000    0.000 inspect.py:2730(__init__)
+       15    0.000    0.000    0.000    0.000 utils.py:75(__call__)
+        1    0.000    0.000    0.000    0.000 {built-in method numpy.where}
+        1    0.000    0.000    0.000    0.000 process.py:10(<module>)
+       15    0.000    0.000    0.000    0.000 utils.py:118(deprecate)
+       14    0.000    0.000    0.000    0.000 getlimits.py:365(__new__)
+        8    0.000    0.000    0.000    0.000 _onenormest.py:200(column_needs_resampling)
+        1    0.000    0.000    0.000    0.000 kdtree.py:3(<module>)
+        4    0.000    0.000    0.000    0.000 _onenormest.py:143(sign_round_up)
+        1    0.000    0.000    0.000    0.000 interface.py:41(<module>)
+        5    0.000    0.000    0.000    0.000 _methods.py:42(_any)
+        2    0.000    0.000    0.000    0.000 _onenormest.py:214(resample_column)
+      358    0.000    0.000    0.000    0.000 {built-in method from_bytes}
+        1    0.000    0.000    0.000    0.000 _cubic.py:1(<module>)
+        4    0.000    0.000    0.000    0.000 _onenormest.py:193(every_col_of_X_is_parallel_to_a_col_of_Y)
+        7    0.000    0.000    0.000    0.000 {method 'all' of 'numpy.ndarray' objects}
+        2    0.000    0.000    0.000    0.000 interface.py:456(__init__)
+        1    0.000    0.000    0.000    0.000 triangulation.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 twodim_base.py:348(tri)
+      486    0.000    0.000    0.000    0.000 {built-in method _thread.allocate_lock}
+      690    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
+       23    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:99(_path_isdir)
+      106    0.000    0.000    0.000    0.000 {method 'format' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 _hessian_update_strategy.py:1(<module>)
+        7    0.000    0.000    0.000    0.000 sre_compile.py:482(_compile_info)
+        1    0.000    0.000    0.000    0.000 decomp_schur.py:1(<module>)
+        7    0.000    0.000    0.000    0.000 _methods.py:45(_all)
+        1    0.000    0.000    0.000    0.000 radau.py:1(<module>)
+        6    0.000    0.000    0.000    0.000 arraysetops.py:484(in1d)
+        5    0.000    0.000    0.000    0.000 __init__.py:73(CFUNCTYPE)
+       20    0.000    0.000    0.000    0.000 _onenormest.py:183(vectors_are_parallel)
+        2    0.000    0.000    0.000    0.000 interface.py:147(__init__)
+      243    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:143(__init__)
+        1    0.000    0.000    0.000    0.000 rk.py:1(<module>)
+        4    0.000    0.000    0.000    0.000 fromnumeric.py:2083(any)
+        4    0.000    0.000    0.000    0.000 fromnumeric.py:2512(amin)
+     1056    0.000    0.000    0.000    0.000 {method 'startswith' of 'str' objects}
+      290    0.000    0.000    0.000    0.000 {method 'endswith' of 'str' objects}
+      230    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:307(__init__)
+      590    0.000    0.000    0.000    0.000 {built-in method posix.fspath}
+        3    0.000    0.000    0.000    0.000 shape_base.py:1021(get_array_prepare)
+        2    0.000    0.000    0.000    0.000 sputils.py:209(isshape)
+        1    0.000    0.000    0.000    0.000 data.py:7(<module>)
+        1    0.000    0.000    0.000    0.000 _dual_annealing.py:8(<module>)
+        1    0.000    0.000    0.000    0.000 {method 'any' of 'numpy.ndarray' objects}
+      238    0.000    0.000    0.000    0.000 {built-in method _imp.is_frozen}
+        1    0.000    0.000    0.000    0.000 _basinhopping.py:3(<module>)
+        1    0.000    0.000    0.000    0.000 kdtree.py:176(KDTree)
+       75    0.000    0.000    0.000    0.000 {method 'extend' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 _matrix_io.py:1(<module>)
+      196    0.000    0.000    0.000    0.000 numerictypes.py:587(<listcomp>)
+      232    0.000    0.000    0.000    0.000 enum.py:517(__new__)
+       16    0.000    0.000    0.000    0.000 re.py:179(search)
+       11    0.000    0.000    0.000    0.000 decorator.py:152(update)
+       11    0.000    0.000    0.000    0.000 {built-in method builtins.eval}
+        1    0.000    0.000    0.000    0.000 matfuncs.py:3(<module>)
+        1    0.000    0.000    0.000    0.000 polyint.py:1(<module>)
+       14    0.000    0.000    0.000    0.000 _onenormest.py:195(<genexpr>)
+        1    0.000    0.000    0.000    0.000 bsr.py:1(<module>)
+        6    0.000    0.000    0.000    0.000 {built-in method builtins.sorted}
+        1    0.000    0.000    0.000    0.000 tr_interior_point.py:13(<module>)
+        2    0.000    0.000    0.000    0.000 abc.py:132(__new__)
+      239    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:707(find_spec)
+      179    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:800(__init__)
+        1    0.000    0.000    0.000    0.000 _remove_redundancy.py:4(<module>)
+       74    0.000    0.000    0.000    0.000 base.py:1190(isspmatrix)
+        1    0.000    0.000    0.000    0.000 <string>:1(<module>)
+        1    0.000    0.000    0.000    0.000 matfuncs.py:362(__init__)
+        2    0.000    0.000    0.000    0.000 getlimits.py:398(_init)
+        1    0.000    0.000    0.000    0.000 _constraints.py:1(<module>)
+       12    0.000    0.000    0.000    0.000 sre_compile.py:223(_compile_charset)
+        2    0.000    0.000    0.000    0.000 {method 'randint' of 'mtrand.RandomState' objects}
+        2    0.000    0.000    0.000    0.000 _onenormest.py:160(_max_abs_axis1)
+        1    0.000    0.000    0.000    0.000 dok.py:1(<module>)
+        8    0.000    0.000    0.000    0.000 fromnumeric.py:2847(ndim)
+        4    0.000    0.000    0.000    0.000 sputils.py:187(isintlike)
+        1    0.000    0.000    0.000    0.000 __init__.py:660(<listcomp>)
+        1    0.000    0.000    0.000    0.000 _differentialevolution.py:4(<module>)
+        4    0.000    0.000    0.000    0.000 numeric.py:175(ones)
+        4    0.000    0.000    0.000    0.000 copyreg.py:96(_slotnames)
+        1    0.000    0.000    0.000    0.000 {method 'outer' of 'numpy.ufunc' objects}
+        1    0.000    0.000    0.000    0.000 decomp.py:15(<module>)
+        4    0.000    0.000    0.000    0.000 {method 'any' of 'numpy.generic' objects}
+        2    0.000    0.000    0.000    0.000 common.py:1(<module>)
+       33    0.000    0.000    0.000    0.000 {method 'match' of '_sre.SRE_Pattern' objects}
+        1    0.000    0.000    0.000    0.000 fitpack2.py:70(UnivariateSpline)
+        8    0.000    0.000    0.000    0.000 {built-in method numpy.arange}
+        1    0.000    0.000    0.000    0.000 matfuncs.py:124(_ident_like)
+       89    0.000    0.000    0.000    0.000 sre_parse.py:253(get)
+        1    0.000    0.000    0.000    0.000 report.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 rotation.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 sf_error.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 _spectral.py:3(<module>)
+    21/14    0.000    0.000    0.000    0.000 sre_parse.py:173(getwidth)
+        1    0.000    0.000    0.000    0.000 tr_interior_point.py:24(BarrierSubproblem)
+        1    0.000    0.000    0.000    0.000 lsoda.py:1(<module>)
+        5    0.000    0.000    0.000    0.000 _version.py:151(__ge__)
+      105    0.000    0.000    0.000    0.000 inspect.py:2779(<genexpr>)
+        1    0.000    0.000    0.000    0.000 _add_newdocs.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 csc.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 coo.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 _matfuncs_sqrtm.py:6(<module>)
+        1    0.000    0.000    0.000    0.000 bvls.py:1(<module>)
+        2    0.000    0.000    0.000    0.000 fromnumeric.py:942(argsort)
+        3    0.000    0.000    0.000    0.000 _internal.py:840(_ufunc_doc_signature_formatter)
+       12    0.000    0.000    0.000    0.000 sre_compile.py:250(_optimize_charset)
+        1    0.000    0.000    0.000    0.000 _testutils.py:4(<module>)
+      262    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:41(_relax_case)
+       12    0.000    0.000    0.000    0.000 _onenormest.py:209(<genexpr>)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:736(exec_module)
+        1    0.000    0.000    0.000    0.000 _expm_multiply.py:2(<module>)
+        1    0.000    0.000    0.000    0.000 dia.py:1(<module>)
+       12    0.000    0.000    0.000    0.000 _onenormest.py:206(<genexpr>)
+        8    0.000    0.000    0.000    0.000 function_base.py:431(add_newdoc)
+        1    0.000    0.000    0.000    0.000 _hessian_update_strategy.py:104(FullHessianUpdateStrategy)
+        1    0.000    0.000    0.000    0.000 {built-in method _imp.exec_builtin}
+        6    0.000    0.000    0.000    0.000 _onenormest.py:177(elementary_vector)
+        1    0.000    0.000    0.000    0.000 triangulation.py:101(Complex)
+        1    0.000    0.000    0.000    0.000 {method 'max' of 'numpy.ndarray' objects}
+      184    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:1202(<genexpr>)
+        1    0.000    0.000    0.000    0.000 _trustregion_exact.py:1(<module>)
+       97    0.000    0.000    0.000    0.000 sre_parse.py:232(__next)
+        4    0.000    0.000    0.000    0.000 {built-in method numpy.copyto}
+        1    0.000    0.000    0.000    0.000 sputils.py:2(<module>)
+        1    0.000    0.000    0.000    0.000 control.py:111(__init__)
+        1    0.000    0.000    0.000    0.000 rbf.py:44(<module>)
+        3    0.000    0.000    0.000    0.000 fromnumeric.py:1583(ravel)
+        2    0.000    0.000    0.000    0.000 getlimits.py:239(_get_machar)
+       72    0.000    0.000    0.000    0.000 sre_parse.py:171(append)
+        3    0.000    0.000    0.000    0.000 functools.py:479(decorating_function)
+       32    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 ndgriddata.py:6(<module>)
+        2    0.000    0.000    0.000    0.000 {method 'argsort' of 'numpy.ndarray' objects}
+        1    0.000    0.000    0.000    0.000 _solvers.py:1(<module>)
+        4    0.000    0.000    0.000    0.000 interface.py:132(__new__)
+        9    0.000    0.000    0.000    0.000 shape_base.py:1026(<genexpr>)
+      179    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:825(get_filename)
+        1    0.000    0.000    0.000    0.000 _trustregion.py:1(<module>)
+       11    0.000    0.000    0.000    0.000 decorator.py:177(<listcomp>)
+        1    0.000    0.000    0.000    0.000 dual.py:12(<module>)
+        1    0.000    0.000    0.000    0.000 __init__.py:210(<listcomp>)
+        3    0.000    0.000    0.000    0.000 shape_base.py:1033(get_array_wrap)
+        1    0.000    0.000    0.000    0.000 bsr.py:24(bsr_matrix)
+        3    0.000    0.000    0.000    0.000 functools.py:44(update_wrapper)
+      179    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:669(create_module)
+        1    0.000    0.000    0.000    0.000 lobpcg.py:11(<module>)
+        1    0.000    0.000    0.000    0.000 construct.py:2(<module>)
+        2    0.000    0.000    0.000    0.000 fromnumeric.py:2171(all)
+        6    0.000    0.000    0.000    0.000 {built-in method numpy.empty}
+       44    0.000    0.000    0.000    0.000 inspect.py:159(isfunction)
+        7    0.000    0.000    0.000    0.000 inspect.py:485(unwrap)
+      230    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:424(has_location)
+       26    0.000    0.000    0.000    0.000 {method 'copy' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 dogbox.py:42(<module>)
+        8    0.000    0.000    0.000    0.000 nonlin.py:219(_set_doc)
+        1    0.000    0.000    0.000    0.000 _trustregion_ncg.py:1(<module>)
+        7    0.000    0.000    0.000    0.000 _util.py:293(<listcomp>)
+        7    0.000    0.000    0.000    0.000 _util.py:307(<listcomp>)
+       83    0.000    0.000    0.000    0.000 {method 'strip' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 canonical_constraint.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 __init__.py:410(<listcomp>)
+       16    0.000    0.000    0.000    0.000 _version.py:62(<listcomp>)
+        1    0.000    0.000    0.000    0.000 _methods.py:26(_amax)
+       39    0.000    0.000    0.000    0.000 sre_parse.py:163(__getitem__)
+        7    0.000    0.000    0.000    0.000 sre_parse.py:828(fix_flags)
+       14    0.000    0.000    0.000    0.000 __init__.py:422(<genexpr>)
+        1    0.000    0.000    0.000    0.000 decomp_svd.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 context.py:40(cpu_count)
+        7    0.000    0.000    0.000    0.000 sre_parse.py:223(__init__)
+       50    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap_external>:908(__init__)
+        1    0.000    0.000    0.000    0.000 _decomp_ldl.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 six.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 _hungarian.py:10(<module>)
+      176    0.000    0.000    0.000    0.000 inspect.py:2500(name)
+        1    0.000    0.000    0.000    0.000 {built-in method posix.cpu_count}
+       16    0.000    0.000    0.000    0.000 {method 'search' of '_sre.SRE_Pattern' objects}
+        2    0.000    0.000    0.000    0.000 type_check.py:282(iscomplexobj)
+        2    0.000    0.000    0.000    0.000 twodim_base.py:33(_min_int)
+       15    0.000    0.000    0.000    0.000 numerictypes.py:654(<listcomp>)
+       37    0.000    0.000    0.000    0.000 {built-in method builtins.min}
+        1    0.000    0.000    0.000    0.000 __init__.py:193(<listcomp>)
+        1    0.000    0.000    0.000    0.000 __init__.py:106(<listcomp>)
+        1    0.000    0.000    0.000    0.000 _linprog_ip.py:3(<module>)
+        9    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:861(_find_spec_legacy)
+        1    0.000    0.000    0.000    0.000 _onenormest.py:2(<module>)
+        1    0.000    0.000    0.000    0.000 minres.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 decomp_lu.py:1(<module>)
+       10    0.000    0.000    0.000    0.000 <string>:12(__new__)
+       37    0.000    0.000    0.000    0.000 __init__.py:22(<genexpr>)
+        1    0.000    0.000    0.000    0.000 sobol_seq.py:21(<module>)
+        1    0.000    0.000    0.000    0.000 numerictypes.py:365(issubdtype)
+       38    0.000    0.000    0.000    0.000 {method 'values' of 'mappingproxy' objects}
+      102    0.000    0.000    0.000    0.000 {method 'isidentifier' of 'str' objects}
+        7    0.000    0.000    0.000    0.000 nonlin.py:1509(<listcomp>)
+        1    0.000    0.000    0.000    0.000 utils.py:1(<module>)
+        7    0.000    0.000    0.000    0.000 _threadsafety.py:27(__init__)
+       13    0.000    0.000    0.000    0.000 dual.py:52(register_func)
+        2    0.000    0.000    0.000    0.000 _util.py:157(__init__)
+       15    0.000    0.000    0.000    0.000 blas.py:277(<listcomp>)
+        1    0.000    0.000    0.000    0.000 classes.py:15(__init__)
+       15    0.000    0.000    0.000    0.000 {method 'index' of 'list' objects}
+        2    0.000    0.000    0.000    0.000 matfuncs.py:189(__init__)
+        1    0.000    0.000    0.000    0.000 lsqr.py:50(<module>)
+        1    0.000    0.000    0.000    0.000 base.py:64(spmatrix)
+        1    0.000    0.000    0.000    0.000 spfun_stats.py:33(<module>)
+        1    0.000    0.000    0.000    0.000 __init__.py:245(<listcomp>)
+        1    0.000    0.000    0.000    0.000 rk.py:262(RK45)
+       55    0.000    0.000    0.000    0.000 distance.py:1685(<genexpr>)
+        1    0.000    0.000    0.000    0.000 numerictypes.py:515(<lambda>)
+        1    0.000    0.000    0.000    0.000 posixpath.py:369(abspath)
+        1    0.000    0.000    0.000    0.000 lsmr.py:17(<module>)
+        1    0.000    0.000    0.000    0.000 _laplacian.py:3(<module>)
+        1    0.000    0.000    0.000    0.000 _spherical_bessel.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 _decomp_qz.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 _gcrotmk.py:4(<module>)
+        1    0.000    0.000    0.000    0.000 process.py:62(BaseProcess)
+        1    0.000    0.000    0.000    0.000 _version.py:136(__lt__)
+        1    0.000    0.000    0.000    0.000 rk.py:173(RK23)
+        1    0.000    0.000    0.000    0.000 distance.py:1691(<dictcomp>)
+       14    0.000    0.000    0.000    0.000 __init__.py:420(<genexpr>)
+        2    0.000    0.000    0.000    0.000 warnings.py:159(_add_filter)
+        4    0.000    0.000    0.000    0.000 {method 'get' of 'mappingproxy' objects}
+        7    0.000    0.000    0.000    0.000 {built-in method _sre.compile}
+        1    0.000    0.000    0.000    0.000 _pade.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 minimize_trustregion_constr.py:39(LagrangianHessian)
+        1    0.000    0.000    0.000    0.000 compressed.py:22(_cs_matrix)
+        1    0.000    0.000    0.000    0.000 special_matrices.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 _expm_frechet.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 decomp_cholesky.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 _decomp_polar.py:1(<module>)
+        7    0.000    0.000    0.000    0.000 _util.py:302(<listcomp>)
+        1    0.000    0.000    0.000    0.000 interpolate.py:255(<listcomp>)
+        4    0.000    0.000    0.000    0.000 function_base.py:20(_index_deprecate)
+      166    0.000    0.000    0.000    0.000 inspect.py:2512(kind)
+       11    0.000    0.000    0.000    0.000 {method 'splitlines' of 'str' objects}
+        6    0.000    0.000    0.000    0.000 {built-in method builtins.repr}
+        1    0.000    0.000    0.000    0.000 qp_subproblem.py:1(<module>)
+        7    0.000    0.000    0.000    0.000 _util.py:297(<listcomp>)
+        9    0.000    0.000    0.000    0.000 shape_base.py:1038(<genexpr>)
+        2    0.000    0.000    0.000    0.000 numerictypes.py:293(issubclass_)
+        4    0.000    0.000    0.000    0.000 __init__.py:484(cast)
+       10    0.000    0.000    0.000    0.000 sre_parse.py:342(_escape)
+        2    0.000    0.000    0.000    0.000 abc.py:135(<setcomp>)
+        9    0.000    0.000    0.000    0.000 {method 'replace' of 'str' objects}
+        7    0.000    0.000    0.000    0.000 {built-in method _imp.is_builtin}
+        1    0.000    0.000    0.000    0.000 __init__.py:123(<listcomp>)
+        6    0.000    0.000    0.000    0.000 interface.py:653(aslinearoperator)
+        1    0.000    0.000    0.000    0.000 decomp_qr.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 _shgo.py:450(SHGO)
+      146    0.000    0.000    0.000    0.000 inspect.py:2504(default)
+        1    0.000    0.000    0.000    0.000 warnings.py:143(simplefilter)
+        7    0.000    0.000    0.000    0.000 _weakrefset.py:36(__init__)
+        3    0.000    0.000    0.000    0.000 {method 'remove' of 'list' objects}
+       27    0.000    0.000    0.000    0.000 {built-in method sys._getframe}
+        1    0.000    0.000    0.000    0.000 _norm.py:3(<module>)
+        1    0.000    0.000    0.000    0.000 lil.py:22(lil_matrix)
+        1    0.000    0.000    0.000    0.000 dok.py:30(dok_matrix)
+        1    0.000    0.000    0.000    0.000 __init__.py:97(<listcomp>)
+        3    0.000    0.000    0.000    0.000 enum.py:797(__or__)
+        6    0.000    0.000    0.000    0.000 sre_compile.py:388(_simple)
+       14    0.000    0.000    0.000    0.000 sre_parse.py:111(__init__)
+        1    0.000    0.000    0.000    0.000 posixpath.py:331(normpath)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:433(spec_from_loader)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:728(create_module)
+        2    0.000    0.000    0.000    0.000 __init__.py:14(<listcomp>)
+       22    0.000    0.000    0.000    0.000 decorator.py:220(<genexpr>)
+        1    0.000    0.000    0.000    0.000 extract.py:2(<module>)
+       18    0.000    0.000    0.000    0.000 data.py:130(_create_method)
+        1    0.000    0.000    0.000    0.000 lambertw.py:1(<module>)
+       37    0.000    0.000    0.000    0.000 context.py:264(<genexpr>)
+        1    0.000    0.000    0.000    0.000 linalg_version.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 <string>:5(MetricInfo)
+        1    0.000    0.000    0.000    0.000 _procrustes.py:6(<module>)
+        1    0.000    0.000    0.000    0.000 _differentialevolution.py:277(DifferentialEvolutionSolver)
+       15    0.000    0.000    0.000    0.000 utils.py:70(__init__)
+        4    0.000    0.000    0.000    0.000 {built-in method numpy.result_type}
+        2    0.000    0.000    0.000    0.000 {method 'newbyteorder' of 'numpy.generic' objects}
+        1    0.000    0.000    0.000    0.000 numerictypes.py:438(__getitem__)
+       19    0.000    0.000    0.000    0.000 sre_parse.py:285(tell)
+        1    0.000    0.000    0.000    0.000 __init__.py:13(<listcomp>)
+        4    0.000    0.000    0.000    0.000 iterative.py:122(combine)
+        1    0.000    0.000    0.000    0.000 interface.py:55(LinearOperator)
+        1    0.000    0.000    0.000    0.000 process.py:301(__init__)
+        1    0.000    0.000    0.000    0.000 reduction.py:244(AbstractReducer)
+       16    0.000    0.000    0.000    0.000 _testutils.py:26(__init__)
+        4    0.000    0.000    0.000    0.000 core.py:6199(isMaskedArray)
+        2    0.000    0.000    0.000    0.000 function_base.py:2031(__init__)
+        4    0.000    0.000    0.000    0.000 getlimits.py:522(max)
+       15    0.000    0.000    0.000    0.000 numerictypes.py:655(<listcomp>)
+        3    0.000    0.000    0.000    0.000 numerictypes.py:238(obj2sctype)
+        4    0.000    0.000    0.000    0.000 numeric.py:2035(isscalar)
+        7    0.000    0.000    0.000    0.000 inspect.py:505(_is_wrapper)
+        3    0.000    0.000    0.000    0.000 sre_compile.py:393(_generate_overlap_table)
+        1    0.000    0.000    0.000    0.000 {built-in method math.cos}
+       27    0.000    0.000    0.000    0.000 {method 'group' of '_sre.SRE_Match' objects}
+       11    0.000    0.000    0.000    0.000 {built-in method builtins.vars}
+        1    0.000    0.000    0.000    0.000 <string>:5(ArgSpec)
+        1    0.000    0.000    0.000    0.000 _procrustes.py:4(<module>)
+        1    0.000    0.000    0.000    0.000 context.py:30(BaseContext)
+        1    0.000    0.000    0.000    0.000 fitpack2.py:768(_BivariateSplineBase)
+        1    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.generic' objects}
+       62    0.000    0.000    0.000    0.000 inspect.py:2508(annotation)
+        2    0.000    0.000    0.000    0.000 inspect.py:73(isclass)
+       14    0.000    0.000    0.000    0.000 sre_compile.py:539(isstring)
+        1    0.000    0.000    0.000    0.000 sre_parse.py:96(closegroup)
+        7    0.000    0.000    0.000    0.000 threading.py:74(RLock)
+       46    0.000    0.000    0.000    0.000 {built-in method _sre.getlower}
+        1    0.000    0.000    0.000    0.000 _trustregion_exact.py:188(IterativeSubproblem)
+        1    0.000    0.000    0.000    0.000 data.py:21(_data_matrix)
+        1    0.000    0.000    0.000    0.000 dia.py:18(dia_matrix)
+        1    0.000    0.000    0.000    0.000 _sketches.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 interpolate.py:345(interp1d)
+       15    0.000    0.000    0.000    0.000 utils.py:53(_set_function_name)
+       15    0.000    0.000    0.000    0.000 _internal.py:851(<genexpr>)
+        6    0.000    0.000    0.000    0.000 sre_compile.py:414(_get_literal_prefix)
+        7    0.000    0.000    0.000    0.000 sre_parse.py:76(__init__)
+       27    0.000    0.000    0.000    0.000 sre_parse.py:248(match)
+       16    0.000    0.000    0.000    0.000 {method 'find' of 'bytearray' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method _imp.create_builtin}
+       40    0.000    0.000    0.000    0.000 {built-in method builtins.globals}
+       11    0.000    0.000    0.000    0.000 {built-in method builtins.next}
+       61    0.000    0.000    0.000    0.000 {built-in method builtins.ord}
+        7    0.000    0.000    0.000    0.000 nonlin.py:1512(<listcomp>)
+        1    0.000    0.000    0.000    0.000 _constraints.py:11(NonlinearConstraint)
+        1    0.000    0.000    0.000    0.000 __init__.py:64(<listcomp>)
+        1    0.000    0.000    0.000    0.000 coo.py:22(coo_matrix)
+        1    0.000    0.000    0.000    0.000 sputils.py:16(<listcomp>)
+        1    0.000    0.000    0.000    0.000 _logsumexp.py:1(<module>)
+        1    0.000    0.000    0.000    0.000 _ode.py:102(ode)
+        1    0.000    0.000    0.000    0.000 basic.py:1892(comb)
+       38    0.000    0.000    0.000    0.000 inspect.py:2809(parameters)
+       18    0.000    0.000    0.000    0.000 sre_parse.py:159(__len__)
+        1    0.000    0.000    0.000    0.000 {built-in method posix.urandom}
+       22    0.000    0.000    0.000    0.000 {method 'end' of '_sre.SRE_Match' objects}
+       17    0.000    0.000    0.000    0.000 {built-in method builtins.callable}
+        3    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+        2    0.000    0.000    0.000    0.000 {built-in method builtins.round}
+        1    0.000    0.000    0.000    0.000 nonlin.py:691(LowRankMatrix)
+        1    0.000    0.000    0.000    0.000 canonical_constraint.py:5(CanonicalConstraint)
+        1    0.000    0.000    0.000    0.000 csr.py:23(csr_matrix)
+        1    0.000    0.000    0.000    0.000 _ccallback.py:26(LowLevelCallable)
+        1    0.000    0.000    0.000    0.000 _bsplines.py:46(BSpline)
+        1    0.000    0.000    0.000    0.000 interpolate.py:1332(BPoly)
+        1    0.000    0.000    0.000    0.000 interpolate.py:1877(NdPPoly)
+        1    0.000    0.000    0.000    0.000 rotation.py:175(Rotation)
+        9    0.000    0.000    0.000    0.000 six.py:184(find_module)
+       16    0.000    0.000    0.000    0.000 sre_parse.py:81(groups)
+        5    0.000    0.000    0.000    0.000 {method 'setter' of 'property' objects}
+       14    0.000    0.000    0.000    0.000 {method '__contains__' of 'frozenset' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method posix.getcwd}
+        8    0.000    0.000    0.000    0.000 {built-in method _operator.index}
+        1    0.000    0.000    0.000    0.000 rbf.py:58(Rbf)
+        1    0.000    0.000    0.000    0.000 _hessian_update_strategy.py:275(__init__)
+        1    0.000    0.000    0.000    0.000 report.py:4(ReportBase)
+        1    0.000    0.000    0.000    0.000 _trustregion.py:14(BaseQuadraticSubproblem)
+        1    0.000    0.000    0.000    0.000 matfuncs.py:223(ProductOperator)
+        1    0.000    0.000    0.000    0.000 matfuncs.py:353(_ExpmPadeHelper)
+        1    0.000    0.000    0.000    0.000 arpack.py:979(IterOpInv)
+        1    0.000    0.000    0.000    0.000 _ode.py:1107(dopri5)
+        1    0.000    0.000    0.000    0.000 reduction.py:33(ForkingPickler)
+        1    0.000    0.000    0.000    0.000 control.py:110(CBTS)
+        1    0.000    0.000    0.000    0.000 rk.py:81(RungeKutta)
+        1    0.000    0.000    0.000    0.000 interpolate.py:704(_PPolyBase)
+        1    0.000    0.000    0.000    0.000 interpolate.py:927(PPoly)
+        2    0.000    0.000    0.000    0.000 getlimits.py:508(min)
+        2    0.000    0.000    0.000    0.000 {method 'tobytes' of 'numpy.generic' objects}
+        3    0.000    0.000    0.000    0.000 sre_compile.py:441(_get_charset_prefix)
+        3    0.000    0.000    0.000    0.000 sre_parse.py:294(_class_escape)
+        1    0.000    0.000    0.000    0.000 posixpath.py:64(isabs)
+        1    0.000    0.000    0.000    0.000 nonlin.py:1184(DiagBroyden)
+        1    0.000    0.000    0.000    0.000 decorator.py:85(FunctionMaker)
+        1    0.000    0.000    0.000    0.000 csc.py:19(csc_matrix)
+        1    0.000    0.000    0.000    0.000 _ode.py:834(vode)
+        1    0.000    0.000    0.000    0.000 _ode.py:1237(lsoda)
+        8    0.000    0.000    0.000    0.000 _version.py:78(_compare_version)
+        4    0.000    0.000    0.000    0.000 six.py:67(_add_doc)
+        1    0.000    0.000    0.000    0.000 bdf.py:73(BDF)
+        1    0.000    0.000    0.000    0.000 base.py:26(OdeSolver)
+        1    0.000    0.000    0.000    0.000 _shgo.py:1592(LMapCache)
+        1    0.000    0.000    0.000    0.000 kdtree.py:77(Rectangle)
+        3    0.000    0.000    0.000    0.000 {method '__array_wrap__' of 'numpy.ndarray' objects}
+        2    0.000    0.000    0.000    0.000 {method 'conj' of 'numpy.ndarray' objects}
+        9    0.000    0.000    0.000    0.000 _internal.py:861(<genexpr>)
+        1    0.000    0.000    0.000    0.000 sre_parse.py:84(opengroup)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:232(_requires_builtin_wrapper)
+        1    0.000    0.000    0.000    0.000 _cubic.py:19(PchipInterpolator)
+        1    0.000    0.000    0.000    0.000 nonlin.py:550(InverseJacobian)
+        1    0.000    0.000    0.000    0.000 nonlin.py:911(BroydenFirst)
+        1    0.000    0.000    0.000    0.000 _hessian_update_strategy.py:240(BFGS)
+        1    0.000    0.000    0.000    0.000 _differentiable_functions.py:196(VectorFunction)
+        1    0.000    0.000    0.000    0.000 _hessian_update_strategy.py:112(__init__)
+        1    0.000    0.000    0.000    0.000 matfuncs.py:187(MatrixPowerOperator)
+        1    0.000    0.000    0.000    0.000 optimize.py:75(OptimizeResult)
+        1    0.000    0.000    0.000    0.000 optimize.py:1846(Brent)
+        1    0.000    0.000    0.000    0.000 interface.py:523(_ProductLinearOperator)
+        1    0.000    0.000    0.000    0.000 _threadsafety.py:15(ReentrancyLock)
+        1    0.000    0.000    0.000    0.000 {scipy.special._comb._comb_int}
+        1    0.000    0.000    0.000    0.000 _ode.py:590(complex_ode)
+        1    0.000    0.000    0.000    0.000 _ode.py:1194(dop853)
+        2    0.000    0.000    0.000    0.000 misc.py:177(_datacopied)
+        1    0.000    0.000    0.000    0.000 classes.py:40(trueField)
+        1    0.000    0.000    0.000    0.000 classes.py:111(GP)
+        1    0.000    0.000    0.000    0.000 version.py:3(<module>)
+        1    0.000    0.000    0.000    0.000 __config__.py:3(<module>)
+        1    0.000    0.000    0.000    0.000 _version.py:17(NumpyVersion)
+        1    0.000    0.000    0.000    0.000 classes.py:14(agent)
+        1    0.000    0.000    0.000    0.000 interpolate.py:2306(RegularGridInterpolator)
+        1    0.000    0.000    0.000    0.000 interpolate.py:2672(_ppform)
+        1    0.000    0.000    0.000    0.000 polyint.py:21(_Interpolator1D)
+        1    0.000    0.000    0.000    0.000 polyint.py:464(BarycentricInterpolator)
+        1    0.000    0.000    0.000    0.000 radau.py:181(Radau)
+        1    0.000    0.000    0.000    0.000 lsoda.py:7(LSODA)
+        1    0.000    0.000    0.000    0.000 <decorator-gen-7>:1(<module>)
+        1    0.000    0.000    0.000    0.000 triangulation.py:583(VertexGroup)
+        1    0.000    0.000    0.000    0.000 _dual_annealing.py:119(EnergyState)
+        1    0.000    0.000    0.000    0.000 kdtree.py:244(node)
+        1    0.000    0.000    0.000    0.000 _spherical_voronoi.py:93(SphericalVoronoi)
+        1    0.000    0.000    0.000    0.000 zeros.py:1011(TOMS748Solver)
+        1    0.000    0.000    0.000    0.000 _basinhopping.py:183(AdaptiveStepsize)
+        1    0.000    0.000    0.000    0.000 _basinhopping.py:273(MinimizerWrapper)
+        8    0.000    0.000    0.000    0.000 {built-in method numpy.core._multiarray_umath.add_docstring}
+        2    0.000    0.000    0.000    0.000 {built-in method numpy.core._multiarray_umath.normalize_axis_index}
+        5    0.000    0.000    0.000    0.000 __init__.py:99(CFunctionType)
+       10    0.000    0.000    0.000    0.000 inspect.py:2813(return_annotation)
+        6    0.000    0.000    0.000    0.000 sre_parse.py:167(__setitem__)
+        1    0.000    0.000    0.000    0.000 posixpath.py:41(_get_sep)
+       11    0.000    0.000    0.000    0.000 {method 'add' of 'set' objects}
+       10    0.000    0.000    0.000    0.000 {method 'pop' of 'dict' objects}
+        3    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+        2    0.000    0.000    0.000    0.000 {method 'insert' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method math.sin}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.locals}
+        1    0.000    0.000    0.000    0.000 _cubic.py:228(Akima1DInterpolator)
+        1    0.000    0.000    0.000    0.000 _cubic.py:352(CubicSpline)
+        1    0.000    0.000    0.000    0.000 _spectral.py:13(_NoConvergence)
+        1    0.000    0.000    0.000    0.000 nonlin.py:418(TerminationCondition)
+        1    0.000    0.000    0.000    0.000 nonlin.py:482(Jacobian)
+        1    0.000    0.000    0.000    0.000 nonlin.py:1231(LinearMixing)
+        1    0.000    0.000    0.000    0.000 nonlin.py:1271(ExcitingMixing)
+        1    0.000    0.000    0.000    0.000 nonlin.py:1329(KrylovJacobian)
+        1    0.000    0.000    0.000    0.000 <string>:2(<module>)
+        1    0.000    0.000    0.000    0.000 _root_scalar.py:19(MemoizeDer)
+        1    0.000    0.000    0.000    0.000 _hessian_update_strategy.py:378(SR1)
+        1    0.000    0.000    0.000    0.000 _constraints.py:103(LinearConstraint)
+        1    0.000    0.000    0.000    0.000 _constraints.py:141(Bounds)
+        1    0.000    0.000    0.000    0.000 _constraints.py:172(PreparedConstraint)
+        1    0.000    0.000    0.000    0.000 report.py:29(BasicReport)
+        1    0.000    0.000    0.000    0.000 report.py:37(SQPReport)
+        1    0.000    0.000    0.000    0.000 lbfgsb.py:375(LbfgsInvHessProduct)
+        1    0.000    0.000    0.000    0.000 _trustregion_dogleg.py:40(DoglegSubproblem)
+        1    0.000    0.000    0.000    0.000 _trustregion_ncg.py:44(CGSteihaugSubproblem)
+        1    0.000    0.000    0.000    0.000 minimize_trustregion_constr.py:26(HessianLinearOperator)
+        1    0.000    0.000    0.000    0.000 _differentiable_functions.py:12(ScalarFunction)
+        1    0.000    0.000    0.000    0.000 _differentiable_functions.py:457(LinearVectorFunction)
+        1    0.000    0.000    0.000    0.000 _differentiable_functions.py:506(IdentityVectorFunction)
+        1    0.000    0.000    0.000    0.000 _hessian_update_strategy.py:12(HessianUpdateStrategy)
+        1    0.000    0.000    0.000    0.000 _expm_multiply.py:305(LazyOperatorNormInfo)
+        1    0.000    0.000    0.000    0.000 optimize.py:53(MemoizeJac)
+        1    0.000    0.000    0.000    0.000 optimize.py:133(OptimizeWarning)
+        1    0.000    0.000    0.000    0.000 <decorator-gen-1>:1(<module>)
+        1    0.000    0.000    0.000    0.000 <decorator-gen-2>:1(<module>)
+        1    0.000    0.000    0.000    0.000 <decorator-gen-3>:1(<module>)
+        1    0.000    0.000    0.000    0.000 <decorator-gen-4>:1(<module>)
+        1    0.000    0.000    0.000    0.000 <decorator-gen-6>:1(<module>)
+        1    0.000    0.000    0.000    0.000 linsolve.py:25(MatrixRankWarning)
+        1    0.000    0.000    0.000    0.000 arpack.py:274(ArpackError)
+        1    0.000    0.000    0.000    0.000 arpack.py:283(ArpackNoConvergence)
+        1    0.000    0.000    0.000    0.000 arpack.py:309(_ArpackParams)
+        1    0.000    0.000    0.000    0.000 arpack.py:379(_SymmetricArpackParams)
+        1    0.000    0.000    0.000    0.000 arpack.py:597(_UnsymmetricArpackParams)
+        1    0.000    0.000    0.000    0.000 arpack.py:924(LuInv)
+        2    0.000    0.000    0.000    0.000 interface.py:163(_init_dtype)
+        1    0.000    0.000    0.000    0.000 interface.py:453(_CustomLinearOperator)
+        1    0.000    0.000    0.000    0.000 interface.py:498(_SumLinearOperator)
+        1    0.000    0.000    0.000    0.000 interface.py:549(_ScaledLinearOperator)
+        1    0.000    0.000    0.000    0.000 interface.py:573(_PowerLinearOperator)
+        1    0.000    0.000    0.000    0.000 interface.py:605(MatrixLinearOperator)
+        1    0.000    0.000    0.000    0.000 interface.py:621(_AdjointMatrixOperator)
+        1    0.000    0.000    0.000    0.000 interface.py:636(IdentityOperator)
+        6    0.000    0.000    0.000    0.000 _threadsafety.py:50(non_reentrant)
+        1    0.000    0.000    0.000    0.000 decorator.py:279(ContextManager)
+        1    0.000    0.000    0.000    0.000 sputils.py:342(IndexMixin)
+        1    0.000    0.000    0.000    0.000 data.py:156(_minmax_mixin)
+        1    0.000    0.000    0.000    0.000 quadpack.py:821(_OptFunc)
+        1    0.000    0.000    0.000    0.000 _ode.py:772(IntegratorBase)
+        1    0.000    0.000    0.000    0.000 _ode.py:1035(zvode)
+        1    0.000    0.000    0.000    0.000 _bvp.py:519(BVPResult)
+        1    0.000    0.000    0.000    0.000 _matfuncs_sqrtm.py:22(SqrtmError)
+        1    0.000    0.000    0.000    0.000 basic.py:1043(LstsqLapackError)
+        1    0.000    0.000    0.000    0.000 _util.py:139(DeprecatedImport)
+        1    0.000    0.000    0.000    0.000 _util.py:343(MapWrapper)
+        1    0.000    0.000    0.000    0.000 context.py:202(reducer)
+        1    0.000    0.000    0.000    0.000 context.py:228(__init__)
+        1    0.000    0.000    0.000    0.000 context.py:225(DefaultContext)
+        1    0.000    0.000    0.000    0.000 context.py:272(ForkProcess)
+        1    0.000    0.000    0.000    0.000 context.py:286(ForkServerProcess)
+        1    0.000    0.000    0.000    0.000 context.py:297(SpawnContext)
+        1    0.000    0.000    0.000    0.000 context.py:301(ForkServerContext)
+        5    0.000    0.000    0.000    0.000 reduction.py:43(register)
+        1    0.000    0.000    0.000    0.000 orthogonal.py:124(orthopoly1d)
+        1    0.000    0.000    0.000    0.000 misc.py:11(LinAlgWarning)
+        1    0.000    0.000    0.000    0.000 classes.py:156(gmrf)
+        1    0.000    0.000    0.000    0.000 classes.py:322(node)
+        1    0.000    0.000    0.000    0.000 _testutils.py:21(PytestTester)
+        2    0.000    0.000    0.000    0.000 _version.py:70(<listcomp>)
+        1    0.000    0.000    0.000    0.000 polyint.py:142(_Interpolator1DWithDerivatives)
+        1    0.000    0.000    0.000    0.000 polyint.py:221(KroghInterpolator)
+        1    0.000    0.000    0.000    0.000 fitpack2.py:521(InterpolatedUnivariateSpline)
+        1    0.000    0.000    0.000    0.000 fitpack2.py:918(BivariateSpline)
+        1    0.000    0.000    0.000    0.000 fitpack2.py:999(SmoothBivariateSpline)
+        1    0.000    0.000    0.000    0.000 fitpack2.py:1064(LSQBivariateSpline)
+        1    0.000    0.000    0.000    0.000 fitpack2.py:1299(SmoothSphereBivariateSpline)
+        1    0.000    0.000    0.000    0.000 fitpack2.py:1391(LSQSphereBivariateSpline)
+        1    0.000    0.000    0.000    0.000 _dual_annealing.py:202(StrategyChain)
+        1    0.000    0.000    0.000    0.000 _dual_annealing.py:366(LocalSearchWrapper)
+        1    0.000    0.000    0.000    0.000 bdf.py:444(BdfDenseOutput)
+        1    0.000    0.000    0.000    0.000 common.py:122(OdeSolution)
+        1    0.000    0.000    0.000    0.000 base.py:218(DenseOutput)
+        1    0.000    0.000    0.000    0.000 radau.py:540(RadauDenseOutput)
+        1    0.000    0.000    0.000    0.000 interpolate.py:107(interp2d)
+        1    0.000    0.000    0.000    0.000 <decorator-gen-9>:1(<module>)
+        1    0.000    0.000    0.000    0.000 <decorator-gen-10>:1(<module>)
+        1    0.000    0.000    0.000    0.000 rotation.py:1636(Slerp)
+        1    0.000    0.000    0.000    0.000 sobol_seq.py:27(Sobol)
+        1    0.000    0.000    0.000    0.000 triangulation.py:650(Simplex)
+        1    0.000    0.000    0.000    0.000 triangulation.py:662(Vertex)
+        1    0.000    0.000    0.000    0.000 triangulation.py:741(VertexCache)
+        1    0.000    0.000    0.000    0.000 _dual_annealing.py:22(VisitingDistribution)
+        1    0.000    0.000    0.000    0.000 _differentialevolution.py:1003(_FunctionWrapper)
+        1    0.000    0.000    0.000    0.000 kdtree.py:261(leafnode)
+        1    0.000    0.000    0.000    0.000 _basinhopping.py:15(Storage)
+        1    0.000    0.000    0.000    0.000 _basinhopping.py:37(BasinHoppingRunner)
+        1    0.000    0.000    0.000    0.000 _basinhopping.py:250(RandomDisplacement)
+        1    0.000    0.000    0.000    0.000 _basinhopping.py:289(Metropolis)
+        1    0.000    0.000    0.000    0.000 _hungarian.py:121(_Hungary)
+        3    0.000    0.000    0.000    0.000 functools.py:448(lru_cache)
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:753(is_package)
+        1    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method math.factorial}
+        2    0.000    0.000    0.000    0.000 {built-in method _warnings._filters_mutated}
+        7    0.000    0.000    0.000    0.000 {built-in method sys.getrecursionlimit}
+        1    0.000    0.000    0.000    0.000 ndgriddata.py:22(NearestNDInterpolator)
+        1    0.000    0.000    0.000    0.000 nonlin.py:134(NoConvergence)
+        1    0.000    0.000    0.000    0.000 nonlin.py:665(GenericBroyden)
+        1    0.000    0.000    0.000    0.000 nonlin.py:1004(BroydenSecond)
+        1    0.000    0.000    0.000    0.000 nonlin.py:1048(Anderson)
+        1    0.000    0.000    0.000    0.000 report.py:45(IPReport)
+        2    0.000    0.000    0.000    0.000 _onenormest.py:122(_blocked_elementwise)
+        1    0.000    0.000    0.000    0.000 optimize.py:788(_LineSearchError)
+        1    0.000    0.000    0.000    0.000 linesearch.py:26(LineSearchWarning)
+        1    0.000    0.000    0.000    0.000 <decorator-gen-0>:1(<module>)
+        1    0.000    0.000    0.000    0.000 <decorator-gen-5>:1(<module>)
+        1    0.000    0.000    0.000    0.000 arpack.py:901(SpLuInv)
+        1    0.000    0.000    0.000    0.000 arpack.py:948(IterInv)
+        4    0.000    0.000    0.000    0.000 iterative.py:121(set_docstring)
+        1    0.000    0.000    0.000    0.000 _threadsafety.py:11(ReentrancyError)
+        1    0.000    0.000    0.000    0.000 decorator.py:48(get_init)
+        1    0.000    0.000    0.000    0.000 odepack.py:12(ODEintWarning)
+        1    0.000    0.000    0.000    0.000 quadpack.py:19(IntegrationWarning)
+        1    0.000    0.000    0.000    0.000 quadpack.py:808(_RangeFunc)
+        1    0.000    0.000    0.000    0.000 quadpack.py:830(_NQuad)
+        1    0.000    0.000    0.000    0.000 _ode.py:757(IntegratorConcurrencyError)
+        1    0.000    0.000    0.000    0.000 base.py:18(SparseWarning)
+        1    0.000    0.000    0.000    0.000 base.py:22(SparseFormatWarning)
+        1    0.000    0.000    0.000    0.000 base.py:26(SparseEfficiencyWarning)
+        1    0.000    0.000    0.000    0.000 context.py:14(ProcessError)
+        1    0.000    0.000    0.000    0.000 context.py:17(BufferTooShort)
+        1    0.000    0.000    0.000    0.000 context.py:20(TimeoutError)
+        1    0.000    0.000    0.000    0.000 context.py:23(AuthenticationError)
+        1    0.000    0.000    0.000    0.000 context.py:219(Process)
+        1    0.000    0.000    0.000    0.000 context.py:279(SpawnProcess)
+        1    0.000    0.000    0.000    0.000 context.py:293(ForkContext)
+        1    0.000    0.000    0.000    0.000 process.py:285(AuthenticationString)
+        1    0.000    0.000    0.000    0.000 process.py:299(_MainProcess)
+        1    0.000    0.000    0.000    0.000 reduction.py:204(_C)
+        1    0.000    0.000    0.000    0.000 classes.py:261(stkf)
+        1    0.000    0.000    0.000    0.000 _distributor_init.py:10(<module>)
+        1    0.000    0.000    0.000    0.000 _testutils.py:16(FPUModeChangeWarning)
+        1    0.000    0.000    0.000    0.000 _ccallback.py:9(CData)
+        1    0.000    0.000    0.000    0.000 quadrature.py:18(AccuracyWarning)
+        1    0.000    0.000    0.000    0.000 sf_error.py:5(SpecialFunctionWarning)
+        1    0.000    0.000    0.000    0.000 sf_error.py:13(SpecialFunctionError)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 control.py:11(piControl)
+        1    0.000    0.000    0.000    0.000 fitpack2.py:629(LSQUnivariateSpline)
+        1    0.000    0.000    0.000    0.000 fitpack2.py:1131(RectBivariateSpline)
+        1    0.000    0.000    0.000    0.000 fitpack2.py:1217(SphereBivariateSpline)
+        1    0.000    0.000    0.000    0.000 fitpack2.py:1525(RectSphereBivariateSpline)
+        1    0.000    0.000    0.000    0.000 _dual_annealing.py:348(ObjectiveFunWrapper)
+        1    0.000    0.000    0.000    0.000 ivp.py:24(OdeResult)
+        1    0.000    0.000    0.000    0.000 base.py:259(ConstantDenseOutput)
+        1    0.000    0.000    0.000    0.000 rk.py:367(RkDenseOutput)
+        1    0.000    0.000    0.000    0.000 lsoda.py:179(LsodaDenseOutput)
+        1    0.000    0.000    0.000    0.000 <decorator-gen-8>:1(<module>)
+        1    0.000    0.000    0.000    0.000 triangulation.py:636(Cell)
+        1    0.000    0.000    0.000    0.000 _shgo.py:1583(LMap)
+        1    0.000    0.000    0.000    0.000 kdtree.py:266(innernode)
+        1    0.000    0.000    0.000    0.000 zeros.py:28(RootResults)
+
+par.nIter = 100
+
+par.belief = 'seqBayes'  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
+par.control = 'cbts'  #'cbts', 'pi2', 'randomWalk'
+par.fieldType = 'predefined'  # 'peak','sine' or 'predefined'
+par.temporal = False  # True: time varying field
+par.plot = False
+parSimList = [par.belief, par.control, par.fieldType, par.temporal]
+
+if par.belief != 'regBayesTrunc':
+    par.nMeas = par.nIter
+
+if par.belief == 'stkf':
+    par.nBeta = 0
+
+
+class par:
+    import math
+    import numpy as np
+
+    """Parameters"""
+
+    """Simulation parameters will be specified in simulation.py"""
+    belief = None
+    control = None
+    fieldType = None
+    temporal = None
+    plot = None
+
+    nIter = None  # number of iterations
+
+
+    class plotOptions:
+        showExploredPaths = False
+        showActionRewardMapping = False
+        showAcquisitionFunction = False
+        showPerformance = False
+
+    exploitingRate = 0
+
+    dt = 1  # timesteps per iteration
+    nMeas = 10  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
+    ov2 = 0.01  # measurement variance
+    ov2Real = ov2
+    dX = dY = 0.01  # discretizaton in x and y for Plotting
+
+    (x0, y0, alpha0) = (0, 0, math.pi / 4)  # initial state
+    maxStepsize = 0.1  # maximum change in every state per iteration
+    xVel = maxStepsize
+    yVel = maxStepsize
+
+    dxdt = 0.001  # Shift of true field in x direction
+    dydt = 0.001  # Shift of true field in y direction
+    pulseTime = nIter  # Duration of sinusodial pulsation
+
+    """GMRF class"""
+    xMin = 0  # GMRF dimensions
+    xMax = 10
+    nGridX = 10
+    yMin = 0
+    yMax = 10
+    nGridY = 10
+    nBeta = 1  # regression coefficients
+    nEdge = 3 # needs to be at least 1
+    valueT = 1e-3  # Prior precision value for regression vector bet
+
+    """STKF class"""
+    sigmaT = 1e5  # 1e3    # determines exponential decay of time kernel
+    lambdSTKF = 1  # influences time kernel value
+    sigma2 = 0.01
+
+    """PI2 controller"""
+    H = 20  # control horizon steps
+    controlCost = 5  # 5e-1   # affects noise of path roll-outs (negatively)
+    R = controlCost * np.eye(H)  # input cost matrix
+    g = np.ones((H, 1))
+    lambd = 1e-1  # 1e-2 # rescales state costs, affects noise of path roll-outs (positively)
+    K = 15  # number of path roll outs
+    ctrSamplingTime = 0.1  # time discretization
+    nUpdated = 5  # number of iterations
+    outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative reward
+
+    """CBTS controller"""
+    trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
+    trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
+    CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
+    branchingFactor = 6  # number of actions that can be evaluated at max for each path segment
+    maxDepth = 3  # depth of search tree
+    kappa = 50  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
+    nTrajPoints = int(trajStepSize / maxStepsize)  # number of measurement points along trajectory
+    kappaChildSelection = 1  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
+    UCBRewardFactor = 0.05  # reward = variance + UCBRewardFactor*mean
+    outOfGridPenaltyCBTS = 1
+
+    thetaMin = -1  # determines curvature of generated trajectories
+    thetaMax = 1  # determines curvature of generated trajectories
+    thetaExpMin = thetaMin  # determines curvature of generated trajectories for node exploration
+    thetaExpMax = thetaMax  # determines curvature of generated trajectories for node exploration
+    trajOrder = 1  # if higher order is used check trajectory generation function
+    initialTheta = np.zeros(trajOrder)  # leads to first trajectory being straight
+    discountFactor = 0.5  # discounts future rewards
+    controlCost = 0.2
+
+    # Gaussian Process for action reward mapping
+    kernelPar = 10  # used in exponential kernel to determine variance between to inputs
+    nThetaSamples = 100  # number of samples thetas which are candidates for next theta
