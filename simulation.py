@@ -1,6 +1,7 @@
 import parameters
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
 from scipy import stats
 import functions
 import main
@@ -11,15 +12,17 @@ import shutil
 import pickle
 import copy
 
+matplotlib.use('TkAgg')
+
 """Load Parameters"""
 par = copy.deepcopy(parameters.par)
 """Simulation Options"""
 beliefOptions = ['stkf']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['randomWalk']  #'cbts', 'pi2', 'randomWalk'
+controlOptions = ['pi2']  #'cbts', 'pi2', 'randomWalk'
 
 saveToFile = False
 nSim = 1
-par.nIter = 100
+par.nIter = 10
 par.fieldType = 'predefined'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
 par.plot = True

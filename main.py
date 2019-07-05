@@ -68,7 +68,7 @@ def main(par):
     Phi[0, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
     """Update and plot field belief"""
     for i in range(par.nIter - 1):
-        print("Iteration ", i, " of ", par.nIter, ".")
+        print("Iteration ", i+1, " of ", par.nIter, ".")
         t = i * par.dt
 
         timeBefore = time.time()
@@ -133,7 +133,6 @@ def main(par):
         if par.plot:
             plt.figure(0)
             plt.clf()
-            plt.ion()
             functions.plotFields(par,fig0, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
             fig0.canvas.draw()
 
@@ -143,6 +142,9 @@ def main(par):
 
     #pr.disable()
     #pr.print_stats(sort='cumtime')
+
+    if par.plot:
+        plt.show(block=True)
 
     return x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist, diffMeanVec, totalVarVec
 #functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
