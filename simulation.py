@@ -18,11 +18,11 @@ matplotlib.use('TkAgg')
 par = copy.deepcopy(parameters.par)
 """Simulation Options"""
 beliefOptions = ['stkf']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['pi2','cbts']  #'cbts', 'pi2', 'randomWalk'
+controlOptions = ['cbts']  #'cbts', 'pi2', 'randomWalk'
 
 saveToFile = True
-nSim = 5
-par.nIter = 100
+nSim = 10
+par.nIter = 400
 par.fieldType = 'sine'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
 par.plot = False
