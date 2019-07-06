@@ -1,11 +1,10 @@
 import copy
-
+import gc
 import math
 import numpy as np
 
 import functions
 from classes import node
-from classes import gmrf
 
 
 class piControl:
@@ -146,6 +145,7 @@ class CBTS:
             vl.accReward = vl.rewardToNode + futureReward
             self.backUp(v0, vl, vl.accReward)
         bestTraj, derivX, derivY = self.getBestTheta(v0)
+        gc.collect()
         return bestTraj, derivX, derivY
 
     def treePolicy(self, v):
@@ -275,6 +275,7 @@ class CBTS:
         derivY = 3 * ay + 2 * by + cy
 
         return tau, derivX, derivY
+
 
     def evaluateTrajectory(self, v, tau, theta):
         r = - self.controlCost * theta

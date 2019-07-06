@@ -172,5 +172,9 @@ plt.show()
 # DONE
 # TODO Enable changing of parameters while simulating
 
+# Memory profiling:
+# mprof run --include-children python3 simulation.py
+# mprof plot --output memory-profile.png
+
 
 
