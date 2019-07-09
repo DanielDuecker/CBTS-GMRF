@@ -54,7 +54,7 @@ class par:
     sigma2 = 0.01
 
     """PI2 controller"""
-    H = 10  # control horizon steps
+    H = 20  # control horizon steps
     controlCost = 5  # 5e-1   # affects noise of path roll-outs (negatively)
     R = controlCost * np.eye(H)  # input cost matrix
     g = np.ones((H, 1))

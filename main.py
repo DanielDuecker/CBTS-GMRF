@@ -97,14 +97,12 @@ def main(par):
             xMeas = auv.x
             yMeas = auv.y
             trajIndex += 1
-            test  = True
         elif par.control == 'randomWalk':
             # Get next measurement according to dynamics, stack under measurement vector
             xMeas, yMeas = functions.randomWalk(par, xMeas, yMeas, gmrf1)
         else:
             return("Error! No controller selected")
 
-        print(math.sqrt((yMeas-yHist[-1])**2+(xMeas-xHist[-1])**2))
         xHist.append(xMeas)
         yHist.append(yMeas)
         zMeas[(i + 1) % par.nMeas] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
