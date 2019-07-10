@@ -238,7 +238,7 @@ class gmrf:
             self.meanCond = np.dot(self.covPrior, np.dot(Phi.T, np.dot(np.linalg.inv(R), zMeas)))
 
         # Also update bSeq and precCond in case seq. belief update is used for planning
-        self.bSeq = self.bSeq + 1 / self.ov2 * Phi[-1,:] * zMeas[-1,0]
+        self.bSeq = self.bSeq + 1 / self.ov2 * np.dot(Phi[-1,:],zMeas[-1,0]).reshape(self.nP+self.nBeta,1)
         self.precCond = np.linalg.inv(self.covCond)
 
 
@@ -256,7 +256,6 @@ class gmrf:
         # hSeq = np.linalg.solve(self.precCond, Phi_k.T)
         # self.diagCovCond = self.diagCovCond - 1 / (self.ov2 + np.dot(Phi_k, hSeq)[0, 0]) * np.dot(hSeq,
         #                                                            hSeq.T).diagonal().reshape(self.nP + self.nBeta, 1)
-
 
 class stkf:
     def __init__(self,par, gmrf1):

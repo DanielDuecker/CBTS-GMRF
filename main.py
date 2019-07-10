@@ -131,7 +131,6 @@ def main(par):
             functions.plotPerformance(diffMeanVec, totalVarVec)
             fig3.canvas.draw()
 
-
         """Plotting"""
         if par.plot:
             plt.figure(0)
@@ -153,7 +152,6 @@ def main(par):
 #functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 #plt.show(block=True)
 
-# TODO Find reason for curved performance
 # TODO use stkf in controller update
 # TODO Fix distance between measurements on trajectory
 # TODO Learning circular field
@@ -168,6 +166,7 @@ def main(par):
 # TODO maybe use cubic splines or kernel trajs
 
 # DONE
+# TODO Find reason for curved performance
 # TODO Check again feasability of trajs
 # TODO add outer grid
 # TODO boundary conditions
