@@ -177,7 +177,7 @@ class CBTS:
                     vNew.auv.x = traj[0, i + 1]
                     vNew.auv.y = traj[1, i + 1]
                     Phi = functions.mapConDis(vNew.gmrf, vNew.auv.x, vNew.auv.y)
-                    #vNew.gmrf.seqBayesianUpdate(o[i], Phi)
+                    vNew.gmrf.seqBayesianUpdate(o[i], Phi)
 
                 vNew.auv.derivX = derivX
                 vNew.auv.derivY = derivY
@@ -272,6 +272,7 @@ class CBTS:
         discretize = 1/100
         for i in range(self.nTrajPoints):
             tau[:, i] = np.dot(beta, np.array([[1], [u], [u ** 2], [u ** 3]]))[:, 0]
+            print("u:",u)
 
             # rescaled u in order to generate steps with a fixed length
             while length < self.par.maxStepsize:
