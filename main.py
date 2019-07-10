@@ -80,7 +80,7 @@ def main(par):
         elif par.belief == 'seqBayes':
             gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])
         elif par.belief == 'regBayes' or par.belief == 'regBayesTrunc':
-            gmrf1.bayesianUpdate(zMeas[0:i], Phi[0:i, :])
+            gmrf1.bayesianUpdate(zMeas[0:(i+1)], Phi[0:(i+1), :])
         else:
             return("Error! No update method selected")
 
@@ -153,6 +153,7 @@ def main(par):
 #functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
 #plt.show(block=True)
 
+# TODO Find reason for curved performance
 # TODO use stkf in controller update
 # TODO Fix distance between measurements on trajectory
 # TODO Learning circular field
