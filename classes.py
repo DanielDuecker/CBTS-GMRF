@@ -238,7 +238,7 @@ class gmrf:
             self.meanCond = np.dot(self.covPrior, np.dot(Phi.T, np.dot(np.linalg.inv(R), zMeas)))
 
         # Also update bSeq and precCond in case seq. belief update is used for planning
-        self.bSeq = self.bSeq + 1 / self.ov2 * Phi[-1] * zMeas[-1]
+        self.bSeq = self.bSeq + 1 / self.ov2 * Phi[-1,:] * zMeas[-1,0]
         self.precCond = np.linalg.inv(self.covCond)
 
 
