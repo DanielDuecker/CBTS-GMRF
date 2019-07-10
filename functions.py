@@ -1,6 +1,7 @@
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+import classes
 
 def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
     noise = np.random.normal(0, math.sqrt(noiseVariance))
@@ -187,3 +188,37 @@ def plotPerformance(diffMean,totalVar):
     plt.plot(totalVar)
     plt.xlabel('Iteration Index')
     plt.ylabel('Total Belief Uncertainty')
+
+def sampleGMRF(gmrf):
+    newGMRF = classes.gmrf(gmrf.par, gmrf.par.nGridXSampled, gmrf.par.nGridYSampled)
+    if gmrf.nBeta > 0:
+        newGMRF.bSeq[-gmrf.nBeta:] = gmrf.bSeq[-gmrf.nBeta:]
+    for i in range(newGMRF.nP-1):
+        xIndex = i % (newGMRF.nX+newGMRF.nBeta)
+        yIndex = int((i/(newGMRF.nX+newGMRF.nBeta)))
+        Phi = mapConDis(gmrf,newGMRF.x[xIndex],newGMRF.y[yIndex])
+        newGMRF.bSeq[i] = np.dot(Phi,gmrf.bSeq)
+        if newGMRF.bSeq[i] > 0:
+            PhiResh = Phi[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)
+            bSeqResh = gmrf.bSeq[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)
+            print("xIndex:",xIndex)
+            print("xOld:", gmrf.x[xIndex])
+            print("x:",newGMRF.x[xIndex])
+            print("yIndex:",yIndex)
+            print("yOld:", gmrf.y[yIndex])
+            print("y:",newGMRF.y[yIndex])
+            print(newGMRF.bSeq[i])
+            wait = True
+        newGMRF.covCond[i,i] = 1
+
+    fig = plt.figure()
+    ax1 = fig.add_subplot(211)
+    ax1.contourf(newGMRF.x, newGMRF.y,newGMRF.bSeq[0:newGMRF.nP].reshape(newGMRF.nY, newGMRF.nX))
+    X,Y = np.meshgrid(newGMRF.x, newGMRF.y)
+    ax1.scatter(Y,X)
+    ax2 = fig.add_subplot(212)
+    ax2.contourf(gmrf.x, gmrf.y,gmrf.bSeq[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
+    X,Y = np.meshgrid(gmrf.x, gmrf.y)
+    ax2.scatter(Y,X)
+    plt.show()
+    return newGMRF

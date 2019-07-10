@@ -257,6 +257,7 @@ class gmrf:
         # self.diagCovCond = self.diagCovCond - 1 / (self.ov2 + np.dot(Phi_k, hSeq)[0, 0]) * np.dot(hSeq,
         #                                                            hSeq.T).diagonal().reshape(self.nP + self.nBeta, 1)
 
+
 class stkf:
     def __init__(self,par, gmrf1):
         self.par = par

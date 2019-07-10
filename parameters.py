@@ -44,9 +44,12 @@ class par:
     yMin = 0
     yMax = 10
     nGridY = 30
-    nBeta = 1  # regression coefficients
+    nBeta = 0  # regression coefficients
     nEdge = 3 # needs to be at least 1
     valueT = 1e-3  # Prior precision value for regression vector bet
+
+    nGridXSampled = 10
+    nGridYSampled = 10
 
     """STKF class"""
     sigmaT = 1e5  # 1e3    # determines exponential decay of time kernel
@@ -67,7 +70,7 @@ class par:
     """CBTS controller"""
     trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
     trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
-    CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
+    CBTSIterations = 1  # determines runtime of algorithm, could also be done with time limit
     branchingFactor = 6  # number of actions that can be evaluated at max for each path segment
     maxDepth = 3  # depth of search tree
     kappa = 50  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
