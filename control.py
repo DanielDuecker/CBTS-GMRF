@@ -272,7 +272,6 @@ class CBTS:
         discretize = 1/100
         for i in range(self.nTrajPoints):
             tau[:, i] = np.dot(beta, np.array([[1], [u], [u ** 2], [u ** 3]]))[:, 0]
-            print("u:",u)
 
             # rescaled u in order to generate steps with a fixed length
             while length < self.par.maxStepsize:

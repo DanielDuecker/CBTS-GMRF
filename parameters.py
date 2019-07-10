@@ -18,7 +18,7 @@ class par:
         showExploredPaths = False
         showActionRewardMapping = False
         showAcquisitionFunction = False
-        showPerformance = False
+        showPerformance = True
 
     exploitingRate = 0
 
@@ -40,10 +40,10 @@ class par:
     """GMRF class"""
     xMin = 0  # GMRF dimensions
     xMax = 10
-    nGridX = 10
+    nGridX = 20
     yMin = 0
     yMax = 10
-    nGridY = 10
+    nGridY = 20
     nBeta = 1  # regression coefficients
     nEdge = 3 # needs to be at least 1
     valueT = 1e-3  # Prior precision value for regression vector bet
