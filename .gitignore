@@ -6,6 +6,7 @@ functions.pyc
 main.pyc
 parameters.pyc
 profiling.pyc
+__pycache__/
 __pycache__/main.cpython-36.pyc
 __pycache__/simulation.cpython-36.pyc
 __pycache__/functions.cpython-36.pyc
