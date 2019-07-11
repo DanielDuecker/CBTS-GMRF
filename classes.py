@@ -154,7 +154,7 @@ class GP:
 
 
 class gmrf:
-    def __init__(self,par,nGridX,nGridY):
+    def __init__(self,par,nGridX,nGridY,nEdge):
         """GMRF properties"""
         self.par = par
 
@@ -167,7 +167,7 @@ class gmrf:
         self.nGridX = nGridX
         self.nGridY = nGridY
 
-        self.nEdge = par.nEdge
+        self.nEdge = nEdge
 
         self.ov2 = par.ov2
         self.valueT = par.valueT

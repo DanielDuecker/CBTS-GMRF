@@ -190,35 +190,41 @@ def plotPerformance(diffMean,totalVar):
     plt.ylabel('Total Belief Uncertainty')
 
 def sampleGMRF(gmrf):
-    newGMRF = classes.gmrf(gmrf.par, gmrf.par.nGridXSampled, gmrf.par.nGridYSampled)
+    """The sampled GMRFs without outer grids are used in the belief nodes in order to reduce the computation time"""
+    newGMRF = classes.gmrf(gmrf.par, gmrf.par.nGridXSampled, gmrf.par.nGridYSampled, 0)
     if gmrf.nBeta > 0:
         newGMRF.bSeq[-gmrf.nBeta:] = gmrf.bSeq[-gmrf.nBeta:]
     for i in range(newGMRF.nP-1):
-        xIndex = i % (newGMRF.nX+newGMRF.nBeta)
-        yIndex = int((i/(newGMRF.nX+newGMRF.nBeta)))
+        xIndex = i % newGMRF.nX
+        yIndex = int(i/newGMRF.nX)
         Phi = mapConDis(gmrf,newGMRF.x[xIndex],newGMRF.y[yIndex])
         newGMRF.bSeq[i] = np.dot(Phi,gmrf.bSeq)
-        if newGMRF.bSeq[i] > 0:
-            PhiResh = Phi[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)
-            bSeqResh = gmrf.bSeq[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)
-            print("xIndex:",xIndex)
-            print("xOld:", gmrf.x[xIndex])
-            print("x:",newGMRF.x[xIndex])
-            print("yIndex:",yIndex)
-            print("yOld:", gmrf.y[yIndex])
-            print("y:",newGMRF.y[yIndex])
-            print(newGMRF.bSeq[i])
-            wait = True
         newGMRF.covCond[i,i] = 1
 
-    fig = plt.figure()
-    ax1 = fig.add_subplot(211)
+    """Check sampling"""
+    fig = plt.figure(999)
+    plt.clf()
+    plt.ion()
+    ax1 = fig.add_subplot(221)
     ax1.contourf(newGMRF.x, newGMRF.y,newGMRF.bSeq[0:newGMRF.nP].reshape(newGMRF.nY, newGMRF.nX))
     X,Y = np.meshgrid(newGMRF.x, newGMRF.y)
     ax1.scatter(Y,X)
-    ax2 = fig.add_subplot(212)
-    ax2.contourf(gmrf.x, gmrf.y,gmrf.bSeq[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX))
-    X,Y = np.meshgrid(gmrf.x, gmrf.y)
+
+    ax2 = fig.add_subplot(222)
+    ax2.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],gmrf.bSeq[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge])
+    X,Y = np.meshgrid(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge])
     ax2.scatter(Y,X)
+
+    #ax3 = fig.add_subplot(223)
+    #ax3.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
+    #             gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],
+    #             levels=gmrf.covLevels)
+    #ax4 = fig.add_subplot(224)
+    #ax4.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
+    #             gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],
+    #             levels=gmrf.covLevels)
+
+
+    fig.canvas.draw()
     plt.show()
     return newGMRF
