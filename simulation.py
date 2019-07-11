@@ -18,7 +18,7 @@ matplotlib.use('TkAgg')
 par = copy.deepcopy(parameters.par)
 """Simulation Options"""
 beliefOptions = ['stkf']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['pi2','cbts']  #'cbts', 'pi2', 'randomWalk'
+controlOptions = ['pi2','cbts']  #'cbts', 'pi2', 'randomWalk', 'geist'
 
 saveToFile = True
 nSim = 5
@@ -47,6 +47,9 @@ if saveToFile:
     except:
         print("Error while creating directory!")
     os.chdir(path)
+
+    # Copy used parameters
+    shutil.copyfile(dirpath + '/parameters.py', path + '/' + folderName + '_parameters.txt')
 
 """Iterate Through Simulation Options"""
 for belief in beliefOptions:
@@ -96,9 +99,6 @@ for belief in beliefOptions:
         totalVarDict[simCase] = totalVar
 
         if saveToFile:
-            # Copy used parameters
-            shutil.copyfile(dirpath + '/parameters.py',path + '/' + folderName + '_' + simCase + '_parameters.txt')
-
             """Save objects"""
             # Save objects
             with open('objs' + '_' + simCase + '.pkl', 'wb') as f:

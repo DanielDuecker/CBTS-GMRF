@@ -44,7 +44,7 @@ class par:
     yMin = 0
     yMax = 10
     nGridY = 20
-    nBeta = 0  # regression coefficients
+    nBeta = 1  # regression coefficients
     nEdge = 5  # needs to be at least 1
     valueT = 1e-3  # Prior precision value for regression vector bet
 
@@ -79,7 +79,7 @@ class par:
     kappaChildSelection = 1  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
     UCBRewardFactor = 0.05  # reward = variance + UCBRewardFactor*mean
     outOfGridPenaltyCBTS = 1
-    useSampledGMRF = True
+    useSampledGMRF = False
 
     thetaMin = -1  # determines curvature of generated trajectories
     thetaMax = 1  # determines curvature of generated trajectories

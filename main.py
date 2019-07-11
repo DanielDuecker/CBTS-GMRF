@@ -16,6 +16,10 @@ def main(par):
     from classes import stkf
     from classes import trueField
 
+    import Config
+    import gp_scripts
+    import control_scripts
+
     """Agent"""
     auv = agent(par, par.x0, par.y0, par.alpha0)
     xHist = [par.x0]  # x-state history vector
@@ -36,7 +40,11 @@ def main(par):
     gmrf1 = gmrf(par,par.nGridX,par.nGridY,par.nEdge)
 
     """PI2 Controller"""
-    controller = control.piControl(par,)
+    controller = control.piControl(par)
+
+    """PI2 Controller Geist"""
+    gmrfGeist = gp_scripts.GMRF(Config.gmrf_dim, Config.alpha_prior, Config.kappa_prior, Config.set_Q_init)
+    u_optimal = np.zeros((10,1))
 
     """Ground Truth"""
     trueField = trueField(par,par.fieldType)
@@ -87,6 +95,18 @@ def main(par):
         if par.control == 'pi2':
             # Get next state according to PI Controller
             xMeas, yMeas = controller.getNewState(auv, gmrf1)
+        elif par.control == 'geist':
+            x_auv = [auv.x,auv.y,auv.alpha]
+            field_limits = (gmrf1.xMin,gmrf1.yMin)
+            u_optimal, tau_x, tau_optimal = control_scripts.pi_controller(x_auv, u_optimal, np.flip(gmrf1.covCond,0).diagonal(), Config.pi_parameters,
+                                                                          gmrfGeist.params, field_limits,
+                                                                          Config.set_sanity_check)
+            auv.x = tau_optimal[0,1]
+            auv.y = tau_optimal[1,1]
+            auv.alpha = tau_optimal[2,1]
+            xMeas = auv.x
+            yMeas = auv.y
+            print(xMeas,yMeas)
         elif par.control == 'cbts':
             if i % par.nMeasPoints == 0:
                 bestTraj, auv.derivX, auv.derivY = CBTS1.getNewTraj(auv, gmrf1)
@@ -148,23 +168,23 @@ def main(par):
         plt.show(block=True)
 
     return x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist, diffMeanVec, totalVarVec
-#functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
-#plt.show(block=True)
+    #functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
+    #plt.show(block=True)
 
 # TODO use stkf in controller update
-# TODO Fix distance between measurements on trajectory
 # TODO Learning circular field
 # TODO Try Car(2) precision matrix
 # TODO use of sparse commands
-# TODO Check computation time -> python library?
 # TODO -> Change implementation of belief update at each node
-# TODO tidy up code, consistent classes and paramater policy
 # TODO Check reason for vertices in PI2
-# TODO Compare to PI2
 # TODO Use generic gmrf implementation (also for action reward mapping)
 # TODO maybe use cubic splines or kernel trajs
 
 # DONE
+# TODO Check computation time -> python library?
+# TODO Compare to PI2
+# TODO tidy up code, consistent classes and paramater policy
+# TODO Fix distance between measurements on trajectory -> implemented but not in use
 # TODO Find reason for curved performance
 # TODO Check again feasability of trajs
 # TODO add outer grid
