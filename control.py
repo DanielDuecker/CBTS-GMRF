@@ -163,7 +163,11 @@ class CBTS:
                 v.GP.update(theta, r)
 
                 # Create new node:
-                vNew = node(self.par, functions.sampleGMRF(v.gmrf), v.auv)
+                if self.par.useSampledGMRF and v.depth == 0:
+                    vNewGMRF = functions.sampleGMRF(v.gmrf)
+                else:
+                    vNewGMRF = v.gmrf
+                vNew = node(self.par, vNewGMRF, v.auv)
                 vNew.rewardToNode = v.rewardToNode + self.discountFactor ** v.depth * r
                 vNew.totalReward = vNew.rewardToNode
                 vNew.parent = v

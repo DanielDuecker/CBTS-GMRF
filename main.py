@@ -1,9 +1,9 @@
 # First 2D-GMRF Implementation
 
 def main(par):
-    #import cProfile
-    #pr = cProfile.Profile()
-    #pr.enable()
+    import cProfile
+    pr = cProfile.Profile()
+    pr.enable()
 
     import time
 
@@ -15,7 +15,6 @@ def main(par):
     from classes import gmrf
     from classes import stkf
     from classes import trueField
-    import math
 
     """Agent"""
     auv = agent(par, par.x0, par.y0, par.alpha0)
@@ -142,8 +141,8 @@ def main(par):
         if par.temporal:
             trueField.updateField(par, i)
 
-    #pr.disable()
-    #pr.print_stats(sort='cumtime')
+    pr.disable()
+    pr.print_stats(sort='cumtime')
 
     if par.plot:
         plt.show(block=True)
