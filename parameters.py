@@ -40,10 +40,10 @@ class par:
     """GMRF class"""
     xMin = 0  # GMRF dimensions
     xMax = 10
-    nGridX = 20
+    nGridX = 10
     yMin = 0
     yMax = 10
-    nGridY = 20
+    nGridY = 10
     nBeta = 1  # regression coefficients
     nEdge = 3  # needs to be at least 1
     valueT = 1e-3  # Prior precision value for regression vector bet
@@ -88,8 +88,8 @@ class par:
     trajOrder = 1  # if higher order is used check trajectory generation function
     initialTheta = np.zeros(trajOrder)  # leads to first trajectory being straight
     discountFactor = 0.5  # discounts future rewards
-    controlCost = 1
+    controlCost = 0.2
 
     # Gaussian Process for action reward mapping
     kernelPar = 10  # used in exponential kernel to determine variance between to inputs
-    nThetaSamples = 20  # number of samples thetas which are candidates for next theta
+    nThetaSamples = 100  # number of samples thetas which are candidates for next theta
