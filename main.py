@@ -74,6 +74,7 @@ def main(par):
     Phi = np.zeros((par.nMeas, gmrf1.nP + gmrf1.nBeta))
     zMeas[0] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
     Phi[0, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
+
     """Update and plot field belief"""
     for i in range(par.nIter - 1):
         print("Iteration ", i+1, " of ", par.nIter, ".")

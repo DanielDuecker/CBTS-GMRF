@@ -7,6 +7,7 @@ import numpy as np
 import scipy
 from scipy import integrate
 from scipy import interpolate
+import scipy.sparse as sp
 
 import functions
 
@@ -211,12 +212,13 @@ class gmrf:
         self.meanCond = np.zeros((self.nP + self.nBeta, 1))
         self.covCond = self.covPrior
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
-        self.precCond = np.linalg.inv(self.covCond)
+        self.precCond = sp.csr_matrix(np.linalg.inv(self.covCond))
         self.covLevels = np.linspace(-0.2, min(np.amax(self.diagCovCond), 0.9), 20)  # using np.amax(self.diagCovCond)
         # leads to wrong scaling, since self.diagCovCond is initialized too hight due to T_inv
 
         "Sequential bayesian regression"
-        self.bSeq = np.zeros((self.nP + self.nBeta, 1))
+        self.bSeq = sp.csc_matrix(np.zeros((self.nP + self.nBeta, 1)))
+
 
     def bayesianUpdate(self, zMeas, Phi):
         """Update conditioned precision matrix"""
@@ -242,16 +244,14 @@ class gmrf:
         self.precCond = np.linalg.inv(self.covCond)
 
 
-    def seqBayesianUpdate(self, zMeas_k, Phi_k):
-        Phi_k = Phi_k.reshape(1, self.nP + self.nBeta)
-        zMeas_k = zMeas_k.reshape(1, 1)
+    def seqBayesianUpdate(self, zMeas, Phi):
+        PhiSparse = sp.csr_matrix(Phi)
 
-        hSeq = np.linalg.solve(self.precCond, Phi_k.T) # TODO Use scipy.sparse.linalg.spsolve
-
-        self.bSeq = self.bSeq + 1 / self.ov2 * Phi_k.T * zMeas_k  # sequential update canonical mean
-        self.precCond = self.precCond + 1 / self.ov2 * np.dot(Phi_k.T, Phi_k)  # sequential update of precision matrix
-        self.meanCond = np.linalg.solve(self.precCond, self.bSeq)
-        self.diagCovCond = np.subtract(self.diagCovCond,np.multiply(hSeq,hSeq) / (self.ov2 + np.dot(Phi_k, hSeq)))
+        hSeq = sp.linalg.spsolve(self.precCond, PhiSparse.T).reshape(self.nP+self.nBeta,1)
+        self.bSeq = self.bSeq + 1 / self.ov2 * np.multiply(PhiSparse.T,zMeas[0])  # sequential update canonical mean
+        self.precCond = self.precCond + 1 / self.ov2 * np.dot(PhiSparse.T, PhiSparse)  # sequential update of precision matrix
+        self.meanCond = sp.linalg.spsolve(self.precCond, self.bSeq)
+        self.diagCovCond = np.subtract(self.diagCovCond,np.multiply(hSeq,hSeq) / (self.ov2 + np.dot(Phi, hSeq)))
 
         """ Works too:
         self.covCond = np.linalg.inv(self.precCond)
