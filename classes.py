@@ -246,17 +246,17 @@ class gmrf:
         Phi_k = Phi_k.reshape(1, self.nP + self.nBeta)
         zMeas_k = zMeas_k.reshape(1, 1)
 
+        hSeq = np.linalg.solve(self.precCond, Phi_k.T) # TODO Use scipy.sparse.linalg.spsolve
+
         self.bSeq = self.bSeq + 1 / self.ov2 * Phi_k.T * zMeas_k  # sequential update canonical mean
         self.precCond = self.precCond + 1 / self.ov2 * np.dot(Phi_k.T, Phi_k)  # sequential update of precision matrix
+        self.meanCond = np.linalg.solve(self.precCond, self.bSeq)
+        self.diagCovCond = np.subtract(self.diagCovCond,np.multiply(hSeq,hSeq) / (self.ov2 + np.dot(Phi_k, hSeq)))
+
+        """ Works too:
         self.covCond = np.linalg.inv(self.precCond)
-        self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)  # works too
-        self.meanCond = np.dot(np.linalg.inv(self.precCond), self.bSeq)
-
-        # TODO: Fix calculation of covariance diagonal
-        # hSeq = np.linalg.solve(self.precCond, Phi_k.T)
-        # self.diagCovCond = self.diagCovCond - 1 / (self.ov2 + np.dot(Phi_k, hSeq)[0, 0]) * np.dot(hSeq,
-        #                                                            hSeq.T).diagonal().reshape(self.nP + self.nBeta, 1)
-
+        self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
+        """
 
 class stkf:
     def __init__(self,par, gmrf1):

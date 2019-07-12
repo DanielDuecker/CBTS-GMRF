@@ -1,0 +1,36 @@
+  ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+       50    0.036    0.001  225.754    4.515 control.py:133(getNewTraj)
+     1000    0.306    0.000  207.035    0.207 control.py:151(treePolicy)
+    10000    3.042    0.000  115.079    0.012 classes.py:245(seqBayesianUpdate)
+    21005  110.202    0.005  111.374    0.005 linalg.py:486(inv)
+     1000    0.023    0.000   88.469    0.088 control.py:192(getNextTheta)
+      630    0.025    0.000   88.428    0.140 classes.py:140(predict)
+     1890   10.451    0.006   88.061    0.047 classes.py:122(getKernelMatrix)
+  6472140   27.255    0.000   77.599    0.000 classes.py:118(kernel)
+  6472141   28.252    0.000   50.345    0.000 linalg.py:2293(norm)
+     1000    0.080    0.000   16.263    0.016 control.py:209(exploreNode)
+1511300/3100    3.293    0.000   15.522    0.005 copy.py:132(deepcopy)
+48100/3100    0.423    0.000   15.426    0.005 copy.py:268(_reconstruct)
+48100/3100    0.960    0.000   15.329    0.005 copy.py:236(_deepcopy_dict)
+  6584389   13.499    0.000   13.499    0.000 {built-in method numpy.dot}
+25000/7960    0.083    0.000   10.952    0.001 copy.py:210(_deepcopy_list)
+   195911    7.889    0.000    7.889    0.000 {method '__deepcopy__' of 'numpy.ndarray' objects}
+  6472177    5.169    0.000    5.169    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+  6497610    2.300    0.000    5.012    0.000 numeric.py:469(asarray)
+      499    0.238    0.000    4.834    0.010 classes.py:294(kalmanFilter)
+  6519192    2.130    0.000    3.242    0.000 linalg.py:121(isComplexType)
+  6597287    2.904    0.000    2.904    0.000 {built-in method numpy.array}
+13308758/13308748    2.552    0.000    2.552    0.000 {built-in method builtins.issubclass}
+       50    2.327    0.047    2.327    0.047 {built-in method gc.collect}
+     2020    0.698    0.000    2.252    0.001 control.py:297(evaluateTrajectory)
+    31199    0.769    0.000    1.969    0.000 functions.py:12(mapConDis)
+    33205    0.160    0.000    1.096    0.000 shape_base.py:286(hstack)
+     1050    0.015    0.000    0.928    0.001 classes.py:324(__init__)
+  3061158    0.761    0.000    0.761    0.000 {method 'get' of 'dict' objects}
+   376851    0.392    0.000    0.584    0.000 copy.py:252(_keep_alive)
+    33205    0.080    0.000    0.473    0.000 shape_base.py:335(<listcomp>)
+        1    0.010    0.010    0.472    0.472 gp_scripts.py:344(__init__)
+    66410    0.241    0.000    0.393    0.000 shape_base.py:25(atleast_1d)
+        1    0.001    0.001    0.393    0.393 classes.py:157(__init__)
+  2022951    0.366    0.000    0.366    0.000 {built-in method builtins.id}
+

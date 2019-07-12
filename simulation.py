@@ -22,7 +22,7 @@ controlOptions = ['cbts']  #'cbts', 'pi2', 'randomWalk', 'geist'
 
 saveToFile = True
 nSim = 1
-par.nIter = 500
+par.nIter = 30
 par.fieldType = 'sine'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
 par.plot = False
