@@ -1,9 +1,9 @@
 # First 2D-GMRF Implementation
 
 def main(par):
-    #import cProfile
-    #pr = cProfile.Profile()
-    #pr.enable()
+    import cProfile
+    pr = cProfile.Profile()
+    pr.enable()
 
     import time
 
@@ -161,8 +161,8 @@ def main(par):
         if par.temporal:
             trueField.updateField(par, i)
 
-    #pr.disable()
-    #pr.print_stats(sort='cumtime')
+    pr.disable()
+    pr.print_stats(sort='cumtime')
 
     if par.plot:
         plt.show(block=True)
