@@ -299,7 +299,7 @@ class CBTS:
         o = []
         for i in range(self.nTrajPoints - 1):
             Phi = functions.mapConDis(v.gmrf, tau[0, i + 1], tau[1, i + 1])
-            r += (np.dot(Phi, v.gmrf.covCond.diagonal()) + self.UCBRewardFactor * np.dot(Phi, v.gmrf.meanCond))[0]
+            r += (np.dot(Phi, v.gmrf.diagCovCond) + self.UCBRewardFactor * np.dot(Phi, v.gmrf.meanCond))[0]
             print(r)
             o.append(np.dot(Phi, v.gmrf.meanCond))
             # lower reward if agent is out of bound
