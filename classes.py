@@ -156,25 +156,23 @@ class GP:
 
 class gmrf:
     def __init__(self,par,nGridX,nGridY,nEdge):
-        """GMRF properties"""
+        "GMRF properties"
         self.par = par
 
         self.xMin = par.xMin
         self.xMax = par.xMax
-
         self.yMin = par.yMin
         self.yMax = par.yMax
 
         self.nGridX = nGridX
         self.nGridY = nGridY
-
         self.nEdge = nEdge
 
         self.ov2 = par.ov2
-        self.valueT = par.valueT
+        self.valueT = par.valueT # Precision value for beta regression
         self.dt = par.dt
 
-        # Distance between two vertices in x and y without edges
+        "Distance between two vertices in x and y without edges"
         self.dx = round((self.xMax - self.xMin) / (self.nGridX - 1),5)
         self.dy = round((self.yMax - self.yMin) / (self.nGridY - 1),5)
 
@@ -190,44 +188,44 @@ class gmrf:
         self.x = np.linspace(self.xMinEdge, self.xMaxEdge, self.nX)  # Vector of x grid values
         self.y = np.linspace(self.yMinEdge, self.yMaxEdge, self.nY)  # Vector of y grid values
 
-        "Mean augmented bayesian regression"
-        # Mean regression matrix
-        self.nBeta = par.nBeta
-        F = np.ones((self.nP, self.nBeta))
-        F_sparse = sp.csr_matrix(F)
-        FT_sparse = scipy.sparse.csr_matrix(F.T)
-        self.T = self.valueT * np.eye(self.nBeta)
-        self.Tinv = np.linalg.inv(self.T)  # Inverse of the Precision matrix of the regression coefficients
-        T_sparse = sp.csr_matrix(self.T)
-
-        # Precision matrix for z values (without regression variable beta)
+        "Precision matrix for z values (without regression variable beta)"
         self.Lambda = functions.getPrecisionMatrix(self)
 
-        Q_temporary = sp.csr_matrix(self.Lambda)
+        "Mean augmented bayesian regression"
+        self.nBeta = par.nBeta
 
-        # Augmented prior precision matrix
-        A2 = Q_temporary.dot(-1 * F_sparse)
-        B1 = -1 * FT_sparse.dot(Q_temporary)
-        B2 = sp.csr_matrix.dot(FT_sparse, Q_temporary.dot(F_sparse)) + T_sparse
-        H1 = sp.hstack([Q_temporary, A2])
-        H2 = sp.hstack([B1, B2])
-        self.precCond = sp.vstack([H1, H2]).tocsr()
+        F = np.ones((self.nP, self.nBeta))
+        FSparse = sp.csr_matrix(F)
+        FTSparse = sp.csr_matrix(F.T)
+        T = self.valueT * np.eye(self.nBeta)
+        Tinv = np.linalg.inv(T)
+        TSparse = sp.csr_matrix(T)
+        TinvSparse = sp.csr_matrix(Tinv)
 
-        # Augmented prior covariance matrix
-        covPriorUpperLeft = np.linalg.inv(self.Lambda) + np.dot(F, np.dot(self.Tinv, F.T))
-        covPriorUpperRight = np.dot(F, self.Tinv)
-        covPriorLowerLeft = np.dot(F, self.Tinv).T
-        covPriorLowerRight = self.Tinv
-        self.covPrior = np.vstack(
-            (np.hstack((covPriorUpperLeft, covPriorUpperRight)), np.hstack((covPriorLowerLeft, covPriorLowerRight))))
+        "Augmented prior precision matrix"
+        precPriorUpperRight = self.Lambda.dot(-1 * FSparse)
+        precPriorLowerLeft = -1 * FTSparse.dot(self.Lambda)
+        precPriorLowerRight = sp.csr_matrix.dot(FTSparse, self.Lambda.dot(FSparse)) + TSparse
+        precH1 = sp.hstack([self.Lambda, precPriorUpperRight])
+        precH2 = sp.hstack([precPriorLowerLeft, precPriorLowerRight])
+        self.precCondSparse = sp.vstack([precH1, precH2]).tocsr()
+
+        "Augmented prior covariance matrix"
+        covPriorUpperLeft = sp.linalg.inv(self.Lambda.tocsc()) + sp.csr_matrix.dot(FSparse,TinvSparse.dot(FTSparse))
+        covPriorUpperRight = FSparse.dot(Tinv)
+        covPriorLowerLeft = covPriorUpperRight.T
+        covPriorLowerRight = TinvSparse
+        covH1 = sp.hstack([covPriorUpperLeft, covPriorUpperRight])
+        covH2 = sp.hstack([covPriorLowerLeft, covPriorLowerRight])
+        self.covCondSparse = sp.vstack([covH1, covH2]).tocsr()
+
+        self.diagCovCond = np.array(self.covCondSparse.todense()).diagonal().reshape(self.nP + self.nBeta, 1)
+
+        "Prior and conditioned mean"
         self.meanPrior = np.zeros((self.nP + self.nBeta, 1))
-
-        # Initialize augmented conditioned mean, covariance and precision matrices
         self.meanCond = np.zeros((self.nP + self.nBeta, 1))
-        self.covCond = self.covPrior
-        self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
-        self.covLevels = np.linspace(-0.2, min(np.amax(self.diagCovCond), 0.9), 20)  # using np.amax(self.diagCovCond)
-        # leads to wrong scaling, since self.diagCovCond is initialized too hight due to T_inv
+
+        self.covLevels = np.linspace(-0.2, min(np.amax(self.diagCovCond), 0.9), 20) # TODO Adapt
 
         "Sequential bayesian regression"
         self.bSeq = np.zeros((self.nP + self.nBeta, 1))
@@ -261,10 +259,10 @@ class gmrf:
         Phi = Phi.T
         PhiSparse = sp.csr_matrix(Phi)
 
-        hSeq = sp.linalg.spsolve(self.precCond, PhiSparse).T
+        hSeq = sp.linalg.spsolve(self.precCondSparse, PhiSparse).T
         self.bSeq = self.bSeq + zMeas[0]/self.ov2 * Phi  # sequential update canonical mean
-        self.precCond = self.precCond + 1 / self.ov2 * PhiSparse.dot(PhiSparse.T)  # sequential update of precision matrix
-        self.meanCond = sp.linalg.spsolve(self.precCond, self.bSeq).T
+        self.precCondSparse = self.precCondSparse + 1 / self.ov2 * PhiSparse.dot(PhiSparse.T)  # sequential update of precision matrix
+        self.meanCond = sp.linalg.spsolve(self.precCondSparse, self.bSeq).T
         self.diagCovCond = np.subtract(self.diagCovCond,np.multiply(hSeq,hSeq).reshape(self.nP+self.nBeta,1) / (self.ov2 + np.dot(Phi.T, hSeq)[0]))
         """ Works too:
         self.covCond = np.linalg.inv(self.precCond)
@@ -280,28 +278,28 @@ class stkf:
         self.lambdSTKF = par.lambdSTKF
 
         # State representation of Sr
-        self.F = -1 / self.sigmaT * np.eye(1)
-        self.H = math.sqrt(2 * self.lambdSTKF / self.sigmaT) * np.eye(1)
-        self.G = np.eye(1)
-        self.sigma2 = par.sigma2
+        F = -1 / self.sigmaT * np.eye(1)
+        H = math.sqrt(2 * self.lambdSTKF / self.sigmaT) * np.eye(1)
+        G = np.eye(1)
+        sigma2 = par.sigma2
 
         # Kernels
-        self.Ks = np.linalg.inv(functions.getPrecisionMatrix(self.gmrf))
-        self.KsChol = np.linalg.cholesky(self.Ks)
+        Ks = np.linalg.inv(np.array(functions.getPrecisionMatrix(self.gmrf).todense()))
+        KsChol = np.linalg.cholesky(Ks)
         # h = lambda tau: lambdSTKF * math.exp(-abs(tau) / sigmaT) # used time kernel
 
-        self.sigmaZero = scipy.linalg.solve_continuous_lyapunov(self.F, -self.G * self.G.T)
+        sigmaZero = scipy.linalg.solve_continuous_lyapunov(F, -G * G.T)
 
-        self.A = scipy.linalg.expm(np.kron(np.eye(self.gmrf.nP), self.F) * self.dt)
-        self.Cs = np.dot(self.KsChol, np.kron(np.eye(self.gmrf.nP), self.H))
-        QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(self.F, tau)), np.dot(self.G,
-                                            np.dot(self.G.T,scipy.linalg.expm(np.dot(self.F,tau)).T))),0, self.dt)[0]
+        self.A = sp.linalg.expm(np.kron(np.eye(self.gmrf.nP), F) * self.dt)
+        self.Cs = np.dot(KsChol, np.kron(np.eye(self.gmrf.nP), H))
+        QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(F, tau)), np.dot(G,
+                                            np.dot(G.T,scipy.linalg.expm(np.dot(F,tau)).T))),0, self.dt)[0]
         self.Q = np.kron(np.eye(self.gmrf.nP), QBar)
-        self.R = self.sigma2 * np.eye(1)
+        self.R = sigma2 * np.eye(1)
 
         # Initialization
         self.skk = np.zeros((self.gmrf.nP, 1))
-        self.covkk = np.kron(np.eye(self.gmrf.nP), self.sigmaZero)
+        self.covkk = np.kron(np.eye(self.gmrf.nP), sigmaZero)
 
     def kalmanFilter(self, t, xMeas, yMeas, zMeas):
         if t % 1 != 0:
@@ -309,6 +307,9 @@ class stkf:
             st = np.dot(self.A, self.skk)
             covt = np.dot(self.A, np.dot(self.covkk, self.A.T))
         else:
+            import cProfile
+            pr = cProfile.Profile()
+            pr.enable()
             Phi = functions.mapConDis(self.gmrf, xMeas, yMeas)
             C = np.dot(Phi, self.Cs)
 
@@ -325,12 +326,15 @@ class stkf:
             covt = covUpdated
 
         self.gmrf.meanCond = np.dot(self.Cs, st)
-        self.gmrf.covCond = np.dot(self.Cs, np.dot(covt, self.Cs.T))
-        self.gmrf.diagCovCond = self.gmrf.covCond.diagonal()
+        covCond = np.dot(self.Cs, np.dot(covt, self.Cs.T))
+        self.gmrf.covCondSparse = sp.csr_matrix(covCond)
+        self.gmrf.diagCovCond = covCond.diagonal().reshape(self.gmrf.nP+self.gmrf.nBeta,1)
 
         # Also update bSeq and precCond in case seq. belief update is used for planning
         self.gmrf.bSeq = self.gmrf.bSeq + 1 / self.par.ov2 * Phi.T * zMeas  # sequential update canonical mean
-        self.gmrf.precCond = np.linalg.inv(self.gmrf.covCond)
+        self.gmrf.precCond = sp.linalg.inv(self.gmrf.covCondSparse)
+        pr.disable()
+        pr.print_stats(sort='cumtime')
 
 class node:
     def __init__(self, par, gmrf, auv):

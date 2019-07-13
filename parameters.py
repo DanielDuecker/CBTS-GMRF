@@ -16,7 +16,7 @@ class par:
 
     class plotOptions:
         showExploredPaths = False
-        showActionRewardMapping = True
+        showActionRewardMapping = False
         showAcquisitionFunction = False
         showPerformance = False
 

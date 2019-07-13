@@ -2,6 +2,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import classes
+import scipy.sparse as sp
 
 def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
     noise = np.random.normal(0, math.sqrt(noiseVariance))
@@ -54,7 +55,7 @@ def getPrecisionMatrix(gmrf):
         if (i % gmrf.nX) == (gmrf.nX - 1):  # right border
             if i <= (gmrf.nP - gmrf.nX):
                 Lambda[i, i + 1] = 0
-    return Lambda
+    return sp.csr_matrix(Lambda)
 
 
 def randomWalk(par, x, y, gmrf):

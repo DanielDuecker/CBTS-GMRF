@@ -17,8 +17,8 @@ matplotlib.use('TkAgg')
 """Load Parameters"""
 par = copy.deepcopy(parameters.par)
 """Simulation Options"""
-beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['pi2','cbts']  #'cbts', 'pi2', 'randomWalk', 'geist'
+beliefOptions = ['stkf']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
+controlOptions = ['pi2']  #'cbts', 'pi2', 'randomWalk', 'geist'
 
 saveToFile = True
 nSim = 10
