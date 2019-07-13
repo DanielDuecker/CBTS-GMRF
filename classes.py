@@ -217,7 +217,7 @@ class gmrf:
         # leads to wrong scaling, since self.diagCovCond is initialized too hight due to T_inv
 
         "Sequential bayesian regression"
-        self.bSeq = sp.csc_matrix(np.zeros((self.nP + self.nBeta, 1)))
+        self.bSeq = np.zeros((self.nP + self.nBeta, 1))
 
 
     def bayesianUpdate(self, zMeas, Phi):
@@ -245,14 +245,14 @@ class gmrf:
 
 
     def seqBayesianUpdate(self, zMeas, Phi):
+        Phi = Phi.T
         PhiSparse = sp.csr_matrix(Phi)
 
-        hSeq = sp.linalg.spsolve(self.precCond, PhiSparse.T).reshape(self.nP+self.nBeta,1)
-        self.bSeq = self.bSeq + 1 / self.ov2 * np.multiply(PhiSparse.T,zMeas[0])  # sequential update canonical mean
-        self.precCond = self.precCond + 1 / self.ov2 * np.dot(PhiSparse.T, PhiSparse)  # sequential update of precision matrix
-        self.meanCond = sp.linalg.spsolve(self.precCond, self.bSeq)
-        self.diagCovCond = np.subtract(self.diagCovCond,np.multiply(hSeq,hSeq) / (self.ov2 + np.dot(Phi, hSeq)))
-
+        hSeq = sp.linalg.spsolve(self.precCond, PhiSparse).T
+        self.bSeq = self.bSeq + zMeas[0]/self.ov2 * Phi  # sequential update canonical mean
+        self.precCond = self.precCond + 1 / self.ov2 * PhiSparse.dot(PhiSparse.T)  # sequential update of precision matrix
+        self.meanCond = sp.linalg.spsolve(self.precCond, self.bSeq).T
+        self.diagCovCond = np.subtract(self.diagCovCond,np.multiply(hSeq,hSeq).reshape(self.nP+self.nBeta,1) / (self.ov2 + np.dot(Phi.T, hSeq)[0]))
         """ Works too:
         self.covCond = np.linalg.inv(self.precCond)
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)

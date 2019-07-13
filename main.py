@@ -3,7 +3,7 @@
 def main(par):
     import cProfile
     pr = cProfile.Profile()
-    pr.enable()
+    #pr.enable()
 
     import time
 
@@ -75,6 +75,7 @@ def main(par):
     zMeas[0] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
     Phi[0, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
 
+
     """Update and plot field belief"""
     for i in range(par.nIter - 1):
         print("Iteration ", i+1, " of ", par.nIter, ".")
@@ -86,7 +87,10 @@ def main(par):
         if par.belief == 'stkf':
             stkf1.kalmanFilter(t, xMeas, yMeas, zMeas[i])
         elif par.belief == 'seqBayes':
-            gmrf1.seqBayesianUpdate(zMeas[i], Phi[i, :])
+            pr.enable()
+            gmrf1.seqBayesianUpdate(zMeas[i], Phi[[i], :])
+            pr.disable()
+            pr.print_stats(sort='cumtime')
         elif par.belief == 'regBayes' or par.belief == 'regBayesTrunc':
             gmrf1.bayesianUpdate(zMeas[0:(i+1)], Phi[0:(i+1), :])
         else:
@@ -162,8 +166,8 @@ def main(par):
         if par.temporal:
             trueField.updateField(par, i)
 
-    pr.disable()
-    pr.print_stats(sort='cumtime')
+    #pr.disable()
+    #pr.print_stats(sort='cumtime')
 
     if par.plot:
         plt.show(block=True)

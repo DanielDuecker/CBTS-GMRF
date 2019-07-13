@@ -57,6 +57,8 @@ class piControl:
                     else:
                         Phi = functions.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
                         stateCost += 1 / np.dot(Phi, gmrf.diagCovCond)
+                        print(Phi.shape)
+                        print(gmrf.diagCovCond.shape)
                     uHead = self.u[index:self.H, 0] + np.dot(M[index:self.H, index:self.H], noise[index:self.H, k])
                     S[index, k] = S[index + 1, k] + stateCost + 0.5 * np.dot(uHead.T,
                                                                 np.dot(self.R[index:self.H, index:self.H],uHead))
