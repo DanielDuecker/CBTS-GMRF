@@ -57,8 +57,6 @@ class piControl:
                     else:
                         Phi = functions.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
                         stateCost += 1 / np.dot(Phi, gmrf.diagCovCond)
-                        print(Phi.shape)
-                        print(gmrf.diagCovCond.shape)
                     uHead = self.u[index:self.H, 0] + np.dot(M[index:self.H, index:self.H], noise[index:self.H, k])
                     S[index, k] = S[index + 1, k] + stateCost + 0.5 * np.dot(uHead.T,
                                                                 np.dot(self.R[index:self.H, index:self.H],uHead))
@@ -302,6 +300,7 @@ class CBTS:
         for i in range(self.nTrajPoints - 1):
             Phi = functions.mapConDis(v.gmrf, tau[0, i + 1], tau[1, i + 1])
             r += (np.dot(Phi, v.gmrf.covCond.diagonal()) + self.UCBRewardFactor * np.dot(Phi, v.gmrf.meanCond))[0]
+            print(r)
             o.append(np.dot(Phi, v.gmrf.meanCond))
             # lower reward if agent is out of bound
             if not functions.sanityCheck(tau[0, i + 1] * np.eye(1), tau[1, i + 1] * np.eye(1), v.gmrf):

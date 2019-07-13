@@ -3,7 +3,7 @@
 def main(par):
     import cProfile
     pr = cProfile.Profile()
-    #pr.enable()
+    pr.enable()
 
     import time
 
@@ -87,10 +87,7 @@ def main(par):
         if par.belief == 'stkf':
             stkf1.kalmanFilter(t, xMeas, yMeas, zMeas[i])
         elif par.belief == 'seqBayes':
-            pr.enable()
             gmrf1.seqBayesianUpdate(zMeas[i], Phi[[i], :])
-            pr.disable()
-            pr.print_stats(sort='cumtime')
         elif par.belief == 'regBayes' or par.belief == 'regBayesTrunc':
             gmrf1.bayesianUpdate(zMeas[0:(i+1)], Phi[0:(i+1), :])
         else:
@@ -111,7 +108,7 @@ def main(par):
             auv.alpha = tau_optimal[2,1]
             xMeas = auv.x
             yMeas = auv.y
-            print(xMeas,yMeas)
+            #print(xMeas,yMeas)
         elif par.control == 'cbts':
             if i % par.nMeasPoints == 0:
                 bestTraj, auv.derivX, auv.derivY = CBTS1.getNewTraj(auv, gmrf1)
@@ -166,8 +163,8 @@ def main(par):
         if par.temporal:
             trueField.updateField(par, i)
 
-    #pr.disable()
-    #pr.print_stats(sort='cumtime')
+    pr.disable()
+    pr.print_stats(sort='cumtime')
 
     if par.plot:
         plt.show(block=True)
