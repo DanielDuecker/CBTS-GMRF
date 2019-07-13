@@ -194,10 +194,24 @@ class gmrf:
         # Mean regression matrix
         self.nBeta = par.nBeta
         F = np.ones((self.nP, self.nBeta))
-        self.Tinv = np.linalg.inv(self.valueT * np.eye(self.nBeta))
+        F_sparse = sp.csr_matrix(F)
+        FT_sparse = scipy.sparse.csr_matrix(F.T)
+        self.T = self.valueT * np.eye(self.nBeta)
+        self.Tinv = np.linalg.inv(self.T)  # Inverse of the Precision matrix of the regression coefficients
+        T_sparse = sp.csr_matrix(self.T)
 
         # Precision matrix for z values (without regression variable beta)
         self.Lambda = functions.getPrecisionMatrix(self)
+
+        Q_temporary = sp.csr_matrix(self.Lambda)
+
+        # Augmented prior precision matrix
+        A2 = Q_temporary.dot(-1 * F_sparse)
+        B1 = -1 * FT_sparse.dot(Q_temporary)
+        B2 = sp.csr_matrix.dot(FT_sparse, Q_temporary.dot(F_sparse)) + T_sparse
+        H1 = sp.hstack([Q_temporary, A2])
+        H2 = sp.hstack([B1, B2])
+        self.precCond = sp.vstack([H1, H2]).tocsr()
 
         # Augmented prior covariance matrix
         covPriorUpperLeft = np.linalg.inv(self.Lambda) + np.dot(F, np.dot(self.Tinv, F.T))
@@ -212,7 +226,6 @@ class gmrf:
         self.meanCond = np.zeros((self.nP + self.nBeta, 1))
         self.covCond = self.covPrior
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
-        self.precCond = sp.csr_matrix(np.linalg.inv(self.covCond))
         self.covLevels = np.linspace(-0.2, min(np.amax(self.diagCovCond), 0.9), 20)  # using np.amax(self.diagCovCond)
         # leads to wrong scaling, since self.diagCovCond is initialized too hight due to T_inv
 
