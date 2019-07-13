@@ -290,16 +290,17 @@ class stkf:
 
         sigmaZero = scipy.linalg.solve_continuous_lyapunov(F, -G * G.T)
 
-        self.A = sp.linalg.expm(np.kron(np.eye(self.gmrf.nP), F) * self.dt)
-        self.Cs = np.dot(KsChol, np.kron(np.eye(self.gmrf.nP), H))
+        self.A = sp.csr_matrix(sp.linalg.expm(np.kron(np.eye(self.gmrf.nP), F) * self.dt))
+        self.AT = sp.csr_matrix(self.A.T)
+        self.Cs = sp.csr_matrix(np.dot(KsChol, np.kron(np.eye(self.gmrf.nP), H)))
         QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(F, tau)), np.dot(G,
                                             np.dot(G.T,scipy.linalg.expm(np.dot(F,tau)).T))),0, self.dt)[0]
-        self.Q = np.kron(np.eye(self.gmrf.nP), QBar)
-        self.R = sigma2 * np.eye(1)
+        self.Q = sp.csr_matrix( np.kron(np.eye(self.gmrf.nP), QBar))
+        self.R = sp.csr_matrix(sigma2 * np.eye(1))
 
         # Initialization
-        self.skk = np.zeros((self.gmrf.nP, 1))
-        self.covkk = np.kron(np.eye(self.gmrf.nP), sigmaZero)
+        self.skk = sp.csr_matrix(np.zeros((self.gmrf.nP, 1)))
+        self.covkk = sp.csr_matrix(np.kron(np.eye(self.gmrf.nP), sigmaZero))
 
     def kalmanFilter(self, t, xMeas, yMeas, zMeas):
         if t % 1 != 0:
@@ -310,20 +311,21 @@ class stkf:
             import cProfile
             pr = cProfile.Profile()
             pr.enable()
-            Phi = functions.mapConDis(self.gmrf, xMeas, yMeas)
-            C = np.dot(Phi, self.Cs)
+            Phi = sp.csr_matrix(functions.mapConDis(self.gmrf, xMeas, yMeas))
+            C =Phi.dot(self.Cs)
+            CT = sp.csr_matrix(C.T)
 
             # Kalman Regression
-            sPred = np.dot(self.A, self.skk)
-            covPred = np.dot(self.A, np.dot(self.covkk, self.A.T)) + self.Q
-            kalmanGain = np.dot(covPred, np.dot(C.T, np.linalg.inv(np.dot(C, np.dot(covPred, C.T)) + self.R)))
-            sUpdated = sPred + np.dot(kalmanGain, zMeas - np.dot(C, sPred))
-            covUpdated = np.dot(np.eye(self.gmrf.nP) - np.dot(kalmanGain, C), covPred)
-            self.skk = sUpdated
-            self.covkk = covUpdated
-
-            st = sUpdated
-            covt = covUpdated
+            sPred = self.A.dot(self.skk)
+            covPred = self.A.dot(self.covkk.dot(self.AT)) + self.Q
+            denum = sp.linalg.inv(C.dot(covPred.dot(CT)) + self.R)
+            kalmanGain = covPred.dot(CT.dot(denum)).reshape(self.gmrf.nP+self.gmrf.nBeta,1)
+            test = kalmanGain.dot(sp.csr_matrix(zMeas) - C.dot(sPred))
+            test2 = sp.csr_matrix(zMeas) - C.dot(sPred)
+            st = sPred + kalmanGain.dot(sp.csr_matrix(zMeas) - C.dot(sPred))
+            covt = (sp.csr_matrix(np.eye(self.gmrf.nP)) - kalmanGain.dot(C)).dot(covPred)
+            self.skk = st
+            self.covkk = covt
 
         self.gmrf.meanCond = np.dot(self.Cs, st)
         covCond = np.dot(self.Cs, np.dot(covt, self.Cs.T))
