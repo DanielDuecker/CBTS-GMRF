@@ -1,5 +1,6 @@
 .idea
 sim/
+simSaved/
 classes.pyc
 control.pyc
 functions.pyc

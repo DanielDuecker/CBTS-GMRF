@@ -40,10 +40,10 @@ class par:
     """GMRF class"""
     xMin = 0  # GMRF dimensions
     xMax = 10
-    nGridX = 20
+    nGridX = 50
     yMin = 0
     yMax = 10
-    nGridY = 20
+    nGridY = 50
     nBeta = 3  # regression coefficients
     nEdge = 5  # needs to be at least 1
     valueT = 1e-3  # Prior precision value for regression vector bet
@@ -52,7 +52,8 @@ class par:
     nGridYSampled = 10
 
     """STKF class"""
-    sigmaT = 1e5  # 1e3    # determines exponential decay of time kernel
+    sigmaT = 1e3
+    #sigmaT = 1e5  # 1e3    # determines exponential decay of time kernel
     lambdSTKF = 1  # influences time kernel value
     sigma2 = 0.01
 

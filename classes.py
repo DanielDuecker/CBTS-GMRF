@@ -293,6 +293,7 @@ class stkf:
         self.A = sp.csr_matrix(sp.linalg.expm(np.kron(np.eye(self.gmrf.nP), F) * self.dt))
         self.AT = sp.csr_matrix(self.A.T)
         self.Cs = sp.csr_matrix(np.dot(KsChol, np.kron(np.eye(self.gmrf.nP), H)))
+        self.CsT = sp.csr_matrix(np.dot(KsChol, np.kron(np.eye(self.gmrf.nP), H)).T)
         QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(F, tau)), np.dot(G,
                                             np.dot(G.T,scipy.linalg.expm(np.dot(F,tau)).T))),0, self.dt)[0]
         self.Q = sp.csr_matrix( np.kron(np.eye(self.gmrf.nP), QBar))
@@ -303,40 +304,47 @@ class stkf:
         self.covkk = sp.csr_matrix(np.kron(np.eye(self.gmrf.nP), sigmaZero))
 
     def kalmanFilter(self, t, xMeas, yMeas, zMeas):
+        import cProfile
+        pr = cProfile.Profile()
         if t % 1 != 0:
             # Open loop prediciton
-            st = np.dot(self.A, self.skk)
-            covt = np.dot(self.A, np.dot(self.covkk, self.A.T))
+            self.skk = np.dot(self.A, self.skk)
+            self.covkk = np.dot(self.A, np.dot(self.covkk, self.A.T))
         else:
-            import cProfile
-            pr = cProfile.Profile()
-            pr.enable()
             Phi = sp.csr_matrix(functions.mapConDis(self.gmrf, xMeas, yMeas))
-            C =Phi.dot(self.Cs)
+            C = Phi.dot(self.Cs)
             CT = sp.csr_matrix(C.T)
 
             # Kalman Regression
             sPred = self.A.dot(self.skk)
             covPred = self.A.dot(self.covkk.dot(self.AT)) + self.Q
-            denum = sp.linalg.inv(C.dot(covPred.dot(CT)) + self.R)
-            kalmanGain = covPred.dot(CT.dot(denum)).reshape(self.gmrf.nP+self.gmrf.nBeta,1)
-            test = kalmanGain.dot(sp.csr_matrix(zMeas) - C.dot(sPred))
-            test2 = sp.csr_matrix(zMeas) - C.dot(sPred)
-            st = sPred + kalmanGain.dot(sp.csr_matrix(zMeas) - C.dot(sPred))
-            covt = (sp.csr_matrix(np.eye(self.gmrf.nP)) - kalmanGain.dot(C)).dot(covPred)
-            self.skk = st
-            self.covkk = covt
+            denum = sp.csr_matrix(sp.linalg.inv(C.dot(covPred.dot(CT)) + self.R))
+            kalmanGain = covPred.dot(CT.dot(denum))
+            self.skk = sPred + kalmanGain.dot(sp.csr_matrix(zMeas) - C.dot(sPred))
+            self.covkk = (sp.csr_matrix(np.eye(self.gmrf.nP)) - kalmanGain.dot(C)).dot(covPred)
 
-        self.gmrf.meanCond = np.dot(self.Cs, st)
-        covCond = np.dot(self.Cs, np.dot(covt, self.Cs.T))
-        self.gmrf.covCondSparse = sp.csr_matrix(covCond)
-        self.gmrf.diagCovCond = covCond.diagonal().reshape(self.gmrf.nP+self.gmrf.nBeta,1)
-
-        # Also update bSeq and precCond in case seq. belief update is used for planning
-        self.gmrf.bSeq = self.gmrf.bSeq + 1 / self.par.ov2 * Phi.T * zMeas  # sequential update canonical mean
-        self.gmrf.precCond = sp.linalg.inv(self.gmrf.covCondSparse)
+        self.gmrf.meanCond = np.array(self.Cs.dot(self.skk).todense())
+        import cProfile
+        pr = cProfile.Profile()
+        pr.enable()
+        test1 = self.covkk.dot(self.CsT)
         pr.disable()
         pr.print_stats(sort='cumtime')
+        pr.enable()
+        test2 = self.Cs.dot(test1)
+        pr.disable()
+        pr.print_stats(sort='cumtime')
+
+        self.gmrf.covCondSparse = self.Cs.dot(self.covkk.dot(self.CsT))
+        pr.disable()
+        pr.print_stats(sort='cumtime')
+        self.gmrf.diagCovCond = self.gmrf.covCondSparse.diagonal().reshape(self.gmrf.nP+self.gmrf.nBeta,1)
+
+        # Also update bSeq and precCond in case seq. belief update is used for planning
+        PhiT = Phi.T
+        PhiSparse = sp.csr_matrix(PhiT)
+        self.gmrf.bSeq = self.gmrf.bSeq + 1 / self.par.ov2 * PhiT * zMeas  # sequential update canonical mean
+        self.gmrf.precCondSparse = self.gmrf.precCondSparse + 1 / self.par.ov2 * PhiSparse.dot(PhiSparse.T)  # sequential update of precision matrix
 
 class node:
     def __init__(self, par, gmrf, auv):
