@@ -262,10 +262,10 @@ class gmrf:
         PhiTSparse = sp.csr_matrix(PhiT)
 
         hSeq = sp.linalg.spsolve(self.precCondSparse, PhiTSparse).T
-        self.bSeq = self.bSeq + zMeas[0]/self.ov2 * Phi  # sequential update canonical mean
+        self.bSeq = self.bSeq + zMeas[0]/self.ov2 * PhiT  # sequential update canonical mean
         self.precCondSparse = self.precCondSparse + 1 / self.ov2 * PhiTSparse.dot(PhiTSparse.T)  # sequential update of precision matrix
-        self.meanCond = sp.linalg.spsolve(self.precCondSparse, self.bSeq).T
-        self.diagCovCond = np.subtract(self.diagCovCond,np.multiply(hSeq,hSeq).reshape(self.nP+self.nBeta,1) / (self.ov2 + np.dot(Phi.T, hSeq)[0]))
+        self.meanCond = sp.linalg.spsolve(self.precCondSparse, self.bSeq).reshape(self.nP+self.nBeta,1)
+        self.diagCovCond = np.subtract(self.diagCovCond,np.multiply(hSeq,hSeq).reshape(self.nP+self.nBeta,1) / (self.ov2 + np.dot(Phi, hSeq)[0]))
         """ Works too:
         self.covCond = np.linalg.inv(self.precCond)
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
@@ -312,8 +312,9 @@ class stkf:
             self.skk = np.dot(self.A, self.skk)
             self.covkk = np.dot(self.A, np.dot(self.covkk, self.A.T))
         else:
-            Phi = sp.csr_matrix(functions.mapConDis(self.gmrf, xMeas, yMeas))
-            C = Phi.dot(self.Cs)
+            Phi = functions.mapConDis(self.gmrf, xMeas, yMeas)
+            PhiSparse = sp.csr_matrix(Phi)
+            C = PhiSparse.dot(self.Cs)
             CT = sp.csr_matrix(C.T)
 
             # Kalman Regression
@@ -323,9 +324,9 @@ class stkf:
             kalmanGain = covPred.dot(CT.dot(denum))
             self.skk = sPred + kalmanGain.dot(sp.csr_matrix(zMeas) - C.dot(sPred))
             self.covkk = (sp.csr_matrix(np.eye(self.gmrf.nP)) - kalmanGain.dot(C)).dot(covPred)
-        
-        self.gmrf.meanCond = np.array(self.Cs.dot(self.skk).todense())
-        self.gmrf.covCond = np.dot(self.CsDense,np.dot(self.covkk.todense(),self.CsDense.T))
+
+        self.gmrf.meanCond = np.array(np.dot(self.CsDense,self.skk.todense()),ndmin=2)
+        self.gmrf.covCond = np.array(np.dot(self.CsDense,np.dot(self.covkk.todense(),self.CsDense.T)))
         self.gmrf.diagCovCond = self.gmrf.covCond.diagonal().reshape(self.gmrf.nP+self.gmrf.nBeta,1)
 
         # Also update bSeq and precCond in case seq. belief update is used for planning
