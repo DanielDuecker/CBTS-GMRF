@@ -294,8 +294,8 @@ class stkf:
 
         self.A = sp.csr_matrix(sp.linalg.expm(np.kron(np.eye(self.gmrf.nP), F) * self.dt))
         self.AT = sp.csr_matrix(self.A.T)
-        self.Cs = sp.csr_matrix(np.dot(KsChol, np.kron(np.eye(self.gmrf.nP), H)))
-        self.CsT = sp.csr_matrix(np.dot(KsChol, np.kron(np.eye(self.gmrf.nP), H)).T)
+        self.CsDense = np.dot(KsChol, np.kron(np.eye(self.gmrf.nP), H))
+        self.Cs = sp.csr_matrix(self.CsDense)
         QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(F, tau)), np.dot(G,
                                             np.dot(G.T,scipy.linalg.expm(np.dot(F,tau)).T))),0, self.dt)[0]
         self.Q = sp.csr_matrix( np.kron(np.eye(self.gmrf.nP), QBar))
@@ -323,9 +323,9 @@ class stkf:
             kalmanGain = covPred.dot(CT.dot(denum))
             self.skk = sPred + kalmanGain.dot(sp.csr_matrix(zMeas) - C.dot(sPred))
             self.covkk = (sp.csr_matrix(np.eye(self.gmrf.nP)) - kalmanGain.dot(C)).dot(covPred)
-
+        
         self.gmrf.meanCond = np.array(self.Cs.dot(self.skk).todense())
-        self.gmrf.covCond = np.dot(self.Cs,np.dot(self.covkk,self.CsT))
+        self.gmrf.covCond = np.dot(self.CsDense,np.dot(self.covkk.todense(),self.CsDense.T))
         self.gmrf.diagCovCond = self.gmrf.covCond.diagonal().reshape(self.gmrf.nP+self.gmrf.nBeta,1)
 
         # Also update bSeq and precCond in case seq. belief update is used for planning
