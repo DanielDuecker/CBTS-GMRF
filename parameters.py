@@ -40,10 +40,10 @@ class par:
     """GMRF class"""
     xMin = 0  # GMRF dimensions
     xMax = 10
-    nGridX = 50
+    nGridX = 30
     yMin = 0
     yMax = 10
-    nGridY = 50
+    nGridY = 30
     nBeta = 3  # regression coefficients
     nEdge = 5  # needs to be at least 1
     valueT = 1e-3  # Prior precision value for regression vector bet
