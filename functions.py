@@ -207,7 +207,6 @@ def sampleGMRF(gmrf):
         newGMRF.covCond[i,i] = np.dot(Phi,gmrf.diagCovCond)
 
     """Check sampling"""
-    """
     fig = plt.figure(999)
     plt.clf()
     plt.ion()
@@ -240,6 +239,5 @@ def sampleGMRF(gmrf):
 
     fig.canvas.draw()
     plt.show()
-    """
 
     return newGMRF

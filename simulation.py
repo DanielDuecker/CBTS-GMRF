@@ -15,13 +15,13 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['geist']  #'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['cbts']  #'cbts', 'pi2', 'randomWalk', 'geist'
 
 """Simulation Options"""
 saveToFile = False
-nSim = 10
-nIter = 500
-fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
+nSim = 1
+nIter = 100
+fieldType = 'predefined'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = True
 "PI2"
@@ -88,7 +88,7 @@ for belief in beliefOptions:
         if control == 'randomWalk':
             parObject = par(belief, control, fieldType, temporal, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             parSettingsList.append(parObject)
-            simCaseList.append(belief + '_' + control + '_randomWalk')
+            simCaseList.append(belief + '_' + control)
 
         if control == 'geist':
             parObject = par(belief, control, fieldType, temporal, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)

@@ -14,7 +14,7 @@ class par:
 
         self.showExploredPaths = False
         self.showActionRewardMapping = False
-        self.showAcquisitionFunction = False
+        self.showAcquisitionFunction = True
         self.showPerformance = False
 
         self.exploitingRate = 0
@@ -81,7 +81,7 @@ class par:
         self.CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
         self.nMeasPoints = int(self.trajStepSize / self.maxStepsize) # number of measurement points along trajectory
         self.nTrajPoints = self.nMeasPoints + 1 # length of trajectories (including starting position)
-        self.useSampledGMRF = False
+        self.useSampledGMRF = True
 
         self.thetaMin = -1  # determines curvature of generated trajectories
         self.thetaMax = 1  # determines curvature of generated trajectories
