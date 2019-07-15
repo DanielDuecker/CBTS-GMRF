@@ -11,7 +11,6 @@ Please feel free to use and modify this, but keep the above information. Thanks!
 import numpy as np
 import scipy
 from scipy import exp, sin, cos, sqrt, pi, interpolate
-import parameters
 
 """Configure the simulation parameters"""
 # AUV starting state
@@ -28,7 +27,7 @@ simulation_end_time = 20000  # Run time of simulation in ms
 
 
 """Choose GMRF parameters"""
-gmrf_dim = [20, 20, 5, 5]  # lxf, lyf, dvx, dvy
+gmrf_dim = [10, 10, 5, 5]  # lxf, lyf, dvx, dvy
 set_Q_init = True  # Re-Calculate precision matrix at Initialization? False: Load stored precision matrix
 set_Q_check = False  # Plots Q matrix entries inside GMRF algorithm
 set_gmrf_torus = False  # True -w> GMRF uses torus boundary condition, False -> GMRF uses Neumann-BC
@@ -90,11 +89,11 @@ pi_parameters = (n_updates, n_k, n_horizon, N_horizon, t_cstep, sigma_epsilon, R
 """DEFINE GENERAL FUNCTIONS"""
 
 # AUV model
-def auv_dynamics(x_auv, u_auv, epsilon_a, delta_t, field_limits, set_border = True):
+def auv_dynamics(par, x_auv, u_auv, epsilon_a, delta_t, field_limits, set_border = True):
     x_auv_out = np.zeros(shape=(3))
     x_auv_out[2] = x_auv[2] + u_auv * delta_t + epsilon_a * sqrt(delta_t)
-    x_auv_out[0] = x_auv[0] + parameters.par.maxStepsize * cos(x_auv_out[2])
-    x_auv_out[1] = x_auv[1] + parameters.par.maxStepsize * sin(x_auv_out[2])
+    x_auv_out[0] = x_auv[0] + par.maxStepsize * cos(x_auv_out[2])
+    x_auv_out[1] = x_auv[1] + par.maxStepsize * sin(x_auv_out[2])
 
     if set_border == True:
         # Prevent AUV from leaving the true field

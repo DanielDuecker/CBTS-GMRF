@@ -102,10 +102,11 @@ def main(par):
             auv.alpha = alphaNext
         elif par.control == 'geist':
             x_auv = [auv.x,auv.y,auv.alpha]
-            field_limits = (gmrf1.xMin,gmrf1.yMin)
-            u_optimal, tau_x, tau_optimal = control_scripts.pi_controller(x_auv, u_optimal, np.flip(gmrf1.covCond,0).diagonal(), Config.pi_parameters,
+            field_limits = (gmrf1.xMax,gmrf1.yMax)
+            u_optimal, tau_x, tau_optimal = control_scripts.pi_controller(par,x_auv, u_optimal, np.flip(gmrf1.covCond,0).diagonal(), Config.pi_parameters,
                                                                           gmrfGeist.params, field_limits,
                                                                           Config.set_sanity_check)
+            #print(tau_optimal)
             auv.x = tau_optimal[0,1]
             auv.y = tau_optimal[1,1]
             auv.alpha = tau_optimal[2,1]

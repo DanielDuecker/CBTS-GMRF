@@ -12,7 +12,7 @@ import numpy as np
 from scipy import exp, sin, cos, sqrt, pi, interpolate
 from random import randint
 
-def pi_controller(x_auv, u_optimal, var_x, pi_parameters, gmrf_params, field_limits, set_sanity_check):
+def pi_controller(par, x_auv, u_optimal, var_x, pi_parameters, gmrf_params, field_limits, set_sanity_check):
     """Optimal Stochastic controller in PI formulation, based on Schaal et al.
     "A generalized Path Integral Control Approach for Reinforcement Learning" (2010) """
     (lxf, lyf, dvx, dvy, lx, ly, n, p, de, l_TH, p_THETA, xg_min, xg_max, yg_min, yg_max) = gmrf_params
@@ -42,7 +42,7 @@ def pi_controller(x_auv, u_optimal, var_x, pi_parameters, gmrf_params, field_lim
 
             for kk in range(0, N_horizon-1):  # Iterate over length of trajectory except of last entry
                 # Sample roll-out trajectory
-                tau_x[:, kk+1, jj] = Config.auv_dynamics(tau_x[:, kk, jj], u_optimal[kk], epsilon_auv[kk, jj], t_cstep,
+                tau_x[:, kk+1, jj] = Config.auv_dynamics(par, tau_x[:, kk, jj], u_optimal[kk], epsilon_auv[kk, jj], t_cstep,
                                                          field_limits, set_border=False)
 
             """Calculate cost and probability weighting"""
@@ -84,7 +84,7 @@ def pi_controller(x_auv, u_optimal, var_x, pi_parameters, gmrf_params, field_lim
         var_x_test = np.zeros(shape=(N_horizon, 1))
         control_cost_test = np.zeros(shape=(N_horizon, 1))
         for kk in range(0, N_horizon - 1):  # Iterate over length of trajectory except of last entry
-            tau_optimal[:, kk + 1] = Config.auv_dynamics(tau_optimal[:, kk], u_optimal[kk], 0, t_cstep, field_limits)
+            tau_optimal[:, kk + 1] = Config.auv_dynamics(par, tau_optimal[:, kk], u_optimal[kk], 0, t_cstep, field_limits)
         for kk in range(0, N_horizon):  # Iterate over length of trajectory except of last entry
             A_test = Config.interpolation_matrix(tau_optimal[:, kk], n, p, lx, xg_min, yg_min, de)
             var_x_test[kk] = 1 / np.dot(A_test.T, var_x)
@@ -95,9 +95,9 @@ def pi_controller(x_auv, u_optimal, var_x, pi_parameters, gmrf_params, field_lim
 
     return u_optimal, tau_x, tau_optimal
 
-def random_walk(x_auv):
+def random_walk(par, x_auv):
     """Random Walk"""
     max_step_size = ((0.2 * pi) / 1000)
     u_auv = max_step_size * randint(-500, 500)  # Control input for random walk
-    x_auv = Config.auv_dynamics(x_auv, u_auv, 0.01)
+    x_auv = Config.auv_dynamics(par, x_auv, u_auv, 0.01)
     return x_auv
