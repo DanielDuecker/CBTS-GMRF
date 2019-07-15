@@ -31,7 +31,7 @@ par.plot = False
 
 parSimList = [nSim, par.nIter, par.belief, par.control, par.fieldType, par.temporal]
 
-"Dictionary with Tunng Parameters"
+"Dictionary with Tuning Parameters"
 parTuning = {
     #"K": [],
     "H": [10,20,30],
@@ -77,7 +77,7 @@ for belief in beliefOptions:
         for parameterName in parTuning:
             for value in parTuning[parameterName]:
                 setattr(par,parameterName,value)
-                simCase = belief + '_' + control + '_' + parameterName + str(value)
+                simCase = belief + '_' + control + '_' + parameterName + '_' + str(value).replace('.','p')
                 simList.append(simCase)
 
                 """Initialize"""
@@ -100,7 +100,7 @@ for belief in beliefOptions:
                     par.nBeta = 0
 
                 for i in range(nSim):
-                    print("Simulation ",i," of ",nSim," with ",par.belief, " belief and controller ", par.control)
+                    print("Simulation ",i," of ",nSim," with ",par.belief, " belief, controller ", par.control, ' and ' + parameterName + ' = ', value)
                     xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = main.main(par)
 
                     x.append(xR)

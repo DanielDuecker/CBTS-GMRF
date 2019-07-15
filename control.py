@@ -9,16 +9,17 @@ from classes import node
 
 class piControl:
     def __init__(self,par):
-        self.R = par.R  # input cost matrix
-        self.g = par.g  # mapping from u to states
         self.lambd = par.lambd  # influences state costs and noise variance
-        self.varNoise = self.lambd * np.linalg.inv(self.R)
         self.H = par.H  # control horizon steps
+        self.g = np.ones((self.H, 1))
         self.K = par.K  # number of path roll outs
         self.dt = par.dt  # time discretization
         self.nUpdated = par.nUpdated  # number of iterations
         self.u = np.zeros((self.H, 1))
         self.outOfGridPenaltyPI2 = par.outOfGridPenaltyPI2
+        self.pi2ControlCost = par.pi2ControlCost
+        self.R = self.pi2ControlCost * np.eye(self.H)  # input cost matrix
+        self.varNoise = self.lambd * np.linalg.inv(self.R)
 
         self.xTraj = np.zeros((1, self.K))
         self.yTraj = np.zeros((1, self.K))

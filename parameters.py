@@ -62,21 +62,15 @@ class par:
     H = 20  # control horizon steps
     nUpdated = 5  # number of iterations
     lambd = 1e-1  # 1e-2 # rescales state costs, affects noise of path roll-outs (positively)
-    "Reward Tuning"
     outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative reward
     pi2ControlCost = 5  # 5e-1   # affects noise of path roll-outs (negatively)
-
-    R = pi2ControlCost * np.eye(H)  # input cost matrix
-    g = np.ones((H, 1))
     #ctrSamplingTime = 0.1  # time discretization
 
     """CBTS controller"""
-    "Monte Carlo Tree Search Tuning"
     branchingFactor = 6  # number of actions that can be evaluated at max for each path segment
     maxDepth = 3  # depth of search tree
     kappa = 100  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
     kappaChildSelection = 1  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-    "Reward Tuning"
     UCBRewardFactor = 0.05  # reward = variance + UCBRewardFactor*mean
     outOfGridPenaltyCBTS = 1
     cbtsControlCost = 0.2
