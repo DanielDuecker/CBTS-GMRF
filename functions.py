@@ -205,6 +205,8 @@ def sampleGMRF(gmrf):
         Phi = mapConDis(gmrf,newGMRF.x[xIndex],newGMRF.y[yIndex])
         newGMRF.bSeq[i] = np.dot(Phi,gmrf.bSeq)
         newGMRF.covCond[i,i] = np.dot(Phi,gmrf.diagCovCond)
+    #print(sum(sum(abs(newGMRF.diagCovCond[0:newGMRF.nP].reshape(newGMRF.nY, newGMRF.nX)-gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge]))))
+    #print(sum(sum(abs(newGMRF.meanCond[0:newGMRF.nP].reshape(newGMRF.nY, newGMRF.nX)-gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge]))))
 
     """Check sampling"""
     fig = plt.figure(999)

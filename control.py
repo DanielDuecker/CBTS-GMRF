@@ -168,7 +168,6 @@ class CBTS:
                     vNewGMRF = functions.sampleGMRF(v.gmrf)
                 else:
                     vNewGMRF = v.gmrf
-
                 vNew = node(self.par, vNewGMRF, v.auv)
                 vNew.rewardToNode = v.rewardToNode + self.discountFactor ** v.depth * r
                 vNew.totalReward = vNew.rewardToNode
@@ -183,15 +182,7 @@ class CBTS:
                     vNew.auv.x = traj[0, i + 1]
                     vNew.auv.y = traj[1, i + 1]
                     Phi = functions.mapConDis(vNew.gmrf, vNew.auv.x, vNew.auv.y)
-                    test1 = copy.deepcopy(vNew.gmrf)
-                    test2 = copy.deepcopy(vNewGMRF)
-                    test3 = copy.deepcopy(v.gmrf)
                     vNew.gmrf.seqBayesianUpdate(o[i], Phi)
-                    #print("vNew.gmrf:",sum(sum(test1.diagCovCond[0:test1.nP].reshape(test1.nY, test1.nX)[test1.nEdge:-test1.nEdge,test1.nEdge:-test1.nEdge]-vNew.gmrf.diagCovCond[0:vNew.gmrf.nP].reshape(vNew.gmrf.nY, vNew.gmrf.nX)[vNew.gmrf.nEdge:-vNew.gmrf.nEdge,vNew.gmrf.nEdge:-vNew.gmrf.nEdge])))
-                    #print("vNewGMRF:",sum(sum(test2.diagCovCond[0:test2.nP].reshape(test2.nY, test2.nX)[test2.nEdge:-test2.nEdge,test2.nEdge:-test2.nEdge]-vNewGMRF.diagCovCond[0:vNewGMRF.nP].reshape(vNewGMRF.nY, vNewGMRF.nX)[vNewGMRF.nEdge:-vNewGMRF.nEdge,vNewGMRF.nEdge:-vNewGMRF.nEdge])))
-                    #print("v.gmrf:",sum(sum(test3.diagCovCond[0:test3.nP].reshape(test3.nY, test3.nX)[test3.nEdge:-test3.nEdge,test3.nEdge:-test3.nEdge]-v.gmrf.diagCovCond[0:v.gmrf.nP].reshape(v.gmrf.nY, v.gmrf.nX)[v.gmrf.nEdge:-v.gmrf.nEdge,v.gmrf.nEdge:-v.gmrf.nEdge])))
-                    #print(sum(sum(abs(vNewGMRF.diagCovCond[0:vNewGMRF.nP].reshape(vNewGMRF.nY, vNewGMRF.nX)[vNewGMRF.nEdge:-vNewGMRF.nEdge,vNewGMRF.nEdge:-vNewGMRF.nEdge]-vNew.gmrf.diagCovCond[0:vNew.gmrf.nP].reshape(vNew.gmrf.nY, vNew.gmrf.nX)[vNew.gmrf.nEdge:-vNew.gmrf.nEdge,vNew.gmrf.nEdge:-vNew.gmrf.nEdge]))))
-                    print(sum(sum(vNewGMRF.diagCovCond[0:vNewGMRF.nP].reshape(vNewGMRF.nY, vNewGMRF.nX)-v.gmrf.diagCovCond[0:v.gmrf.nP].reshape(v.gmrf.nY, v.gmrf.nX)[v.gmrf.nEdge:-v.gmrf.nEdge,v.gmrf.nEdge:-v.gmrf.nEdge])))
 
                 vNew.auv.derivX = derivX
                 vNew.auv.derivY = derivY
@@ -313,6 +304,10 @@ class CBTS:
             o.append(np.dot(Phi, v.gmrf.meanCond))
             # lower reward if agent is out of bound
             if not functions.sanityCheck(tau[0, i + 1] * np.eye(1), tau[1, i + 1] * np.eye(1), v.gmrf):
+                print((np.dot(Phi, v.gmrf.diagCovCond) + self.UCBRewardFactor * np.dot(Phi, v.gmrf.meanCond))[0])
+                print(np.dot(Phi, v.gmrf.diagCovCond))
+                print(self.UCBRewardFactor *np.dot(Phi, v.gmrf.meanCond))
+                print("-____")
                 r -= self.outOfGridPenaltyCBTS
 
         return r, o
