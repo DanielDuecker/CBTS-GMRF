@@ -92,19 +92,19 @@ class piControl:
 
         self.xTraj, self.yTraj, self.alphaTraj = auv.trajectoryFromControl(self.u)
 
-        auv.x, auv.y, auv.alpha = (self.xTraj[1], self.yTraj[1], self.alphaTraj[1])
+        xNext, yNext, alphaNext = (self.xTraj[1], self.yTraj[1], self.alphaTraj[1])
 
-        if auv.x < gmrf.xMin:
-            auv.x = gmrf.xMin
-        elif auv.x > gmrf.xMax:
-            auv.x = gmrf.xMax
+        if xNext < gmrf.xMin:
+            xNext = gmrf.xMin
+        elif xNext > gmrf.xMax:
+            xNext = gmrf.xMax
 
-        if auv.y < gmrf.yMin:
-            auv.y = gmrf.yMin
-        elif auv.y > gmrf.yMax:
-            auv.y = gmrf.yMax
+        if yNext < gmrf.yMin:
+            yNext = gmrf.yMin
+        elif yNext > gmrf.yMax:
+            yNext = gmrf.yMax
 
-        return auv.x, auv.y
+        return xNext, yNext
 
 
 class CBTS:

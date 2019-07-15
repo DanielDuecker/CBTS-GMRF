@@ -93,3 +93,6 @@ class par:
     # Gaussian Process for action reward mapping
     kernelPar = 10  # used in exponential kernel to determine variance between to inputs
     nThetaSamples = 100  # number of samples thetas which are candidates for next theta
+
+    """Random Walk"""
+    noiseRandomWalk = 0.3

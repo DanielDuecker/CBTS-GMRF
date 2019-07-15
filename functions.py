@@ -58,22 +58,26 @@ def getPrecisionMatrix(gmrf):
     return sp.csr_matrix(Lambda)
 
 
-def randomWalk(par, x, y, gmrf):
-    alpha = 2*math.pi*np.random.rand()
-    xNext = x + par.maxStepsize*math.cos(alpha)
-    yNext = y + par.maxStepsize*math.sin(alpha)
+def randomWalk(par, auv, gmrf):
+    alphaNext = auv.alpha + np.random.normal(0,par.noiseRandomWalk)
+    xNext = auv.x + par.maxStepsize*math.cos(alphaNext)
+    yNext = auv.y + par.maxStepsize*math.sin(alphaNext)
 
     if xNext < gmrf.xMin:
-        xNext = x + par.xVel
+        xNext = gmrf.xMin
+        alphaNext += math.pi
     elif xNext > gmrf.xMax:
-        xNext = x - par.xVel
+        xNext = gmrf.xMax
+        alphaNext += math.pi
 
     if yNext < gmrf.yMin:
-        yNext = y + par.yVel
+        yNext = gmrf.yMin
+        alphaNext += math.pi
     elif yNext > gmrf.yMax:
-        yNext = y - par.yVel
+        yNext = gmrf.yMax
+        alphaNext += math.pi
 
-    return xNext, yNext
+    return xNext, yNext, alphaNext
 
 def plotFields(par, fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist, yHist):
     # Plotting ground truth

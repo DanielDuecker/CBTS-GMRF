@@ -19,12 +19,12 @@ par = copy.deepcopy(parameters.par)
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['pi2','cbts']  #'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['randomWalk']  #'cbts', 'pi2', 'randomWalk', 'geist'
 
 """Simulation Options"""
 saveToFile = True
 nSim = 1
-par.nIter = 500
+par.nIter = 300
 par.fieldType = 'sine'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
 par.plot = False
@@ -32,12 +32,17 @@ par.plot = False
 parSimList = [nSim, par.nIter, par.belief, par.control, par.fieldType, par.temporal]
 
 "Dictionary with Tuning Parameters"
-parTuning = {
+parTuningNoise ={
+    "": []
+}
+parTuningPI2 = {
     #"K": [],
-    "H": [10,20,30],
+    #"H": [],
     #"nUpdated": [],
     #"lambd": [],
-    #"pi2ControlCost": [],
+    #"pi2ControlCost": []
+}
+parTuningCBTS ={
     #"branchingFactor": [],
     #"maxDepth": [],
     #"kappa": [],
@@ -46,6 +51,7 @@ parTuning = {
     #"cbtsControlCost": [],
     #"discountFactor": []
 }
+
 simList = []
 diffMeanDict = {}
 totalVarDict = {}
@@ -72,12 +78,26 @@ if saveToFile:
 """Iterate Through Simulation and Parameter Options"""
 for belief in beliefOptions:
     par.belief = belief
+
     for control in controlOptions:
         par.control = control
+        simCase = belief + '_' + control
+
+        # Switch to Specific Parameter Settings
+        if control == 'pi2':
+            parTuning = parTuningPI2
+        elif control == 'cbts':
+            parTuning = parTuningCBTS
+
+        # If no parameter variations are provided, use the default setting
+        if not parTuning:
+            parTuning[""] = ['defaultParameters']
+
         for parameterName in parTuning:
+        
             for value in parTuning[parameterName]:
                 setattr(par,parameterName,value)
-                simCase = belief + '_' + control + '_' + parameterName + '_' + str(value).replace('.','p')
+                simCase += '_' + parameterName + '_' + str(value).replace('.','p')
                 simList.append(simCase)
 
                 """Initialize"""
@@ -100,8 +120,11 @@ for belief in beliefOptions:
                     par.nBeta = 0
 
                 for i in range(nSim):
-                    print("Simulation ",i," of ",nSim," with ",par.belief, " belief, controller ", par.control, ' and ' + parameterName + ' = ', value)
-                    xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = main.main(par)
+                    print("Simulation ", i, " of ", nSim, " with ", par.belief, " belief, controller ",
+                          par.control,
+                          ' and ' + parameterName + ' = ', value)
+                    xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = main.main(
+                        par)
 
                     x.append(xR)
                     y.append(yR)
@@ -123,14 +146,17 @@ for belief in beliefOptions:
                     """Save objects"""
                     # Save objects
                     with open('objs' + '_' + simCase + '.pkl', 'wb') as f:
-                        pickle.dump([x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList], f)
+                        pickle.dump(
+                            [x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar,
+                             parList],
+                            f)
 
                     # Getting back the objects:
                     # with open('objs.pkl','rb') as f:
                     #    x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList = pickle.load(f)
 
                     # Save data as csv
-                    with open(folderName + '_' + simCase + '_data.csv','w') as dataFile:
+                    with open(folderName + '_' + simCase + '_data.csv', 'w') as dataFile:
                         writer = csv.writer(dataFile)
                         for i in range(nSim):
                             writer.writerow([i])
@@ -147,18 +173,22 @@ for belief in beliefOptions:
                             writer.writerow(["-"])
                         dataFile.close()
 
-                """Plot fields"""
-                fig0 = plt.figure(100, figsize=(19.2,10.8), dpi=100)
-                print("Plotting..")
-                for i in range(nSim):
-                    functions.plotFields(par,fig0, x[i], y[i], trueField[i], gmrf[i], controller[i], CBTS[i], timeVec[i], xHist[i], yHist[i])
-                    if saveToFile:
-                        fig0.savefig(folderName + '_' + str(i) + '_' + simCase + '_' + par.fieldType + '.svg', format='svg')
-                    else:
-                        plt.show()
-                    plt.clf()
-                plt.close(fig0)
+            """Plot fields"""
+            fig0 = plt.figure(100, figsize=(19.2, 10.8), dpi=100)
+            print("Plotting..")
+            for i in range(nSim):
+                functions.plotFields(par, fig0, x[i], y[i], trueField[i], gmrf[i], controller[i], CBTS[i],
+                                     timeVec[i], xHist[i],
+                                     yHist[i])
+                if saveToFile:
+                    fig0.savefig(folderName + '_' + str(i) + '_' + simCase + '_' + par.fieldType + '.svg',
+                                 format='svg')
+                else:
+                    plt.show()
+                plt.clf()
+            plt.close(fig0)
 
+"""Plot Performance"""
 fig1 = plt.figure(200,figsize=(19.2,10.8), dpi=100)
 x = np.linspace(0,par.nIter-1,par.nIter-1)
 plt.title('Performance Measurement')
@@ -187,6 +217,7 @@ plt.ylabel('Total Belief Uncertainty')
 if saveToFile:
     fig1.savefig(folderName + '_performance.svg', format='svg')
 plt.show()
+
 
 # TODO Enable loading of pickled data instead of simulating
 

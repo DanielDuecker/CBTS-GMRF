@@ -96,7 +96,10 @@ def main(par):
         """Controller"""
         if par.control == 'pi2':
             # Get next state according to PI Controller
-            xMeas, yMeas = controller.getNewState(auv, gmrf1)
+            xNext, yNext, alphaNext = controller.getNewState(auv, gmrf1)
+            auv.x = xNext
+            auv.y = yNext
+            auv.alpha = alphaNext
         elif par.control == 'geist':
             x_auv = [auv.x,auv.y,auv.alpha]
             field_limits = (gmrf1.xMin,gmrf1.yMin)
@@ -106,24 +109,24 @@ def main(par):
             auv.x = tau_optimal[0,1]
             auv.y = tau_optimal[1,1]
             auv.alpha = tau_optimal[2,1]
-            xMeas = auv.x
-            yMeas = auv.y
-            #print(xMeas,yMeas)
         elif par.control == 'cbts':
             if i % par.nMeasPoints == 0:
                 bestTraj, auv.derivX, auv.derivY = CBTS1.getNewTraj(auv, gmrf1)
                 trajIndex = 1
             auv.x = bestTraj[0, trajIndex]
             auv.y = bestTraj[1, trajIndex]
-            xMeas = auv.x
-            yMeas = auv.y
             trajIndex += 1
         elif par.control == 'randomWalk':
             # Get next measurement according to dynamics, stack under measurement vector
-            xMeas, yMeas = functions.randomWalk(par, xMeas, yMeas, gmrf1)
+            xNext, yNext, alphaNext = functions.randomWalk(par, auv, gmrf1)
+            auv.x = xNext
+            auv.y = yNext
+            auv.alpha = alphaNext
         else:
             return("Error! No controller selected")
 
+        xMeas = auv.x
+        yMeas = auv.y
         xHist.append(xMeas)
         yHist.append(yMeas)
         zMeas[(i + 1) % par.nMeas] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
