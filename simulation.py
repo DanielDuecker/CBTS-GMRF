@@ -19,20 +19,20 @@ controlOptions = ['pi2','cbts','randomWalk']  #'cbts', 'pi2', 'randomWalk', 'gei
 
 """Simulation Options"""
 saveToFile = True
-nSim = 1
-nIter = 10
-fieldType = 'sine'  # 'peak','sine' or 'predefined'
+nSim = 10
+nIter = 500
+fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = False
 "PI2"
 K = [15]
-H = [10,20,30]
+H = [20]
 nUpdated = [5]
 lambd = [1e-1]
 pi2ControlCost = [5]
 "CBTS"
 branchingFactor = [6]
-maxDepth = [3,4]
+maxDepth = [3]
 kappa = [100]
 kappaChildSelection = [1]
 UCBRewardFactor = [0.05]

@@ -42,6 +42,13 @@ class trueField:
     def __init__(self, par, fieldType):
         self.fieldType = fieldType
 
+        """random field"""
+        maxRandomValue = 5
+        xRand = np.linspace(0,10,11)  # column coordinates
+        yRand = np.linspace(0,10,11)  # row coordinates
+        zRand = np.random.rand(11,11)*maxRandomValue
+        self.fRand = interpolate.interp2d(xRand, yRand, zRand)
+
         """sine field"""
         self.cScale = 1
 
@@ -80,6 +87,9 @@ class trueField:
         elif self.fieldType == 'peak':
             self.fieldMin = -1
             self.fieldMax = self.peakValue + 0.1
+        elif self.fieldType == 'random':
+            self.fieldMin = -maxRandomValue
+            self.fieldMax = maxRandomValue
         else:
             self.fieldMin = self.minValPreDef-par.ov2
             self.fieldMax = self.maxValPreDef+par.ov2
@@ -93,6 +103,8 @@ class trueField:
         elif self.fieldType == 'peak':
             X,Y = np.meshgrid(x, y)
             Z = self.peakValue * np.exp(-((X-self.xPeak)/self.peakPar)**2)*np.exp(-((Y-self.yPeak)/self.peakPar)**2)
+        elif self.fieldType == 'random':
+            Z = self.fRand(x,y)
         else:
             Z = self.fPreDef(x - self.xShift,y + self.yShift)
         return Z
