@@ -57,28 +57,36 @@ class par:
     sigma2 = 0.01
 
     """PI2 controller"""
-    H = 20  # control horizon steps
-    controlCost = 5  # 5e-1   # affects noise of path roll-outs (negatively)
-    R = controlCost * np.eye(H)  # input cost matrix
-    g = np.ones((H, 1))
-    lambd = 1e-1  # 1e-2 # rescales state costs, affects noise of path roll-outs (positively)
+    "Rollout Tuning"
     K = 15  # number of path roll outs
-    ctrSamplingTime = 0.1  # time discretization
+    H = 20  # control horizon steps
     nUpdated = 5  # number of iterations
+    lambd = 1e-1  # 1e-2 # rescales state costs, affects noise of path roll-outs (positively)
+    "Reward Tuning"
     outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative reward
+    pi2ControlCost = 5  # 5e-1   # affects noise of path roll-outs (negatively)
+
+    R = pi2ControlCost * np.eye(H)  # input cost matrix
+    g = np.ones((H, 1))
+    #ctrSamplingTime = 0.1  # time discretization
 
     """CBTS controller"""
+    "Monte Carlo Tree Search Tuning"
+    branchingFactor = 6  # number of actions that can be evaluated at max for each path segment
+    maxDepth = 3  # depth of search tree
+    kappa = 100  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
+    kappaChildSelection = 1  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
+    "Reward Tuning"
+    UCBRewardFactor = 0.05  # reward = variance + UCBRewardFactor*mean
+    outOfGridPenaltyCBTS = 1
+    cbtsControlCost = 0.2
+    discountFactor = 0.5  # discounts future rewards
+
     trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
     trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
     CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
-    branchingFactor = 6  # number of actions that can be evaluated at max for each path segment
-    maxDepth = 3  # depth of search tree
-    kappa = 50  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
     nMeasPoints = int(trajStepSize / maxStepsize) # number of measurement points along trajectory
     nTrajPoints = nMeasPoints + 1 # length of trajectories (including starting position)
-    kappaChildSelection = 1  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-    UCBRewardFactor = 0.05  # reward = variance + UCBRewardFactor*mean
-    outOfGridPenaltyCBTS = 1
     useSampledGMRF = False
 
     thetaMin = -1  # determines curvature of generated trajectories
@@ -87,8 +95,6 @@ class par:
     thetaExpMax = thetaMax  # determines curvature of generated trajectories for node exploration
     trajOrder = 1  # if higher order is used check trajectory generation function
     initialTheta = np.zeros(trajOrder)  # leads to first trajectory being straight
-    discountFactor = 0.5  # discounts future rewards
-    controlCost = 0.2
 
     # Gaussian Process for action reward mapping
     kernelPar = 10  # used in exponential kernel to determine variance between to inputs

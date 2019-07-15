@@ -16,18 +16,36 @@ matplotlib.use('TkAgg')
 
 """Load Parameters"""
 par = copy.deepcopy(parameters.par)
+
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['pi2',''cbts']  #'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['pi2','cbts']  #'cbts', 'pi2', 'randomWalk', 'geist'
 
+"""Simulation Options"""
 saveToFile = True
-nSim = 10
-par.nIter = 100
+nSim = 1
+par.nIter = 500
 par.fieldType = 'sine'  # 'peak','sine' or 'predefined'
 par.temporal = False  # True: time varying field
-par.plot = True
+par.plot = False
 
 parSimList = [nSim, par.nIter, par.belief, par.control, par.fieldType, par.temporal]
+
+"Dictionary with Tunng Parameters"
+parTuning = {
+    #"K": [],
+    "H": [10,20,30],
+    #"nUpdated": [],
+    #"lambd": [],
+    #"pi2ControlCost": [],
+    #"branchingFactor": [],
+    #"maxDepth": [],
+    #"kappa": [],
+    #"kappaChildSelection": [],
+    #"UCBRewardFactor": [],
+    #"cbtsControlCost": [],
+    #"discountFactor": []
+}
 simList = []
 diffMeanDict = {}
 totalVarDict = {}
@@ -51,92 +69,95 @@ if saveToFile:
     # Copy used parameters
     shutil.copyfile(dirpath + '/parameters.py', path + '/' + folderName + '_parameters.txt')
 
-"""Iterate Through Simulation Options"""
+"""Iterate Through Simulation and Parameter Options"""
 for belief in beliefOptions:
     par.belief = belief
     for control in controlOptions:
         par.control = control
-        simCase = belief + '_' + control
-        simList.append(simCase)
+        for parameterName in parTuning:
+            for value in parTuning[parameterName]:
+                setattr(par,parameterName,value)
+                simCase = belief + '_' + control + '_' + parameterName + str(value)
+                simList.append(simCase)
 
-        """Initialize"""
-        x = []
-        y = []
-        trueField = []
-        gmrf = []
-        controller = []
-        CBTS = []
-        timeVec = []
-        xHist = []
-        yHist = []
-        diffMean = []
-        totalVar = []
-        parList = []
+                """Initialize"""
+                x = []
+                y = []
+                trueField = []
+                gmrf = []
+                controller = []
+                CBTS = []
+                timeVec = []
+                xHist = []
+                yHist = []
+                diffMean = []
+                totalVar = []
+                parList = []
 
-        if par.belief != 'regBayesTrunc':
-            par.nMeas = par.nIter
-        if par.belief == 'stkf':
-            par.nBeta = 0
+                if par.belief != 'regBayesTrunc':
+                    par.nMeas = par.nIter
+                if par.belief == 'stkf':
+                    par.nBeta = 0
 
-        for i in range(nSim):
-            print("Simulation ",i," of ",nSim," with ",par.belief, " belief and controller ", par.control)
-            xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = main.main(par)
-
-            x.append(xR)
-            y.append(yR)
-            trueField.append(trueFieldR)
-            gmrf.append(gmrfR)
-            controller.append(controllerR)
-            CBTS.append(CBTSR)
-            timeVec.append(timeVecR)
-            xHist.append(xHistR)
-            yHist.append(yHistR)
-            diffMean.append(diffMeanR)
-            totalVar.append(totalVarR)
-            parList.append(par)
-
-        diffMeanDict[simCase] = diffMean
-        totalVarDict[simCase] = totalVar
-
-        if saveToFile:
-            """Save objects"""
-            # Save objects
-            with open('objs' + '_' + simCase + '.pkl', 'wb') as f:
-                pickle.dump([x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList], f)
-
-            # Getting back the objects:
-            # with open('objs.pkl','rb') as f:
-            #    x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList = pickle.load(f)
-
-            # Save data as csv
-            with open(folderName + '_' + simCase + '_data.csv','w') as dataFile:
-                writer = csv.writer(dataFile)
                 for i in range(nSim):
-                    writer.writerow([i])
-                    writer.writerow(x[i])
-                    writer.writerow(y[i])
-                    writer.writerow(timeVec[i])
-                    writer.writerow(xHist[i])
-                    writer.writerow(yHist[i])
-                    writer.writerow(diffMean[i])
-                    writer.writerow(totalVar[i])
-                    writer.writerow(gmrf[i].meanCond)
-                    writer.writerow(gmrf[i].covCond)
-                    writer.writerow(parSimList)
-                    writer.writerow(["-"])
-                dataFile.close()
+                    print("Simulation ",i," of ",nSim," with ",par.belief, " belief and controller ", par.control)
+                    xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = main.main(par)
 
-        """Plot fields"""
-        fig0 = plt.figure(100, figsize=(19.2,10.8), dpi=100)
-        print("Plotting..")
-        for i in range(nSim):
-            functions.plotFields(par,fig0, x[i], y[i], trueField[i], gmrf[i], controller[i], CBTS[i], timeVec[i], xHist[i], yHist[i])
-            if saveToFile:
-                fig0.savefig(folderName + '_' + str(i) + '_' + simCase + '_' + par.fieldType + '.svg', format='svg')
-            else:
-                plt.show()
-            plt.clf()
-        plt.close(fig0)
+                    x.append(xR)
+                    y.append(yR)
+                    trueField.append(trueFieldR)
+                    gmrf.append(gmrfR)
+                    controller.append(controllerR)
+                    CBTS.append(CBTSR)
+                    timeVec.append(timeVecR)
+                    xHist.append(xHistR)
+                    yHist.append(yHistR)
+                    diffMean.append(diffMeanR)
+                    totalVar.append(totalVarR)
+                    parList.append(par)
+
+                diffMeanDict[simCase] = diffMean
+                totalVarDict[simCase] = totalVar
+
+                if saveToFile:
+                    """Save objects"""
+                    # Save objects
+                    with open('objs' + '_' + simCase + '.pkl', 'wb') as f:
+                        pickle.dump([x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList], f)
+
+                    # Getting back the objects:
+                    # with open('objs.pkl','rb') as f:
+                    #    x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, parList = pickle.load(f)
+
+                    # Save data as csv
+                    with open(folderName + '_' + simCase + '_data.csv','w') as dataFile:
+                        writer = csv.writer(dataFile)
+                        for i in range(nSim):
+                            writer.writerow([i])
+                            writer.writerow(x[i])
+                            writer.writerow(y[i])
+                            writer.writerow(timeVec[i])
+                            writer.writerow(xHist[i])
+                            writer.writerow(yHist[i])
+                            writer.writerow(diffMean[i])
+                            writer.writerow(totalVar[i])
+                            writer.writerow(gmrf[i].meanCond)
+                            writer.writerow(gmrf[i].covCond)
+                            writer.writerow(parSimList)
+                            writer.writerow(["-"])
+                        dataFile.close()
+
+                """Plot fields"""
+                fig0 = plt.figure(100, figsize=(19.2,10.8), dpi=100)
+                print("Plotting..")
+                for i in range(nSim):
+                    functions.plotFields(par,fig0, x[i], y[i], trueField[i], gmrf[i], controller[i], CBTS[i], timeVec[i], xHist[i], yHist[i])
+                    if saveToFile:
+                        fig0.savefig(folderName + '_' + str(i) + '_' + simCase + '_' + par.fieldType + '.svg', format='svg')
+                    else:
+                        plt.show()
+                    plt.clf()
+                plt.close(fig0)
 
 fig1 = plt.figure(200,figsize=(19.2,10.8), dpi=100)
 x = np.linspace(0,par.nIter-1,par.nIter-1)

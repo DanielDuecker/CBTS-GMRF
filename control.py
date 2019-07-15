@@ -116,7 +116,7 @@ class CBTS:
         self.branchingFactor = par.branchingFactor  # maximum number of generated actions per node
         self.kappa = par.kappa
         self.discountFactor = par.discountFactor
-        self.controlCost = par.controlCost
+        self.cbtsControlCost = par.cbtsControlCost
         self.initialTheta = par.initialTheta
         self.thetaMin = par.thetaMin
         self.thetaMax = par.thetaMax
@@ -295,7 +295,7 @@ class CBTS:
 
 
     def evaluateTrajectory(self, v, tau, theta):
-        r = - self.controlCost * theta
+        r = - self.cbtsControlCost * theta
         o = []
         for i in range(self.nTrajPoints - 1):
             Phi = functions.mapConDis(v.gmrf, tau[0, i + 1], tau[1, i + 1])
