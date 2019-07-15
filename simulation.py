@@ -93,7 +93,7 @@ for belief in beliefOptions:
         if control == 'geist':
             parObject = par(belief, control, fieldType, temporal, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             parSettingsList.append(parObject)
-            simCaseList.append(belief + '_' + control + '_randomWalk')
+            simCaseList.append(belief + '_' + control)
 
 
 """Create directory if data should be saved"""
