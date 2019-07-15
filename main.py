@@ -148,7 +148,7 @@ def main(par):
         diffMean, totalVar = functions.measurePerformance(gmrf1, trueField)
         diffMeanVec.append(diffMean)
         totalVarVec.append(totalVar)
-        if par.plotOptions.showPerformance:
+        if par.showPerformance:
             fig3 = plt.figure(3)
             plt.clf()
             plt.show()

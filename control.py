@@ -104,7 +104,7 @@ class piControl:
         elif yNext > gmrf.yMax:
             yNext = gmrf.yMax
 
-        return xNext, yNext
+        return xNext, yNext, alphaNext
 
 
 class CBTS:
@@ -202,7 +202,7 @@ class CBTS:
             bestTheta = thetaPredict[index, :]
 
             # plot estimated reward over actions
-            if self.par.plotOptions.showActionRewardMapping and len(v.D) == (self.branchingFactor - 1):
+            if self.par.showActionRewardMapping and len(v.D) == (self.branchingFactor - 1):
                 functions.plotPolicy(self.par, v.GP, thetaPredict, mu)
 
         return bestTheta
@@ -215,7 +215,7 @@ class CBTS:
             nextTraj, derivX, derivY = self.generateTrajectory(v, nextTheta)
 
             # add explored paths to collected trajectories for plotting:
-            if self.par.plotOptions.showExploredPaths:
+            if self.par.showExploredPaths:
                 self.xTraj = np.hstack((self.xTraj, nextTraj[0, :].reshape(self.nTrajPoints, 1)))
                 self.yTraj = np.hstack((self.yTraj, nextTraj[1, :].reshape(self.nTrajPoints, 1)))
 
@@ -238,7 +238,7 @@ class CBTS:
         bestTraj, derivX, derivY = self.generateTrajectory(v0, bestTheta)
 
         # plot acquisition function
-        if self.par.plotOptions.showAcquisitionFunction:
+        if self.par.showAcquisitionFunction:
             functions.plotRewardFunction(self.par,v0.gmrf)
 
         return bestTraj, derivX, derivY

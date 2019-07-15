@@ -1,98 +1,103 @@
+import math
+import numpy as np
+
 class par:
-    import math
-    import numpy as np
+    def __init__(self, belief, control, fieldType, temporal, plot, nIter, K=15, H=10, nUpdated=5, lambd=1e-1,
+                 pi2ControlCost=5, branchingFactor=6, maxDepth=3, kappa=100, kappaChildSelection=1,
+                 UCBRewardFactor=0.05, cbtsControlCost=0.2, discountFactor=0.5):
+        self.belief = belief
+        self.control = control
+        self.fieldType = fieldType
+        self.temporal = temporal
+        self.plot = plot
+        self.nIter = nIter  # number of iterations
 
-    """Parameters"""
+        self.showExploredPaths = False
+        self.showActionRewardMapping = False
+        self.showAcquisitionFunction = False
+        self.showPerformance = False
 
-    """Simulation parameters will be specified in simulation.py"""
-    belief = None
-    control = None
-    fieldType = None
-    temporal = None
-    plot = None
+        self.exploitingRate = 0
 
-    nIter = None  # number of iterations
+        self.dt = 1  # timesteps per iteration
+        self.nMeas = 10  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
+        self.ov2 = 0.01  # measurement variance
+        self.ov2Real = self.ov2
+        self.dX = 0.01
+        self.dY = 0.01  # discretizaton in x and y for Plotting
 
+        self.x0 = 0
+        self.y0 = 0
+        self.alpha0 = math.pi / 4  # initial state
+        self.maxStepsize = 0.1  # maximum change in every state per iteration
+        self.xVel = self.maxStepsize
+        self.yVel = self.maxStepsize
 
-    class plotOptions:
-        showExploredPaths = False
-        showActionRewardMapping = False
-        showAcquisitionFunction = False
-        showPerformance = False
+        self.dxdt = 0.001  # Shift of true field in x direction
+        self.dydt = 0.001  # Shift of true field in y direction
+        self.pulseTime = self.nIter  # Duration of sinusodial pulsation
 
-    exploitingRate = 0
+        """GMRF class"""
+        self.xMin = 0  # GMRF dimensions
+        self.xMax = 10
+        self.nGridX = 10
+        self.yMin = 0
+        self.yMax = 10
+        self.nGridY = 10
+        self.nBeta = 1  # regression coefficients
+        self.nEdge = 5  # needs to be at least 1
+        self.valueT = 1e-3  # Prior precision value for regression vector bet
 
-    dt = 1  # timesteps per iteration
-    nMeas = 10  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
-    ov2 = 0.01  # measurement variance
-    ov2Real = ov2
-    dX = dY = 0.01  # discretizaton in x and y for Plotting
+        self.nGridXSampled = 10
+        self.nGridYSampled = 10
 
-    (x0, y0, alpha0) = (0, 0, math.pi / 4)  # initial state
-    maxStepsize = 0.1  # maximum change in every state per iteration
-    xVel = maxStepsize
-    yVel = maxStepsize
+        """STKF class"""
+        self.sigmaT = 1e3  # 1e3    # determines exponential decay of time kernel
+        self.lambdSTKF = 1  # influences time kernel value
+        self.sigma2 = 0.01
 
-    dxdt = 0.001  # Shift of true field in x direction
-    dydt = 0.001  # Shift of true field in y direction
-    pulseTime = nIter  # Duration of sinusodial pulsation
+        """PI2 controller"""
+        "Rollout Tuning"
+        self.K = K  # number of path roll outs
+        self.H = H  # control horizon steps
+        self.nUpdated = nUpdated  # number of iterations
+        self.lambd = lambd  # 1e-2 # rescales state costs, affects noise of path roll-outs (positively)
+        self.outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative reward
+        self.pi2ControlCost = pi2ControlCost  # 5e-1   # affects noise of path roll-outs (negatively)
+        #ctrSamplingTime = 0.1  # time discretization
 
-    """GMRF class"""
-    xMin = 0  # GMRF dimensions
-    xMax = 10
-    nGridX = 10
-    yMin = 0
-    yMax = 10
-    nGridY = 10
-    nBeta = 1  # regression coefficients
-    nEdge = 5  # needs to be at least 1
-    valueT = 1e-3  # Prior precision value for regression vector bet
+        """CBTS controller"""
+        self.branchingFactor = branchingFactor  # number of actions that can be evaluated at max for each path segment
+        self.maxDepth = maxDepth  # depth of search tree
+        self.kappa = kappa  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
+        self.kappaChildSelection = kappaChildSelection  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
+        self.UCBRewardFactor = UCBRewardFactor  # reward = variance + UCBRewardFactor*mean
+        self.outOfGridPenaltyCBTS = 1
+        self.cbtsControlCost = cbtsControlCost
+        self.discountFactor = discountFactor  # discounts future rewards
 
-    nGridXSampled = 10
-    nGridYSampled = 10
+        self.trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
+        self.trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
+        self.CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
+        self.nMeasPoints = int(self.trajStepSize / self.maxStepsize) # number of measurement points along trajectory
+        self.nTrajPoints = self.nMeasPoints + 1 # length of trajectories (including starting position)
+        self.useSampledGMRF = False
 
-    """STKF class"""
-    sigmaT = 1e3  # 1e3    # determines exponential decay of time kernel
-    lambdSTKF = 1  # influences time kernel value
-    sigma2 = 0.01
+        self.thetaMin = -1  # determines curvature of generated trajectories
+        self.thetaMax = 1  # determines curvature of generated trajectories
+        self.thetaExpMin = self.thetaMin  # determines curvature of generated trajectories for node exploration
+        self.thetaExpMax = self.thetaMax  # determines curvature of generated trajectories for node exploration
+        self.trajOrder = 1  # if higher order is used check trajectory generation function
+        self.initialTheta = np.zeros(self.trajOrder)  # leads to first trajectory being straight
 
-    """PI2 controller"""
-    "Rollout Tuning"
-    K = 15  # number of path roll outs
-    H = 20  # control horizon steps
-    nUpdated = 5  # number of iterations
-    lambd = 1e-1  # 1e-2 # rescales state costs, affects noise of path roll-outs (positively)
-    outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative reward
-    pi2ControlCost = 5  # 5e-1   # affects noise of path roll-outs (negatively)
-    #ctrSamplingTime = 0.1  # time discretization
+        # Gaussian Process for action reward mapping
+        self.kernelPar = 10  # used in exponential kernel to determine variance between to inputs
+        self.nThetaSamples = 100  # number of samples thetas which are candidates for next theta
 
-    """CBTS controller"""
-    branchingFactor = 6  # number of actions that can be evaluated at max for each path segment
-    maxDepth = 3  # depth of search tree
-    kappa = 100  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
-    kappaChildSelection = 1  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
-    UCBRewardFactor = 0.05  # reward = variance + UCBRewardFactor*mean
-    outOfGridPenaltyCBTS = 1
-    cbtsControlCost = 0.2
-    discountFactor = 0.5  # discounts future rewards
+        """Random Walk"""
+        self.noiseRandomWalk = 0.3
 
-    trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
-    trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
-    CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
-    nMeasPoints = int(trajStepSize / maxStepsize) # number of measurement points along trajectory
-    nTrajPoints = nMeasPoints + 1 # length of trajectories (including starting position)
-    useSampledGMRF = False
-
-    thetaMin = -1  # determines curvature of generated trajectories
-    thetaMax = 1  # determines curvature of generated trajectories
-    thetaExpMin = thetaMin  # determines curvature of generated trajectories for node exploration
-    thetaExpMax = thetaMax  # determines curvature of generated trajectories for node exploration
-    trajOrder = 1  # if higher order is used check trajectory generation function
-    initialTheta = np.zeros(trajOrder)  # leads to first trajectory being straight
-
-    # Gaussian Process for action reward mapping
-    kernelPar = 10  # used in exponential kernel to determine variance between to inputs
-    nThetaSamples = 100  # number of samples thetas which are candidates for next theta
-
-    """Random Walk"""
-    noiseRandomWalk = 0.3
+        if self.belief != 'regBayesTrunc':
+            self.nMeas = self.nIter
+        if self.belief == 'stkf':
+            self.nBeta = 0
