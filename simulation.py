@@ -15,12 +15,12 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['pi2','cbts']  #'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['pi2','cbts','randomWalk']  #'cbts', 'pi2', 'randomWalk', 'geist'
 
 """Simulation Options"""
 saveToFile = True
-nSim = 2
-nIter = 100
+nSim = 1
+nIter = 10
 fieldType = 'sine'  # 'peak','sine' or 'predefined'
 temporal = False  # True: time varying field
 plot = False
@@ -32,7 +32,7 @@ lambd = [1e-1]
 pi2ControlCost = [5]
 "CBTS"
 branchingFactor = [6]
-maxDepth = [3]
+maxDepth = [3,4]
 kappa = [100]
 kappaChildSelection = [1]
 UCBRewardFactor = [0.05]
@@ -85,6 +85,10 @@ for belief in beliefOptions:
                                             + '_' + 'UCBRewardFactor' + str(UCBRewardFactor_i).replace('.','p')
                                             + '_' + 'cbtsControlCost' + str(cbtsControlCost_i).replace('.','p')
                                             + '_' + 'discountFactor' + str(discountFactor_i).replace('.','p'))
+        if control == 'randomWalk':
+            parObject = par(belief, control, fieldType, temporal, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            parSettingsList.append(parObject)
+            simCaseList.append(belief + '_' + control + '_randomWalk')
 
 
 """Create directory if data should be saved"""
