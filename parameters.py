@@ -40,10 +40,10 @@ class par:
         """GMRF class"""
         self.xMin = 0  # GMRF dimensions
         self.xMax = 10
-        self.nGridX = 10
+        self.nGridX = 30
         self.yMin = 0
         self.yMax = 10
-        self.nGridY = 10
+        self.nGridY = 30
         self.nBeta = 1  # regression coefficients
         self.nEdge = 5  # needs to be at least 1
         self.valueT = 1e-3  # Prior precision value for regression vector bet
@@ -81,7 +81,7 @@ class par:
         self.CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
         self.nMeasPoints = int(self.trajStepSize / self.maxStepsize) # number of measurement points along trajectory
         self.nTrajPoints = self.nMeasPoints + 1 # length of trajectories (including starting position)
-        self.useSampledGMRF = False
+        self.useSampledGMRF = True
 
         self.thetaMin = -1  # determines curvature of generated trajectories
         self.thetaMax = 1  # determines curvature of generated trajectories

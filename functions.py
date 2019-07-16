@@ -208,14 +208,19 @@ def sampleGMRF(gmrf):
     newGMRF = classes.gmrf(gmrf.par, gmrf.par.nGridXSampled, gmrf.par.nGridYSampled, 0)
     if gmrf.nBeta > 0:
         newGMRF.bSeq[-gmrf.nBeta:] = gmrf.bSeq[-gmrf.nBeta:]
+        newGMRF.covCond[-gmrf.nBeta:,-gmrf.nBeta:] = gmrf.covCond[-gmrf.nBeta:,-gmrf.nBeta:]
+        newGMRF.precCondSparse[-gmrf.nBeta:,-gmrf.nBeta:] = gmrf.precCondSparse[-gmrf.nBeta:,-gmrf.nBeta:]
+
+    gmrf.precCondSparseDense = np.array(gmrf.precCondSparse.todense())
     for i in range(newGMRF.nP):
         xIndex = i % newGMRF.nX
         yIndex = int(i/newGMRF.nX)
         Phi = mapConDis(gmrf,newGMRF.x[xIndex],newGMRF.y[yIndex])
         newGMRF.bSeq[i] = np.dot(Phi,gmrf.bSeq)
+        newGMRF.precCondSparse[i,i] = np.dot(Phi,np.dot(gmrf.precCondSparseDense,Phi.T))
         newGMRF.covCond[i,i] = np.dot(Phi,gmrf.diagCovCond)
-    #print(sum(sum(abs(newGMRF.diagCovCond[0:newGMRF.nP].reshape(newGMRF.nY, newGMRF.nX)-gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge]))))
-    #print(sum(sum(abs(newGMRF.meanCond[0:newGMRF.nP].reshape(newGMRF.nY, newGMRF.nX)-gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge]))))
+        newGMRF.meanCond[i] = np.dot(Phi,gmrf.meanCond)
+    newGMRF.diagCovCond = newGMRF.covCond.diagonal().reshape(newGMRF.nP+newGMRF.nBeta,1)
 
     """Check sampling"""
     fig = plt.figure(999)
