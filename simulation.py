@@ -59,7 +59,7 @@ for belief in beliefOptions:
                         for lambd_i in lambd:
                             for pi2ControlCost_i in pi2ControlCost:
                                 parObject = par(belief,control,0, fieldType,temporal,plot,nIter,K_i,H_i,nUpdated_i,
-                                                lambd_i,i2ControlCost_i,0,0,0,0,0,0,0)
+                                                lambd_i,pi2ControlCost_i,0,0,0,0,0,0,0)
                                 parSettingsList.append(parObject)
                                 simCaseList.append(belief + '_' + control + '_' + 'K' + str(K_i).replace('.','p')
                                             + '_' + 'H' + str(H_i).replace('.','p')
