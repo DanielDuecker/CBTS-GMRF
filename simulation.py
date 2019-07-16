@@ -16,13 +16,13 @@ matplotlib.use('TkAgg')
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
 controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
-cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
+cbtsNodeBelief = ['noUpdates','fullGMRF']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
-printTime = True
+printTime = False
 saveToFile = False
-nSim = 1
-nIter = 20
+nSim = 5
+nIter = 1000
 fieldType = 'predefined'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = False
@@ -75,7 +75,7 @@ for belief in beliefOptions:
                                 for UCBRewardFactor_i in UCBRewardFactor:
                                     for cbtsControlCost_i in cbtsControlCost:
                                         for discountFactor_i in discountFactor:
-                                            parObject = par(belief, control, cbtsNodeBelief, fieldType, temporal, plot, nIter, 0, 0,
+                                            parObject = par(belief, control, cbtsNodeBelief_i, fieldType, temporal, plot, nIter, 0, 0,
                                                             0, 0, 0, branchingFactor_i, maxDepth_i, kappa_i,
                                                             kappaChildSelection_i, UCBRewardFactor_i, cbtsControlCost_i,
                                                             discountFactor_i)

@@ -187,7 +187,6 @@ class CBTS:
                     if self.par.cbtsNodeBelief != 'noUpdates':
                         Phi = functions.mapConDis(vNew.gmrf, vNew.auv.x, vNew.auv.y)
                         vNew.gmrf.seqBayesianUpdate(o[i], Phi)
-
                 vNew.auv.derivX = derivX
                 vNew.auv.derivY = derivY
                 return vNew
