@@ -16,11 +16,11 @@ matplotlib.use('TkAgg')
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
 controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
-cbtsNodeBelief = ['noUpdates','fullGMRF']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
+cbtsNodeBelief = ['fullGMRF']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
-saveToFile = False
+saveToFile = True
 nSim = 5
 nIter = 1000
 fieldType = 'predefined'  # 'peak','sine', 'random' or 'predefined'
