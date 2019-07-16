@@ -14,15 +14,15 @@ import pickle
 matplotlib.use('TkAgg')
 
 """Simulation Options"""
-beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
+beliefOptions = ['stkf']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
 controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
-cbtsNodeBelief = ['fullGMRF']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
+cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
-printTime = False
-saveToFile = True
-nSim = 5
-nIter = 1000
+printTime = True
+saveToFile = False
+nSim = 1
+nIter = 20
 fieldType = 'predefined'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = False
