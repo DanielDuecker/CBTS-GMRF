@@ -14,7 +14,7 @@ class par:
 
         self.showExploredPaths = False
         self.showActionRewardMapping = False
-        self.showAcquisitionFunction = True
+        self.showAcquisitionFunction = False
         self.showPerformance = False
 
         self.exploitingRate = 0

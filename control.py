@@ -304,11 +304,11 @@ class CBTS:
             o.append(np.dot(Phi, v.gmrf.meanCond))
             # lower reward if agent is out of bound
             if not functions.sanityCheck(tau[0, i + 1] * np.eye(1), tau[1, i + 1] * np.eye(1), v.gmrf):
-                print((np.dot(Phi, v.gmrf.diagCovCond) + self.UCBRewardFactor * np.dot(Phi, v.gmrf.meanCond))[0])
-                print(np.dot(Phi, v.gmrf.diagCovCond))
-                print(self.UCBRewardFactor *np.dot(Phi, v.gmrf.meanCond))
-                print("-____")
                 r -= self.outOfGridPenaltyCBTS
+            #print((np.dot(Phi, v.gmrf.diagCovCond) + self.UCBRewardFactor * np.dot(Phi, v.gmrf.meanCond))[0])
+            #print(np.dot(Phi, v.gmrf.diagCovCond))
+            #print(self.UCBRewardFactor *np.dot(Phi, v.gmrf.meanCond))
+            #print("-____")
 
         return r, o
 

@@ -14,6 +14,15 @@ def mapConDis(gmrf, xMeas, yMeas):
     Phi = np.zeros((1, gmrf.nP))
     Phi = np.hstack((Phi, np.zeros((1, gmrf.nBeta)))) #TODO Change this
 
+    if xMeas < gmrf.xMin:
+        return Phi
+    elif xMeas > gmrf.xMax:
+        return Phi
+    if yMeas < gmrf.yMin:
+        return Phi
+    elif yMeas > gmrf.yMax:
+        return Phi
+
     # Get grid position relative to surrounding vertices
     xRel = (xMeas - gmrf.xMinEdge) % gmrf.dx - gmrf.dx / 2
     yRel = (yMeas - gmrf.yMinEdge) % gmrf.dy - gmrf.dy / 2
