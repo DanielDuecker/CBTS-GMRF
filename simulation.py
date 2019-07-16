@@ -20,7 +20,7 @@ controlOptions = ['cbts']  #'cbts', 'pi2', 'randomWalk', 'geist'
 """Simulation Options"""
 saveToFile = False
 nSim = 1
-nIter = 100
+nIter = 500
 fieldType = 'predefined'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = True
@@ -36,7 +36,7 @@ maxDepth = [3]
 kappa = [100]
 kappaChildSelection = [1]
 UCBRewardFactor = [0.05]
-cbtsControlCost = [0.2]
+cbtsControlCost = [0.1]
 discountFactor = [0.5]
 
 "Initialize lists and dicts"

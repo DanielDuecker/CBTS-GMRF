@@ -296,7 +296,7 @@ class CBTS:
 
 
     def evaluateTrajectory(self, v, tau, theta):
-        r = - self.cbtsControlCost * theta
+        r = - self.cbtsControlCost * abs(theta)
         o = []
         for i in range(self.nTrajPoints - 1):
             Phi = functions.mapConDis(v.gmrf, tau[0, i + 1], tau[1, i + 1])
