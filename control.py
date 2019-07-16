@@ -134,7 +134,7 @@ class CBTS:
     def getNewTraj(self, auv, gmrf):
         # Get gmrf with less grid points
         print("calculating..")
-        v0 = node(self.par, gmrf, auv)  # create node with belief b and total reward 0
+        v0 = node(self.par, copy.deepcopy(gmrf), auv)  # create node with belief b and total reward 0
         self.xTraj = np.zeros((self.nTrajPoints, 1))
         self.yTraj = np.zeros((self.nTrajPoints, 1))
         for i in range(self.nIterations):
@@ -164,10 +164,13 @@ class CBTS:
                 v.GP.update(theta, r)
 
                 # Create new node:
-                if self.par.useSampledGMRF and v.depth == 0:
+                if self.par.cbtsNodeBelief == 'noUpdates':
+                    vNewGMRF = v.gmrf   # pass reference (since no updates)
+                elif self.par.cbtsNodeBelief == 'sampledGMRF' and v.depth == 0:
                     vNewGMRF = functions.sampleGMRF(v.gmrf)
                 else:
-                    vNewGMRF = v.gmrf
+                    vNewGMRF = copy.deepcopy(v.gmrf) # copy GMRF (since copy will be updated)
+
                 vNew = node(self.par, vNewGMRF, v.auv)
                 vNew.rewardToNode = v.rewardToNode + self.discountFactor ** v.depth * r
                 vNew.totalReward = vNew.rewardToNode
@@ -181,8 +184,9 @@ class CBTS:
                 for i in range(len(o)):
                     vNew.auv.x = traj[0, i + 1]
                     vNew.auv.y = traj[1, i + 1]
-                    Phi = functions.mapConDis(vNew.gmrf, vNew.auv.x, vNew.auv.y)
-                    vNew.gmrf.seqBayesianUpdate(o[i], Phi)
+                    if self.par.cbtsNodeBelief != 'noUpdates':
+                        Phi = functions.mapConDis(vNew.gmrf, vNew.auv.x, vNew.auv.y)
+                        vNew.gmrf.seqBayesianUpdate(o[i], Phi)
 
                 vNew.auv.derivX = derivX
                 vNew.auv.derivY = derivY

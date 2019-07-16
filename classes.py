@@ -349,7 +349,7 @@ class stkf:
 
 class node:
     def __init__(self, par, gmrf, auv):
-        self.gmrf = copy.deepcopy(gmrf)
+        self.gmrf = gmrf
         self.auv = copy.deepcopy(auv)
         self.rewardToNode = 0
         self.accReward = 0

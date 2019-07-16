@@ -2,11 +2,12 @@ import math
 import numpy as np
 
 class par:
-    def __init__(self, belief, control, fieldType, temporal, plot, nIter, K=15, H=10, nUpdated=5, lambd=1e-1,
+    def __init__(self, belief, control, cbtsNodeBelief, fieldType, temporal, plot, nIter, K=15, H=10, nUpdated=5, lambd=1e-1,
                  pi2ControlCost=5, branchingFactor=6, maxDepth=3, kappa=100, kappaChildSelection=1,
                  UCBRewardFactor=0.05, cbtsControlCost=0.2, discountFactor=0.5):
         self.belief = belief
         self.control = control
+        self.cbtsNodeBelief = cbtsNodeBelief
         self.fieldType = fieldType
         self.temporal = temporal
         self.plot = plot
@@ -81,7 +82,6 @@ class par:
         self.CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
         self.nMeasPoints = int(self.trajStepSize / self.maxStepsize) # number of measurement points along trajectory
         self.nTrajPoints = self.nMeasPoints + 1 # length of trajectories (including starting position)
-        self.useSampledGMRF = True
 
         self.thetaMin = -1  # determines curvature of generated trajectories
         self.thetaMax = 1  # determines curvature of generated trajectories

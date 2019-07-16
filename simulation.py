@@ -15,15 +15,17 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['cbts']  #'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
+printTime = True
 saveToFile = False
 nSim = 1
-nIter = 500
+nIter = 20
 fieldType = 'predefined'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
-plot = True
+plot = False
 "PI2"
 K = [15]
 H = [20]
@@ -33,11 +35,11 @@ pi2ControlCost = [5]
 "CBTS"
 branchingFactor = [6]
 maxDepth = [3]
-kappa = [100]
+kappa = [50]
 kappaChildSelection = [1]
 UCBRewardFactor = [0.05]
-cbtsControlCost = [0.1]
-discountFactor = [0.5]
+cbtsControlCost = [0.5]
+discountFactor = [0.9]
 
 "Initialize lists and dicts"
 simCaseList = []
@@ -56,8 +58,8 @@ for belief in beliefOptions:
                     for nUpdated_i in nUpdated:
                         for lambd_i in lambd:
                             for pi2ControlCost_i in pi2ControlCost:
-                                parObject = par(belief,control,fieldType,temporal,plot,nIter,K_i,H_i,nUpdated_i,lambd_i,
-                                                pi2ControlCost_i,0,0,0,0,0,0,0)
+                                parObject = par(belief,control,0, fieldType,temporal,plot,nIter,K_i,H_i,nUpdated_i,
+                                                lambd_i,i2ControlCost_i,0,0,0,0,0,0,0)
                                 parSettingsList.append(parObject)
                                 simCaseList.append(belief + '_' + control + '_' + 'K' + str(K_i).replace('.','p')
                                             + '_' + 'H' + str(H_i).replace('.','p')
@@ -65,33 +67,35 @@ for belief in beliefOptions:
                                             + '_' + 'lambd' + str(lambd_i).replace('.','p')
                                             + '_' + 'pi2ControlCost' + str(pi2ControlCost_i).replace('.','p'))
         if control == 'cbts':
-            for branchingFactor_i in branchingFactor:
-                for maxDepth_i in maxDepth:
-                    for kappa_i in kappa:
-                        for kappaChildSelection_i in kappaChildSelection:
-                            for UCBRewardFactor_i in UCBRewardFactor:
-                                for cbtsControlCost_i in cbtsControlCost:
-                                    for discountFactor_i in discountFactor:
-                                        parObject = par(belief, control, fieldType, temporal, plot, nIter, 0, 0,
-                                                        0, 0, 0, branchingFactor_i, maxDepth_i, kappa_i,
-                                                        kappaChildSelection_i, UCBRewardFactor_i, cbtsControlCost_i,
-                                                        discountFactor_i)
-                                        parSettingsList.append(parObject)
-                                        simCaseList.append(belief + '_' + control
-                                            + '_' + 'branchingFactor' + str(branchingFactor_i).replace('.','p')
-                                            + '_' + 'maxDepth' + str(maxDepth_i).replace('.','p')
-                                            + '_' + 'kappa' + str(kappa_i).replace('.','p')
-                                            + '_' + 'kappaChildSelection' + str(kappaChildSelection_i).replace('.','p')
-                                            + '_' + 'UCBRewardFactor' + str(UCBRewardFactor_i).replace('.','p')
-                                            + '_' + 'cbtsControlCost' + str(cbtsControlCost_i).replace('.','p')
-                                            + '_' + 'discountFactor' + str(discountFactor_i).replace('.','p'))
+            for cbtsNodeBelief_i in cbtsNodeBelief:
+                for branchingFactor_i in branchingFactor:
+                    for maxDepth_i in maxDepth:
+                        for kappa_i in kappa:
+                            for kappaChildSelection_i in kappaChildSelection:
+                                for UCBRewardFactor_i in UCBRewardFactor:
+                                    for cbtsControlCost_i in cbtsControlCost:
+                                        for discountFactor_i in discountFactor:
+                                            parObject = par(belief, control, cbtsNodeBelief, fieldType, temporal, plot, nIter, 0, 0,
+                                                            0, 0, 0, branchingFactor_i, maxDepth_i, kappa_i,
+                                                            kappaChildSelection_i, UCBRewardFactor_i, cbtsControlCost_i,
+                                                            discountFactor_i)
+                                            parSettingsList.append(parObject)
+                                            simCaseList.append(belief + '_' + control
+                                                + '_' + 'cbtsNodeBelief' + str(cbtsNodeBelief_i).replace('.','p')
+                                                + '_' + 'branchingFactor' + str(branchingFactor_i).replace('.','p')
+                                                + '_' + 'maxDepth' + str(maxDepth_i).replace('.','p')
+                                                + '_' + 'kappa' + str(kappa_i).replace('.','p')
+                                                + '_' + 'kappaChildSelection' + str(kappaChildSelection_i).replace('.','p')
+                                                + '_' + 'UCBRewardFactor' + str(UCBRewardFactor_i).replace('.','p')
+                                                + '_' + 'cbtsControlCost' + str(cbtsControlCost_i).replace('.','p')
+                                                + '_' + 'discountFactor' + str(discountFactor_i).replace('.','p'))
         if control == 'randomWalk':
-            parObject = par(belief, control, fieldType, temporal, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            parObject = par(belief, control, 0, fieldType, temporal, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             parSettingsList.append(parObject)
             simCaseList.append(belief + '_' + control)
 
         if control == 'geist':
-            parObject = par(belief, control, fieldType, temporal, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            parObject = par(belief, control, 0, fieldType, temporal, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             parSettingsList.append(parObject)
             simCaseList.append(belief + '_' + control)
 
@@ -134,7 +138,7 @@ for i in range(len(parSettingsList)):
 
     for i in range(nSim):
         print("Simulation ", i, " of ", nSim, " with ", simCase)
-        xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = main.main(par)
+        xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = main.main(par,printTime)
 
         x.append(xR)
         y.append(yR)
