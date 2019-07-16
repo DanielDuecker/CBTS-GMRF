@@ -147,9 +147,9 @@ def main(par,printTime):
         timeVec.append(timeAfter - timeBefore)
 
         """Measure performance"""
-        #diffMean, totalVar = functions.measurePerformance(gmrf1, trueField)
-        #diffMeanVec.append(diffMean)
-        #totalVarVec.append(totalVar)
+        diffMean, totalVar = functions.measurePerformance(gmrf1, trueField)
+        diffMeanVec.append(diffMean)
+        totalVarVec.append(totalVar)
         if par.showPerformance:
             fig3 = plt.figure(3)
             plt.clf()

@@ -218,9 +218,6 @@ class gmrf:
         precPriorUpperRight = self.Lambda.dot(-1 * FSparse)
         precPriorLowerLeft = -1 * FTSparse.dot(self.Lambda)
         precPriorLowerRight = sp.csr_matrix.dot(FTSparse, self.Lambda.dot(FSparse)) + TSparse
-        print(self.Lambda)
-        print("__")
-        print(precPriorUpperRight)
         precH1 = sp.hstack([self.Lambda, precPriorUpperRight])
         precH2 = sp.hstack([precPriorLowerLeft, precPriorLowerRight])
         self.precCondSparse = sp.vstack([precH1, precH2]).tocsr()
