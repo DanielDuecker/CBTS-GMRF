@@ -15,8 +15,8 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
-cbtsNodeBelief = ['fullGMRF','noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
+controlOptions = ['pi2','geist']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
@@ -28,8 +28,8 @@ temporal = False  # True: time varying field
 plot = False
 "PI2"
 K = [15]
-H = [20]
-nUpdated = [5]
+H = [10]
+nUpdated = [10]
 lambd = [1e-1]
 pi2ControlCost = [5]
 "CBTS"

@@ -71,9 +71,9 @@ def main(par,printTime):
     """Get first measurement:"""
     xMeas = par.x0
     yMeas = par.y0
-    zMeas = np.zeros((par.nMeas, 1))  # Initialize measurement vector and mapping matrix
+    fMeas = np.zeros((par.nMeas, 1))  # Initialize measurement vector and mapping matrix
     Phi = np.zeros((par.nMeas, gmrf1.nP + gmrf1.nBeta))
-    zMeas[0] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
+    fMeas[0] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
     Phi[0, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
 
 
@@ -86,11 +86,11 @@ def main(par,printTime):
 
         """Update belief"""
         if par.belief == 'stkf':
-            stkf1.kalmanFilter(t, xMeas, yMeas, zMeas[i])
+            stkf1.kalmanFilter(t, xMeas, yMeas, fMeas[i])
         elif par.belief == 'seqBayes':
-            gmrf1.seqBayesianUpdate(zMeas[i], Phi[[i], :])
+            gmrf1.seqBayesianUpdate(fMeas[i], Phi[[i], :])
         elif par.belief == 'regBayes' or par.belief == 'regBayesTrunc':
-            gmrf1.bayesianUpdate(zMeas[0:(i+1)], Phi[0:(i+1), :])
+            gmrf1.bayesianUpdate(fMeas[0:(i+1)], Phi[0:(i+1), :])
         else:
             return("Error! No update method selected")
 
@@ -131,7 +131,7 @@ def main(par,printTime):
         yMeas = auv.y
         xHist.append(xMeas)
         yHist.append(yMeas)
-        zMeas[(i + 1) % par.nMeas] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
+        fMeas[(i + 1) % par.nMeas] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
 
         """Map measurement to surrounding grid vertices and stack under Phi matrix"""
         Phi[(i + 1) % par.nMeas, :] = functions.mapConDis(gmrf1, xMeas, yMeas)

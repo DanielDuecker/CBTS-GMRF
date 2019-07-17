@@ -243,10 +243,10 @@ class gmrf:
         self.bSeq = np.zeros((self.nP + self.nBeta, 1))
 
 
-    def bayesianUpdate(self, zMeas, Phi):
+    def bayesianUpdate(self, fMeas, Phi):
         """Update conditioned precision matrix"""
         R = np.dot(Phi, np.dot(self.covPrior, Phi.T)) + self.ov2 * np.eye(
-            len(zMeas))  # covariance matrix of measurements
+            len(fMeas))  # covariance matrix of measurements
         temp1 = np.dot(Phi, self.covPrior)
         temp2 = np.dot(np.linalg.inv(R), temp1)
         temp3 = np.dot(Phi.T, temp2)
@@ -258,23 +258,23 @@ class gmrf:
         "Update mean"
         if self.par.belief == 'regBayesTrunc':
             self.meanCond = self.meanPrior + 1 / self.ov2 * np.dot(self.covCond,
-                                                                   np.dot(Phi.T, zMeas - np.dot(Phi, self.meanPrior)))
+                                                                   np.dot(Phi.T, fMeas - np.dot(Phi, self.meanPrior)))
         else:
-            self.meanCond = np.dot(self.covPrior, np.dot(Phi.T, np.dot(np.linalg.inv(R), zMeas)))
+            self.meanCond = np.dot(self.covPrior, np.dot(Phi.T, np.dot(np.linalg.inv(R), fMeas)))
 
         # Also update bSeq and precCond in case seq. belief update is used for planning
         PhiT = Phi.T
         PhiTSparse = sp.csr_matrix(PhiT)
-        self.bSeq = self.bSeq + 1 / self.ov2 * np.dot(PhiT,zMeas)  # sequential update canonical mean
+        self.bSeq = self.bSeq + 1 / self.ov2 * np.dot(PhiT,fMeas)  # sequential update canonical mean
         self.precCondSparse = self.precCondSparse + 1 / self.par.ov2 * PhiTSparse.dot(PhiTSparse.T)
 
 
-    def seqBayesianUpdate(self, zMeas, Phi):
+    def seqBayesianUpdate(self, fMeas, Phi):
         PhiT = Phi.T
         PhiTSparse = sp.csr_matrix(PhiT)
 
         hSeq = sp.linalg.spsolve(self.precCondSparse, PhiTSparse).T
-        self.bSeq = self.bSeq + zMeas[0]/self.ov2 * PhiT  # sequential update canonical mean
+        self.bSeq = self.bSeq + fMeas[0]/self.ov2 * PhiT  # sequential update canonical mean
         self.precCondSparse = self.precCondSparse + 1 / self.ov2 * PhiTSparse.dot(PhiTSparse.T)  # sequential update of precision matrix
         self.meanCond = sp.linalg.spsolve(self.precCondSparse, self.bSeq).reshape(self.nP+self.nBeta,1)
         self.diagCovCond = np.subtract(self.diagCovCond,np.multiply(hSeq,hSeq).reshape(self.nP+self.nBeta,1) / (self.ov2 + np.dot(Phi, hSeq)[0]))
@@ -317,7 +317,7 @@ class stkf:
         self.skk = sp.csr_matrix(np.zeros((self.gmrf.nP, 1)))
         self.covkk = sp.csr_matrix(np.kron(np.eye(self.gmrf.nP), sigmaZero))
 
-    def kalmanFilter(self, t, xMeas, yMeas, zMeas):
+    def kalmanFilter(self, t, xMeas, yMeas, fMeas):
         import cProfile
         if t % 1 != 0:
             # Open loop prediciton
@@ -334,7 +334,7 @@ class stkf:
             covPred = self.A.dot(self.covkk.dot(self.AT)) + self.Q
             denum = sp.csr_matrix(sp.linalg.inv(C.dot(covPred.dot(CT)) + self.R))
             kalmanGain = covPred.dot(CT.dot(denum))
-            self.skk = sPred + kalmanGain.dot(sp.csr_matrix(zMeas) - C.dot(sPred))
+            self.skk = sPred + kalmanGain.dot(sp.csr_matrix(fMeas) - C.dot(sPred))
             self.covkk = (sp.csr_matrix(np.eye(self.gmrf.nP)) - kalmanGain.dot(C)).dot(covPred)
 
         self.gmrf.meanCond = np.array(np.dot(self.CsDense,self.skk.todense()),ndmin=2)
@@ -344,7 +344,7 @@ class stkf:
         # Also update bSeq and precCond in case seq. belief update is used for planning
         PhiT = Phi.T
         PhiTSparse = sp.csr_matrix(PhiT)
-        self.gmrf.bSeq = self.gmrf.bSeq + 1 / self.par.ov2 * PhiT * zMeas  # sequential update canonical mean
+        self.gmrf.bSeq = self.gmrf.bSeq + 1 / self.par.ov2 * PhiT * fMeas  # sequential update canonical mean
         self.gmrf.precCondSparse = self.gmrf.precCondSparse + 1 / self.par.ov2 * PhiTSparse.dot(PhiTSparse.T)  # sequential update of precision matrix
 
 class node:
