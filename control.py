@@ -11,14 +11,14 @@ class piControl:
     def __init__(self,par):
         self.lambd = par.lambd  # influences state costs and noise variance
         self.H = par.H  # control horizon steps
-        self.g = np.ones((self.H, 1))
+        self.g = np.eye(1)
         self.K = par.K  # number of path roll outs
         self.dt = par.dt  # time discretization
         self.nUpdated = par.nUpdated  # number of iterations
         self.u = np.zeros((self.H, 1))
         self.outOfGridPenaltyPI2 = par.outOfGridPenaltyPI2
         self.pi2ControlCost = par.pi2ControlCost
-        self.R = self.pi2ControlCost * np.eye(self.H)  # input cost matrix
+        self.R = self.pi2ControlCost * np.eye(1)  # input cost matrix
         self.varNoise = self.lambd * np.linalg.inv(self.R)
 
         self.xTraj = np.zeros((1, self.K))
@@ -31,8 +31,10 @@ class piControl:
         self.u[0:-2, 0] = self.u[1:-1, 0]
         self.u[-1, 0] = 0
 
-        M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T)) / (
-            np.dot(self.g.T, np.dot(np.linalg.inv(self.R), self.g)))
+        #M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T)) / (
+        #    np.dot(self.g.T, np.dot(np.linalg.inv(self.R), self.g)))
+        # If input is one dimensional and noise directly affects input:
+        M = 1
         for n in range(self.nUpdated):
             noise = np.zeros((self.H, self.K))
             self.xPathRollOut = np.zeros((self.H, self.K))
@@ -40,10 +42,8 @@ class piControl:
             S = np.zeros((self.H + 1, self.K))
 
             for k in range(self.K):
-
                 # sample control noise and compute path roll-outs
-                for j in range(self.H):
-                    noise[:, k] = np.random.normal(0, math.sqrt(self.varNoise[j, j]))
+                noise[:, k] = math.sqrt(self.varNoise) * np.random.standard_normal(self.H)
                 (xTrVec, yTrVec, alphaNew) = auv.trajectoryFromControl(self.u[:, 0] + noise[:, k])
                 self.xPathRollOut[:, k] = xTrVec[:, 0]
                 self.yPathRollOut[:, k] = yTrVec[:, 0]
@@ -58,9 +58,8 @@ class piControl:
                     else:
                         Phi = functions.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
                         stateCost += 1 / np.dot(Phi, gmrf.diagCovCond)
-                    uHead = self.u[index:self.H, 0] + np.dot(M[index:self.H, index:self.H], noise[index:self.H, k])
-                    S[index, k] = S[index + 1, k] + stateCost + 0.5 * np.dot(uHead.T,
-                                                                np.dot(self.R[index:self.H, index:self.H],uHead))
+                    uHead = self.u[index, 0] + M * noise[index, k]
+                    S[index, k] = S[index + 1, k] + stateCost + 0.5 * np.dot(uHead.T, np.dot(self.R,uHead))
 
             # Normalize state costs
             S = S / np.amax(S)
@@ -80,7 +79,7 @@ class piControl:
             deltaU = np.zeros((self.H, self.H))
             weightedDeltaU = np.zeros((self.H, 1))
             for i in range(self.H):
-                deltaU[i:self.H, i] = np.dot(np.dot(M[i:self.H, i:self.H], noise[i:self.H, :]), P[i, :].T)
+                deltaU[i:self.H, i] = np.dot(M * noise[i:self.H, :], P[i, :].T)
                 sumNum = 0
                 sumDen = 0
                 for h in range(self.H):
