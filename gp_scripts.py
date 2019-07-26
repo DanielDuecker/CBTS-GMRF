@@ -341,7 +341,7 @@ def sample_from_GMRF(gmrf_dim, kappa, alpha, car_var, plot_gmrf=False):
 
 
 class GMRF:
-    def __init__(self, gmrf_dim, alpha_prior, kappa_prior, set_Q_init):
+    def __init__(self, gmrf_dim, alpha_prior, kappa_prior, set_Q_init, nBeta):
         """Initialize GMRF dimensions and precision matrices"""
 
         """Initialize GMRF dimensions"""
@@ -358,7 +358,7 @@ class GMRF:
         yg_max = y_max + dvy * de[1]
 
         """Intialize GMRF PRECISION matrices"""
-        p = 1  # Number of regression coefficients beta
+        p = nBeta  # Number of regression coefficients beta
         self.F = np.ones(shape=(n, p))  # Mean regression functions
         self.T = 1e-6 * np.ones(shape=(p, p))  # Precision matrix of the regression coefficients
         # Initialize hyperparameter prior

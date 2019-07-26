@@ -15,14 +15,14 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['cbts', 'geist']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 1
-nIter = 200
+nSim = 1000
+nIter = 50
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = False
@@ -128,6 +128,8 @@ for i in range(len(parSettingsList)):
     y = []
     trueField = []
     gmrf = []
+    gmrfMean = []
+    gmrfCov = []
     controller = []
     CBTS = []
     timeVec = []
@@ -143,7 +145,9 @@ for i in range(len(parSettingsList)):
         x.append(xR)
         y.append(yR)
         trueField.append(trueFieldR)
-        gmrf.append(gmrfR)
+        gmrf.append((gmrfR))
+        gmrfMean.append(gmrfR.meanCond)
+        gmrfCov.append(gmrfR.covCond)
         controller.append(controllerR)
         CBTS.append(CBTSR)
         timeVec.append(timeVecR)
@@ -152,19 +156,22 @@ for i in range(len(parSettingsList)):
         diffMean.append(diffMeanR)
         totalVar.append(totalVarR)
 
+        # Save gmrf for each simulation (since it can be very large)
+        with open('objs_' + str(i) + '_gmrf_' + simCase + '.pkl', 'wb') as f:
+            pickle.dump(gmrfR,f)
+
     diffMeanDict[simCase] = diffMean
     totalVarDict[simCase] = totalVar
 
     if saveToFile:
         """Save objects"""
         # Save objects
-        with open('objs' + '_' + simCase + '.pkl', 'wb') as f:
-            pickle.dump(
-                [x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, par],f)
+        with open('objs_other_' + simCase + '.pkl', 'wb') as f:
+            pickle.dump([x, y, trueField, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar],f)
 
         # Getting back the objects:
         # with open('objs.pkl','rb') as f:
-        #    x, y, trueField, gmrf, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar,simCase = pickle.load(f)
+        #   x, y, trueField, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar, simCase = pickle.load(f)
 
         # Save data as csv
         with open(folderName + '_' + simCase + '_data.csv', 'w') as dataFile:
@@ -178,8 +185,8 @@ for i in range(len(parSettingsList)):
                 writer.writerow(yHist[i])
                 writer.writerow(diffMean[i])
                 writer.writerow(totalVar[i])
-                writer.writerow(gmrf[i].meanCond)
-                writer.writerow(gmrf[i].covCond)
+                writer.writerow(gmrfMean[i])
+                writer.writerow(gmrfCov[i])
                 writer.writerow(["-"])
             dataFile.close()
 
@@ -188,8 +195,7 @@ for i in range(len(parSettingsList)):
     print("Plotting..")
     for i in range(nSim):
         functions.plotFields(par, fig0, x[i], y[i], trueField[i], gmrf[i], controller[i], CBTS[i],
-                             timeVec[i], xHist[i],
-                             yHist[i])
+                             timeVec[i], xHist[i], yHist[i])
         if saveToFile:
             fig0.savefig(folderName + '_' + str(i) + '_' + simCase + '_' + par.fieldType + '.svg',
                          format='svg')

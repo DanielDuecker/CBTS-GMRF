@@ -229,7 +229,8 @@ class gmrf:
         covPriorLowerRight = TinvSparse
         covH1 = sp.hstack([covPriorUpperLeft, covPriorUpperRight])
         covH2 = sp.hstack([covPriorLowerLeft, covPriorLowerRight])
-        self.covCond = np.array(sp.vstack([covH1, covH2]).todense())
+        self.covPrior = np.array(sp.vstack([covH1, covH2]).todense())
+        self.covCond = self.covPrior
 
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
 

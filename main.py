@@ -44,7 +44,7 @@ def main(par,printTime):
     controller = control.piControl(par)
 
     """PI2 Controller Geist"""
-    gmrfGeist = gp_scripts.GMRF(Config.gmrf_dim, Config.alpha_prior, Config.kappa_prior, Config.set_Q_init)
+    gmrfGeist = gp_scripts.GMRF(Config.gmrf_dim, Config.alpha_prior, Config.kappa_prior, Config.set_Q_init, par.nBeta)
     u_optimal = np.zeros((10,1))
 
     """Ground Truth"""
