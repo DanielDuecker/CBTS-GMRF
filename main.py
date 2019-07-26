@@ -56,7 +56,6 @@ def main(par,printTime):
     """"Continuous Belief Tree Search"""
     CBTS1 = control.CBTS(par,)
     bestTraj = np.zeros((2, 1))
-    trajIndex = 1 # current position in trajectory vector (0 is initial position)
 
     """Initialize plot"""
     if par.plot:
@@ -128,7 +127,7 @@ def main(par,printTime):
             return("Error! No controller selected")
 
         # Check if stepsize is constant
-        print(math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2))
+        #print(math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2))
 
         xMeas = auv.x
         yMeas = auv.y

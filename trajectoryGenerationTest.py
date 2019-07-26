@@ -12,7 +12,6 @@ matplotlib.use('TkAgg')
 
 N = 10
 depth = 1
-
 par = par('seqBayes', 'cbts', 'noUpdates', 'random', False, False, 1000, 0, 0, 0, 0, 0, 6, 3, 50, 50, 0.05, 0.5, 0.9)
 cbts = CBTS(par)
 auv = agent(par, par.x0, par.y0, par.alpha0)
