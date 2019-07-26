@@ -19,7 +19,11 @@ class piControl:
         self.outOfGridPenaltyPI2 = par.outOfGridPenaltyPI2
         self.pi2ControlCost = par.pi2ControlCost
         self.R = self.pi2ControlCost * np.eye(1)  # input cost matrix
-        self.varNoise = self.lambd * np.linalg.inv(self.R)
+        print(self.R)
+        try:
+            self.varNoise = self.lambd * np.linalg.inv(self.R)
+        except:
+            self.varNoise = None
 
         self.xTraj = np.zeros((1, self.K))
         self.yTraj = np.zeros((1, self.K))
