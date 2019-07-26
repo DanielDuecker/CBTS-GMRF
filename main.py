@@ -7,7 +7,7 @@ def main(par,printTime):
         pr.enable()
 
     import time
-
+    import math
     import matplotlib.pyplot as plt
     import numpy as np
     import control
@@ -127,8 +127,12 @@ def main(par,printTime):
         else:
             return("Error! No controller selected")
 
+        # Check if stepsize is constant
+        print(math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2))
+
         xMeas = auv.x
         yMeas = auv.y
+
         xHist.append(xMeas)
         yHist.append(yMeas)
         fMeas[(i + 1) % par.nMeas] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)

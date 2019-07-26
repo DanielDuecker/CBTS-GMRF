@@ -276,21 +276,19 @@ class CBTS:
 
         tau = np.zeros((2, self.nTrajPoints))
         u = 0
-        #length = 0
-        #discretize = 1/100
+        length = 0
+        discretize = 1/1000
         for i in range(self.nTrajPoints):
             tau[:, i] = np.dot(beta, np.array([[1], [u], [u ** 2], [u ** 3]]))[:, 0]
 
-            # rescaled u in order to generate steps with a fixed length
-        #   while length < self.par.maxStepsize:
-        #        u += discretize
-        #        length += discretize*math.sqrt((2*by*u + cy)**2 + (2*bx*u + cx)**2)
-        #    length = 0
-
-        #    print(u)
-
-            # equidistant u
-            u = (i+1)/self.nTrajPoints
+            if self.par.constantStepsize:
+                # rescaled u in order to generate steps with a fixed length
+                while length < self.par.maxStepsize:
+                    u += discretize
+                    length += discretize*math.sqrt((2*by*u + cy)**2 + (2*bx*u + cx)**2)
+                length = 0
+            else:
+                u = (i+1)/self.nTrajPoints
 
         derivX = 3 * ax + 2 * bx + cx
         derivY = 3 * ay + 2 * by + cy

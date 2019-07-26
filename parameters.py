@@ -41,10 +41,10 @@ class par:
         """GMRF class"""
         self.xMin = 0  # GMRF dimensions
         self.xMax = 10
-        self.nGridX = 10
+        self.nGridX = 40
         self.yMin = 0
         self.yMax = 10
-        self.nGridY = 10
+        self.nGridY = 40
         self.nBeta = 1  # regression coefficients
         self.nEdge = 5  # needs to be at least 1
         self.valueT = 1e-3  # Prior precision value for regression vector bet
@@ -68,6 +68,7 @@ class par:
         #ctrSamplingTime = 0.1  # time discretization
 
         """CBTS controller"""
+        self.constantStepsize = True
         self.branchingFactor = branchingFactor  # number of actions that can be evaluated at max for each path segment
         self.maxDepth = maxDepth  # depth of search tree
         self.kappa = kappa  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
