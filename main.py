@@ -125,7 +125,7 @@ def main(par,printTime):
             return("Error! No controller selected")
 
         # Check if stepsize is constant
-        print(math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2))
+        #print(math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2))
 
         xMeas = auv.x
         yMeas = auv.y
