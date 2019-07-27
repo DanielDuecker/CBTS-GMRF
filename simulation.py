@@ -15,14 +15,14 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['pi2','geist']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['pi2']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 2
-nIter = 20
+nSim = 1
+nIter = 500
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = True
@@ -38,7 +38,7 @@ maxDepth = [3]
 kappa = [50]
 kappaChildSelection = [1]
 UCBRewardFactor = [0.05]
-cbtsControlCost = [0.5]
+cbtsControlCost = [1]
 discountFactor = [0.9]
 
 "Initialize lists and dicts"

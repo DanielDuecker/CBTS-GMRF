@@ -72,23 +72,15 @@ class piControl:
                     expS[i, k] = math.exp(- S_scaled / self.lambd)
 
             P = np.zeros((self.H, self.K))
-            for k in range(self.K):
-                for i in range(self.H):
+            deltaU = np.zeros((self.H,1))
+            for i in range(self.H):
+                for k in range(self.K):
                     P[i, k] = expS[i, k] / sum(expS[i, :])
 
-            # Compute next control action
-            deltaU = np.zeros((self.H, self.H))
-            weightedDeltaU = np.zeros((self.H, 1))
-            for i in range(self.H):
-                deltaU[i:self.H, i] = np.dot(M * noise[i:self.H, :], P[i, :].T)
-                sumNum = 0
-                sumDen = 0
-                for h in range(self.H):
-                    sumNum += (self.H - h) * deltaU[:, i][i]
-                    sumDen += (self.H - h)
-                weightedDeltaU[i, 0] = sumNum / sumDen
-
-            self.u += weightedDeltaU
+                # Compute next control action
+                for k in range(self.K):
+                    deltaU[i] += np.dot(M * noise[i, k], P[i, k].T)
+            self.u += deltaU
 
         self.xTraj, self.yTraj, self.alphaTraj = auv.trajectoryFromControl(self.u)
 
