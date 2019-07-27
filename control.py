@@ -61,7 +61,7 @@ class piControl:
                         stateCost += self.outOfGridPenaltyPI2
                     else:
                         Phi = functions.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
-                        stateCost += 1 / np.dot(Phi, gmrf.diagCovCond)
+                        stateCost += 1 / np.dot(Phi, np.flip(gmrf.diagCovCond,0))
                     uHead = self.u[index, 0] + M * noise[index, k]
                     S[index, k] = S[index + 1, k] + stateCost + 0.5 * np.dot(uHead.T, np.dot(self.R,uHead))
 

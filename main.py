@@ -82,7 +82,6 @@ def main(par,printTime):
         t = i * par.dt
 
         timeBefore = time.time()
-
         """Update belief"""
         if par.belief == 'stkf':
             stkf1.kalmanFilter(t, xMeas, yMeas, fMeas[i])
@@ -103,7 +102,7 @@ def main(par,printTime):
         elif par.control == 'geist':
             x_auv = [auv.x,auv.y,auv.alpha]
             field_limits = (gmrf1.xMax,gmrf1.yMax)
-            u_optimal, tau_x, tau_optimal = control_scripts.pi_controller(par,x_auv, u_optimal, np.flip(gmrf1.covCond,0).diagonal(), Config.pi_parameters,
+            u_optimal, tau_x, tau_optimal = control_scripts.pi_controller(par,x_auv, u_optimal, np.flip(gmrf1.diagCovCond,0), Config.pi_parameters,
                                                                           gmrfGeist.params, field_limits,
                                                                           Config.set_sanity_check)
             #print(tau_optimal)
