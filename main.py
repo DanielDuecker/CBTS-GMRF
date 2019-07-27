@@ -105,7 +105,6 @@ def main(par,printTime):
             u_optimal, tau_x, tau_optimal = control_scripts.pi_controller(par,x_auv, u_optimal, gmrf1.diagCovCond, Config.pi_parameters,
                                                                           gmrfGeist.params, field_limits,
                                                                           Config.set_sanity_check)
-            #print(tau_optimal)
             auv.x = tau_optimal[0,1]
             auv.y = tau_optimal[1,1]
             auv.alpha = tau_optimal[2,1]
@@ -126,7 +125,7 @@ def main(par,printTime):
             return("Error! No controller selected")
 
         # Check if stepsize is constant
-        #print(math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2))
+        print(math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2))
 
         xMeas = auv.x
         yMeas = auv.y

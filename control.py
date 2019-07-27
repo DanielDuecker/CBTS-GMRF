@@ -64,14 +64,12 @@ class piControl:
                     uHead = self.u[index, 0] + M * noise[index, k]
                     S[index, k] = S[index + 1, k] + stateCost + 0.5 * np.dot(uHead.T, np.dot(self.R,uHead))
 
-            # Normalize state costs
-            S = S / np.amax(S)
-
             # Compute cost of path segments
             expS = np.zeros((self.H, self.K))
             for k in range(self.K):
                 for i in range(self.H):
-                    expS[i, k] = math.exp(-S[i, k] / self.lambd)
+                    S_scaled = (S[i, k] - np.amin(S[:, k])) / (np.amax(S[:, k]) - np.amin(S[:, k]))
+                    expS[i, k] = math.exp(- S_scaled / self.lambd)
 
             P = np.zeros((self.H, self.K))
             for k in range(self.K):
