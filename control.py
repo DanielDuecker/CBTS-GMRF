@@ -141,6 +141,18 @@ class CBTS:
             self.backUp(v0, vl, vl.accReward)
         bestTraj, derivX, derivY = self.getBestTheta(v0)
         gc.collect()
+
+        for x in bestTraj[0,:]:
+            for y in bestTraj[1,:]:
+                if x < gmrf.xMin:
+                    x = gmrf.xMin
+                elif x > gmrf.xMax:
+                    x = gmrf.xMax
+
+                if y < gmrf.yMin:
+                    y = gmrf.yMin
+                elif y > gmrf.yMax:
+                    y = gmrf.yMax
         return bestTraj, derivX, derivY
 
     def treePolicy(self, v):
