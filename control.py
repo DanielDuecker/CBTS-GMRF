@@ -38,11 +38,17 @@ class piControl:
         #    np.dot(self.g.T, np.dot(np.linalg.inv(self.R), self.g)))
         # If input is one dimensional and noise directly affects input:
         M = 1
+
+        noise = np.zeros((self.H, self.K))
+        self.xPathRollOut = np.zeros((self.H, self.K))
+        self.yPathRollOut = np.zeros((self.H, self.K))
+        S = np.zeros((self.H, self.K))
+        expS = np.zeros((self.H, self.K))
+        P = np.zeros((self.H, self.K))
+        stateCost = np.zeros((self.H, self.K))
+        controlCost = np.zeros((self.H, self.K))
+
         for n in range(self.nUpdated):
-            noise = np.zeros((self.H, self.K))
-            self.xPathRollOut = np.zeros((self.H, self.K))
-            self.yPathRollOut = np.zeros((self.H, self.K))
-            S = np.zeros((self.H + 1, self.K))
 
             for k in range(self.K):
                 # sample control noise and compute path roll-outs
@@ -52,34 +58,30 @@ class piControl:
                 self.yPathRollOut[:, k] = yTrVec[:, 0]
 
                 # compute path costs
-                stateCost = 0
-                for i in range(self.H):
-                    index = self.H - i - 1
-                    if not functions.sanityCheck(self.xPathRollOut[index, k] * np.eye(1),
-                                               self.yPathRollOut[index, k] * np.eye(1), gmrf):
-                        stateCost += self.outOfGridPenaltyPI2
+                for h in range(self.H):
+                    if not functions.sanityCheck(self.xPathRollOut[h, k] * np.eye(1),
+                                               self.yPathRollOut[h, k] * np.eye(1), gmrf):
+                        stateCost[h,k] = self.outOfGridPenaltyPI2
+                        controlCost[h,k] = 0
                     else:
-                        Phi = functions.mapConDis(gmrf, self.xPathRollOut[index, k], self.yPathRollOut[index, k])
-                        stateCost += 1 / np.dot(Phi, gmrf.diagCovCond)
-                    uHead = self.u[index, 0] + M * noise[index, k]
-                    S[index, k] = S[index + 1, k] + stateCost + 0.5 * np.dot(uHead.T, np.dot(self.R,uHead))
+                        Phi = functions.mapConDis(gmrf, self.xPathRollOut[h, k], self.yPathRollOut[h, k])
+                        stateCost[h,k] = 1 / np.dot(Phi, gmrf.diagCovCond)
+                        uHead = self.u[h, 0] + M * noise[h, k]
+                        controlCost[h,k] = 0.5 * np.dot(uHead.T, np.dot(self.R,uHead))
 
-            # Compute cost of path segments
-            expS = np.zeros((self.H, self.K))
-            for k in range(self.K):
-                for i in range(self.H):
-                    S_scaled = (S[i, k] - np.amin(S[:, k])) / (np.amax(S[:, k]) - np.amin(S[:, k]))
-                    expS[i, k] = math.exp(- S_scaled / self.lambd)
+                for h in range(self.H):
+                    S[h,k] = np.sum(stateCost[h:,k]) + np.sum(controlCost[h:,k])
 
-            P = np.zeros((self.H, self.K))
+                for h in range(self.H):
+                    expS[h,k] = math.exp(-((S[h,k]-np.amin(S[:,k]))/(np.amax(S[:,k])-np.amin(S[:,k])))/self.lambd)
+
             deltaU = np.zeros((self.H,1))
-            for i in range(self.H):
+            for h in range(self.H):
                 for k in range(self.K):
-                    P[i, k] = expS[i, k] / sum(expS[i, :])
+                    P[h,k] = expS[h,k]/np.sum(expS[h,:])
 
-                # Compute next control action
                 for k in range(self.K):
-                    deltaU[i] += np.dot(M * noise[i, k], P[i, k].T)
+                    deltaU[h] += P[h,k] * M * noise[h,k]
             self.u += deltaU
 
         self.xTraj, self.yTraj, self.alphaTraj = auv.trajectoryFromControl(self.u)
