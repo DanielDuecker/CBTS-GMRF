@@ -11,10 +11,11 @@ Please feel free to use and modify this, but keep the above information. Thanks!
 import numpy as np
 import scipy
 from scipy import exp, sin, cos, sqrt, pi, interpolate
+import math
 
 """Configure the simulation parameters"""
 # AUV starting state
-x_auv = np.array([0.1, 0.1, 0.785]).T  # Initial AUV state
+x_auv = np.array([0, 0, math.pi/4]).T  # Initial AUV state
 v_auv = 0.5  # AUV velocity in meter/second (constant)
 
 # Field dimensions
