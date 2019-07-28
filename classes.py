@@ -26,6 +26,15 @@ class agent:
         alpha += u
         xNext = x + self.maxStepsize * math.cos(alpha)
         yNext = y + self.maxStepsize * math.sin(alpha)
+
+        if alpha > 2 * math.pi:
+            a_pi = int(alpha / (2 * math.pi))
+            alpha = alpha - a_pi * 2 * math.pi
+
+        if alpha < 0:
+            a_pi = int(- alpha / (2 * math.pi))+1
+            alpha = alpha + a_pi * 2 * math.pi
+
         return xNext, yNext, alpha
 
     def trajectoryFromControl(self, u):
