@@ -23,27 +23,27 @@ class agent:
         self.derivY = self.trajScaling * math.sin(self.alpha)
 
     def stateDynamics(self, x, y, alpha, u):
-        alpha += u
-        xNext = x + self.maxStepsize * math.cos(alpha)
-        yNext = y + self.maxStepsize * math.sin(alpha)
+        alphaNext = alpha + u
+        xNext = x + self.maxStepsize * math.cos(alphaNext)
+        yNext = y + self.maxStepsize * math.sin(alphaNext)
 
-        if alpha > 2 * math.pi:
-            a_pi = int(alpha / (2 * math.pi))
-            alpha = alpha - a_pi * 2 * math.pi
+        if alphaNext > 2 * math.pi:
+            a_pi = int(alphaNext / (2 * math.pi))
+            alphaNext = alphaNext - a_pi * 2 * math.pi
 
-        if alpha < 0:
-            a_pi = int(- alpha / (2 * math.pi))+1
-            alpha = alpha + a_pi * 2 * math.pi
+        if alphaNext < 0:
+            a_pi = int(- alphaNext / (2 * math.pi))+1
+            alphaNext = alphaNext + a_pi * 2 * math.pi
 
-        return xNext, yNext, alpha
+        return xNext, yNext, alphaNext
 
     def trajectoryFromControl(self, u):
         xTraj = np.zeros((len(u), 1))
         yTraj = np.zeros((len(u), 1))
         alphaTraj = np.zeros((len(u), 1))
-        (xTraj[0], yTraj[0], alphaTraj[0]) = (copy.copy(self.x), copy.copy(self.y), copy.copy(self.alpha))
+        (xTraj[0], yTraj[0], alphaTraj[0]) = (self.x, self.y, self.alpha)
         for i in range(len(u) - 1):
-            (xTraj[i + 1], yTraj[i + 1], alphaTraj[i + 1]) = self.stateDynamics(copy.copy(xTraj[i]), copy.copy(yTraj[i]), copy.copy(alphaTraj[i]), u[i])
+            (xTraj[i + 1], yTraj[i + 1], alphaTraj[i + 1]) = self.stateDynamics(xTraj[i], yTraj[i], alphaTraj[i], u[i])
         return xTraj, yTraj, alphaTraj
 
 
