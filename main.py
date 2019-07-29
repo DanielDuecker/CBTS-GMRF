@@ -45,7 +45,7 @@ def main(par,printTime):
 
     """PI2 Controller Geist"""
     gmrfGeist = gp_scripts.GMRF(Config.gmrf_dim, Config.alpha_prior, Config.kappa_prior, Config.set_Q_init, par.nBeta)
-    u_optimal = np.zeros((10,1))
+    u_optimal = np.zeros((Config.horizonGeist,1))
 
     """Ground Truth"""
     trueField = trueField(par,par.fieldType)

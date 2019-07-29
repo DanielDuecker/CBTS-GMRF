@@ -15,17 +15,17 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['geist']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 1
-nIter = 500
+nSim = 10
+nIter = 800
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
-plot = True
+plot = False
 "PI2"
 K = [15]
 H = [10]
@@ -118,6 +118,7 @@ if saveToFile:
 
     # Copy used parameters
     shutil.copyfile(dirpath + '/parameters.py', path + '/' + folderName + '_parameters.txt')
+    shutil.copyfile(dirpath + '/Config.py', path + '/' + folderName + '_config.txt')
 
 for i in range(len(parSettingsList)):
     par = parSettingsList[i]

@@ -11,6 +11,7 @@ import Config
 import numpy as np
 from scipy import exp, sin, cos, sqrt, pi, interpolate
 from random import randint
+import classes
 
 def pi_controller(par, x_auv, u_optimal, var_x, pi_parameters, gmrf_params, field_limits, set_sanity_check):
     """Optimal Stochastic controller in PI formulation, based on Schaal et al.

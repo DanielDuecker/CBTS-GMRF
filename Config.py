@@ -80,6 +80,7 @@ n_updates = 10  # Control loop updates
 n_k = 15  # Number of virtual roll-out pathes
 n_horizon = 10  # Control horizon length in s
 N_horizon = 10  # Number of discrete rollout points
+horizonGeist = N_horizon
 t_cstep = n_horizon / N_horizon  # Control horizon step size in s
 sigma_epsilon = scipy.pi / 16  # Exploration noise in radians, 90 grad = 1,57
 R_cost = 5 * np.ones(shape=(1, 1))  # Immediate control cost
