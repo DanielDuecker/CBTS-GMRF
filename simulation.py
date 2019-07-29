@@ -1,28 +1,30 @@
-from parameters import par
-import numpy as np
-import matplotlib.pyplot as plt
+import csv
+import os
+import pickle
+import shutil
+import time
+
 import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 from scipy import stats
+
 import functions
 import main
-import os
-import csv
-import time
-import shutil
-import pickle
+from parameters import par
 
 matplotlib.use('TkAgg')
 
 """Simulation Options"""
-beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['cbts','geist']  # 'cbts', 'pi2', 'randomWalk', 'geist'
-cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
+beliefOptions = ['seqBayes','stkf']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
+controlOptions = ['cbts', 'geist','pi2','randomWalk']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+cbtsNodeBelief = ['noUpdates','fullGMRF','sampledGMRF']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
 saveToFile = True
 nSim = 2
-nIter = 200
+nIter = 20
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = False
@@ -58,14 +60,15 @@ for belief in beliefOptions:
                     for nUpdated_i in nUpdated:
                         for lambd_i in lambd:
                             for pi2ControlCost_i in pi2ControlCost:
-                                parObject = par(belief,control,0, fieldType,temporal,plot,nIter,K_i,H_i,nUpdated_i,
-                                                lambd_i,pi2ControlCost_i,0,0,0,0,0,0,0)
+                                parObject = par(belief, control, 0, fieldType, temporal, plot, nIter, K_i, H_i,
+                                                nUpdated_i,
+                                                lambd_i, pi2ControlCost_i, 0, 0, 0, 0, 0, 0, 0)
                                 parSettingsList.append(parObject)
-                                simCaseList.append(belief + '_' + control + '_' + 'K' + str(K_i).replace('.','p')
-                                            + '_' + 'H' + str(H_i).replace('.','p')
-                                            + '_' + 'nUpdated' + str(nUpdated_i).replace('.','p')
-                                            + '_' + 'lambd' + str(lambd_i).replace('.','p')
-                                            + '_' + 'pi2ControlCost' + str(pi2ControlCost_i).replace('.','p'))
+                                simCaseList.append(belief + '_' + control + '_' + 'K' + str(K_i).replace('.', 'p')
+                                                   + '_' + 'H' + str(H_i).replace('.', 'p')
+                                                   + '_' + 'nUpdated' + str(nUpdated_i).replace('.', 'p')
+                                                   + '_' + 'lambd' + str(lambd_i).replace('.', 'p')
+                                                   + '_' + 'pi2ControlCost' + str(pi2ControlCost_i).replace('.', 'p'))
         if control == 'cbts':
             for cbtsNodeBelief_i in cbtsNodeBelief:
                 for branchingFactor_i in branchingFactor:
@@ -75,20 +78,20 @@ for belief in beliefOptions:
                                 for UCBRewardFactor_i in UCBRewardFactor:
                                     for cbtsControlCost_i in cbtsControlCost:
                                         for discountFactor_i in discountFactor:
-                                            parObject = par(belief, control, cbtsNodeBelief_i, fieldType, temporal, plot, nIter, 0, 0,
-                                                            0, 0, 0, branchingFactor_i, maxDepth_i, kappa_i,
-                                                            kappaChildSelection_i, UCBRewardFactor_i, cbtsControlCost_i,
-                                                            discountFactor_i)
+                                            parObject = par(belief, control, cbtsNodeBelief_i, fieldType, temporal,
+                                                            plot, nIter, 0, 0, 0, 0, 0, branchingFactor_i, maxDepth_i,
+                                                            kappa_i,kappaChildSelection_i, UCBRewardFactor_i,
+                                                            cbtsControlCost_i, discountFactor_i)
                                             parSettingsList.append(parObject)
                                             simCaseList.append(belief + '_' + control
-                                                + '_' + 'cbtsNodeBelief' + str(cbtsNodeBelief_i).replace('.','p')
-                                                + '_' + 'branchingFactor' + str(branchingFactor_i).replace('.','p')
-                                                + '_' + 'maxDepth' + str(maxDepth_i).replace('.','p')
-                                                + '_' + 'kappa' + str(kappa_i).replace('.','p')
-                                                + '_' + 'kappaChildSelection' + str(kappaChildSelection_i).replace('.','p')
-                                                + '_' + 'UCBRewardFactor' + str(UCBRewardFactor_i).replace('.','p')
-                                                + '_' + 'cbtsControlCost' + str(cbtsControlCost_i).replace('.','p')
-                                                + '_' + 'discountFactor' + str(discountFactor_i).replace('.','p'))
+                                            + '_' + 'cbtsNodeBelief' + str(cbtsNodeBelief_i).replace('.', 'p')
+                                            + '_' + 'branchingFactor' + str(branchingFactor_i).replace('.', 'p')
+                                            + '_' + 'maxDepth' + str(maxDepth_i).replace('.', 'p')
+                                            + '_' + 'kappa' + str(kappa_i).replace('.', 'p')
+                                            + '_' + 'kappaChildSelection' + str(kappaChildSelection_i).replace('.', 'p')
+                                            + '_' + 'UCBRewardFactor' + str(UCBRewardFactor_i).replace('.', 'p')
+                                            + '_' + 'cbtsControlCost' + str(cbtsControlCost_i).replace('.', 'p')
+                                            + '_' + 'discountFactor' + str(discountFactor_i).replace('.', 'p'))
         if control == 'randomWalk':
             parObject = par(belief, control, 0, fieldType, temporal, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             parSettingsList.append(parObject)
@@ -98,7 +101,6 @@ for belief in beliefOptions:
             parObject = par(belief, control, 0, fieldType, temporal, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             parSettingsList.append(parObject)
             simCaseList.append(belief + '_' + control)
-
 
 """Create directory if data should be saved"""
 if saveToFile:
@@ -139,14 +141,15 @@ for i in range(len(parSettingsList)):
     diffMean = []
     totalVar = []
 
-    for i in range(nSim):
-        print("Simulation ", i, " of ", nSim, " with ", simCase)
-        xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = main.main(par,printTime)
+    for j in range(nSim):
+        print("Simulation ", j, " of ", nSim, " with ", simCase)
+        xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = \
+            main.main(par, printTime)
 
         x.append(xR)
         y.append(yR)
         trueField.append(trueFieldR)
-        gmrf.append((gmrfR))
+        gmrf.append(gmrfR)
         gmrfMean.append(gmrfR.meanCond)
         gmrfCov.append(gmrfR.covCond)
         controller.append(controllerR)
@@ -162,8 +165,8 @@ for i in range(len(parSettingsList)):
         print("Average computation time is", np.mean(timeVecR), "s")
 
         # Save gmrf for each simulation (since it can be very large)
-        with open('objs_' + str(i) + '_gmrf_' + simCase + '.pkl', 'wb') as f:
-            pickle.dump(gmrfR,f)
+        with open('objs_' + str(j) + '_gmrf_' + simCase + '.pkl', 'wb') as f:
+            pickle.dump(gmrfR, f)
 
     diffMeanDict[simCase] = diffMean
     totalVarDict[simCase] = totalVar
@@ -172,7 +175,7 @@ for i in range(len(parSettingsList)):
         """Save objects"""
         # Save objects
         with open('objs_other_' + simCase + '.pkl', 'wb') as f:
-            pickle.dump([x, y, trueField, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar],f)
+            pickle.dump([x, y, trueField, controller, CBTS, timeVec, xHist, yHist, diffMean, totalVar], f)
 
         # Getting back the objects:
         # with open('objs.pkl','rb') as f:
@@ -181,17 +184,17 @@ for i in range(len(parSettingsList)):
         # Save data as csv
         with open(folderName + '_' + simCase + '_data.csv', 'w') as dataFile:
             writer = csv.writer(dataFile)
-            for i in range(nSim):
-                writer.writerow([i])
-                writer.writerow(x[i])
-                writer.writerow(y[i])
-                writer.writerow(timeVec[i])
-                writer.writerow(xHist[i])
-                writer.writerow(yHist[i])
-                writer.writerow(diffMean[i])
-                writer.writerow(totalVar[i])
-                writer.writerow(gmrfMean[i])
-                writer.writerow(gmrfCov[i])
+            for k in range(nSim):
+                writer.writerow([k])
+                writer.writerow(x[k])
+                writer.writerow(y[k])
+                writer.writerow(timeVec[k])
+                writer.writerow(xHist[k])
+                writer.writerow(yHist[k])
+                writer.writerow(diffMean[k])
+                writer.writerow(totalVar[k])
+                writer.writerow(gmrfMean[k])
+                writer.writerow(gmrfCov[k])
                 writer.writerow(["-"])
             dataFile.close()
 
@@ -210,34 +213,33 @@ for i in range(len(parSettingsList)):
     plt.close(fig0)
 
 """Plot Performance"""
-fig1 = plt.figure(200,figsize=(19.2,10.8), dpi=100)
-x = np.linspace(0,nIter-1,nIter-1)
+fig1 = plt.figure(200, figsize=(19.2, 10.8), dpi=100)
+x = np.linspace(0, nIter - 1, nIter - 1)
 plt.title('Performance Measurement')
 plt.subplot(211)
 for sim in simCaseList:
-    meanDiff = np.mean(diffMeanDict[sim],axis=0)
-    iqrDiff = stats.iqr(diffMeanDict[sim],axis=0)
-    plt.plot(x,meanDiff,label = sim)
-    plt.plot(x,meanDiff - iqrDiff,'gray')
-    plt.plot(x,meanDiff + iqrDiff,'gray')
-    plt.fill_between(x,meanDiff - iqrDiff,meanDiff + iqrDiff, cmap='twilight',alpha=0.4)
+    meanDiff = np.mean(diffMeanDict[sim], axis=0)
+    iqrDiff = stats.iqr(diffMeanDict[sim], axis=0)
+    plt.plot(x, meanDiff, label=sim)
+    plt.plot(x, meanDiff - iqrDiff, 'gray')
+    plt.plot(x, meanDiff + iqrDiff, 'gray')
+    plt.fill_between(x, meanDiff - iqrDiff, meanDiff + iqrDiff, cmap='twilight', alpha=0.4)
 plt.xlabel('Iteration Index')
 plt.ylabel('Difference Between Ground Truth and Belief')
 plt.subplot(212)
 for sim in simCaseList:
-    meanVar = np.mean(totalVarDict[sim],axis=0)
-    iqrVar = stats.iqr(totalVarDict[sim],axis=0)
-    plt.plot(x,meanVar,label = sim)
-    plt.plot(x,meanVar - iqrVar,'gray')
-    plt.plot(x,meanVar + iqrVar,'gray')
-    plt.fill_between(x,meanVar - iqrVar,meanVar + iqrVar, cmap='twilight',alpha=0.4)
+    meanVar = np.mean(totalVarDict[sim], axis=0)
+    iqrVar = stats.iqr(totalVarDict[sim], axis=0)
+    plt.plot(x, meanVar, label=sim)
+    plt.plot(x, meanVar - iqrVar, 'gray')
+    plt.plot(x, meanVar + iqrVar, 'gray')
+    plt.fill_between(x, meanVar - iqrVar, meanVar + iqrVar, cmap='twilight', alpha=0.4)
     plt.legend(loc='best')
 plt.xlabel('Iteration Index')
 plt.ylabel('Total Belief Uncertainty')
 if saveToFile:
     fig1.savefig(folderName + '_performance.svg', format='svg')
 plt.show()
-
 
 # TODO Enable loading of pickled data instead of simulating
 
@@ -247,6 +249,3 @@ plt.show()
 # Memory profiling:
 # mprof run --include-children python3 simulation.py
 # mprof plot --output memory-profile.png
-
-
-

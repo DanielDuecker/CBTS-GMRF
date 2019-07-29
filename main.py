@@ -1,13 +1,12 @@
 # First 2D-GMRF Implementation
 
-def main(par,printTime):
+def main(par, printTime):
     if printTime:
         import cProfile
         pr = cProfile.Profile()
         pr.enable()
 
     import time
-    import math
     import matplotlib.pyplot as plt
     import numpy as np
     import control
@@ -38,23 +37,23 @@ def main(par,printTime):
     totalVarVec = []
 
     """GMRF representation"""
-    gmrf1 = gmrf(par,par.nGridX,par.nGridY,par.nEdge)
+    gmrf1 = gmrf(par, par.nGridX, par.nGridY, par.nEdge)
 
     """PI2 Controller"""
     controller = control.piControl(par)
 
     """PI2 Controller Geist"""
     gmrfGeist = gp_scripts.GMRF(Config.gmrf_dim, Config.alpha_prior, Config.kappa_prior, Config.set_Q_init, par.nBeta)
-    u_optimal = np.zeros((Config.horizonGeist,1))
+    u_optimal = np.zeros((Config.horizonGeist, 1))
 
     """Ground Truth"""
-    trueField = trueField(par,par.fieldType)
+    trueField = trueField(par, par.fieldType)
 
     """STKF extension of gmrf"""
-    stkf1 = stkf(par,gmrf1)
+    stkf1 = stkf(par, gmrf1)
 
     """"Continuous Belief Tree Search"""
-    CBTS1 = control.CBTS(par,)
+    CBTS1 = control.CBTS(par, )
     bestTraj = np.zeros((2, 1))
 
     """Initialize plot"""
@@ -75,11 +74,10 @@ def main(par,printTime):
     fMeas[0] = functions.getMeasurement(xMeas, yMeas, trueField, par.ov2Real)
     Phi[0, :] = functions.mapConDis(gmrf1, xMeas, yMeas)
 
-
     """Update and plot field belief"""
     for i in range(par.nIter - 1):
-        if (i+1) % (par.nIter/10) == 0:
-            print("Iteration ", i+1, " of ", par.nIter, ".")
+        if (i + 1) % (par.nIter / 10) == 0:
+            print("Iteration ", i + 1, " of ", par.nIter, ".")
         t = i * par.dt
 
         timeBefore = time.time()
@@ -89,9 +87,9 @@ def main(par,printTime):
         elif par.belief == 'seqBayes':
             gmrf1.seqBayesianUpdate(fMeas[i], Phi[[i], :])
         elif par.belief == 'regBayes' or par.belief == 'regBayesTrunc':
-            gmrf1.bayesianUpdate(fMeas[0:(i+1)], Phi[0:(i+1), :])
+            gmrf1.bayesianUpdate(fMeas[0:(i + 1)], Phi[0:(i + 1), :])
         else:
-            return("Error! No update method selected")
+            return "Error! No update method selected"
 
         """Controller"""
         if par.control == 'pi2':
@@ -101,14 +99,15 @@ def main(par,printTime):
             auv.y = yNext
             auv.alpha = alphaNext
         elif par.control == 'geist':
-            x_auv = [auv.x,auv.y,auv.alpha]
-            field_limits = (gmrf1.xMax,gmrf1.yMax)
-            u_optimal, tau_x, tau_optimal = control_scripts.pi_controller(par,x_auv, u_optimal, gmrf1.diagCovCond, Config.pi_parameters,
+            x_auv = [auv.x, auv.y, auv.alpha]
+            field_limits = (gmrf1.xMax, gmrf1.yMax)
+            u_optimal, tau_x, tau_optimal = control_scripts.pi_controller(par, x_auv, u_optimal, gmrf1.diagCovCond,
+                                                                          Config.pi_parameters,
                                                                           gmrfGeist.params, field_limits,
                                                                           Config.set_sanity_check)
-            auv.x = tau_optimal[0,1]
-            auv.y = tau_optimal[1,1]
-            auv.alpha = tau_optimal[2,1]
+            auv.x = tau_optimal[0, 1]
+            auv.y = tau_optimal[1, 1]
+            auv.alpha = tau_optimal[2, 1]
         elif par.control == 'cbts':
             if i % par.nMeasPoints == 0:
                 bestTraj, auv.derivX, auv.derivY = CBTS1.getNewTraj(auv, gmrf1)
@@ -123,10 +122,10 @@ def main(par,printTime):
             auv.y = yNext
             auv.alpha = alphaNext
         else:
-            return("Error! No controller selected")
+            return "Error! No controller selected"
 
         # Check if stepsize is constant
-        #print(math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2))
+        # print(math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2))
 
         xMeas = auv.x
         yMeas = auv.y
@@ -163,7 +162,7 @@ def main(par,printTime):
         if par.plot:
             plt.figure(0)
             plt.clf()
-            functions.plotFields(par,fig0, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
+            functions.plotFields(par, fig0, x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist)
             fig0.canvas.draw()
 
         """Update ground truth:"""
@@ -178,8 +177,8 @@ def main(par,printTime):
         plt.show(block=True)
 
     return x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist, diffMeanVec, totalVarVec
-    #functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
-    #plt.show(block=True)
+    # functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
+    # plt.show(block=True)
 
 # TODO use stkf in controller update
 # TODO Learning circular field

@@ -1,18 +1,21 @@
 import math
+
 import matplotlib.pyplot as plt
 import numpy as np
-import classes
 import scipy.sparse as sp
+
+import classes
+
 
 def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
     noise = np.random.normal(0, math.sqrt(noiseVariance))
-    return (trueField.getField(xMeas, yMeas) + noise)
+    return trueField.getField(xMeas, yMeas) + noise
 
 
 def mapConDis(gmrf, xMeas, yMeas):
     # Initialize j-th row of mapping matrix Phi
     Phi = np.zeros((1, gmrf.nP))
-    Phi = np.hstack((Phi, np.zeros((1, gmrf.nBeta)))) #TODO Change this
+    Phi = np.hstack((Phi, np.zeros((1, gmrf.nBeta))))  # TODO Change this
 
     if xMeas < gmrf.xMin:
         return Phi
@@ -36,16 +39,16 @@ def mapConDis(gmrf, xMeas, yMeas):
     # Calculate weights at neighbouring positions
     try:
         Phi[0, (yPos + 1) * gmrf.nX + xPos] = 1 / (gmrf.dx * gmrf.dy) * (xRel - gmrf.dx / 2) * (
-            -yRel - gmrf.dy / 2)  # lower left
+                -yRel - gmrf.dy / 2)  # lower left
         Phi[0, (yPos + 1) * gmrf.nX + xPos + 1] = -1 / (gmrf.dx * gmrf.dy) * (xRel + gmrf.dx / 2) * (
-            -yRel - gmrf.dy / 2)  # lower right
+                -yRel - gmrf.dy / 2)  # lower right
         Phi[0, yPos * gmrf.nX + xPos + 1] = 1 / (gmrf.dx * gmrf.dy) * (xRel + gmrf.dx / 2) * (
-            -yRel + gmrf.dy / 2)  # upper right
+                -yRel + gmrf.dy / 2)  # upper right
         Phi[0, yPos * gmrf.nX + xPos] = -1 / (gmrf.dx * gmrf.dy) * (xRel - gmrf.dx / 2) * (
-            -yRel + gmrf.dy / 2)  # upper left
+                -yRel + gmrf.dy / 2)  # upper left
 
     except:
-        print("Error! Agent is out of bound with state (",xMeas,",",yMeas,")")
+        print("Error! Agent is out of bound with state (", xMeas, ",", yMeas, ")")
     return Phi
 
 
@@ -68,9 +71,9 @@ def getPrecisionMatrix(gmrf):
 
 
 def randomWalk(par, auv, gmrf):
-    alphaNext = auv.alpha + np.random.normal(0,par.noiseRandomWalk)
-    xNext = auv.x + par.maxStepsize*math.cos(alphaNext)
-    yNext = auv.y + par.maxStepsize*math.sin(alphaNext)
+    alphaNext = auv.alpha + np.random.normal(0, par.noiseRandomWalk)
+    xNext = auv.x + par.maxStepsize * math.cos(alphaNext)
+    yNext = auv.y + par.maxStepsize * math.sin(alphaNext)
 
     if xNext < gmrf.xMin:
         xNext = gmrf.xMin
@@ -88,10 +91,11 @@ def randomWalk(par, auv, gmrf):
 
     return xNext, yNext, alphaNext
 
-def plotFields(par, fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist, yHist):
+
+def plotFields(par, fig, x, y, trueField, gmrf, controller, CBTS1, timeVec, xHist, yHist):
     # Plotting ground truth
     ax1 = fig.add_subplot(221)
-    Z = trueField.getField(x,y)
+    Z = trueField.getField(x, y)
     CS = ax1.contourf(x, y, Z, levels=trueField.fieldLevels)
     for a in CS.collections:
         a.set_edgecolor('face')
@@ -102,8 +106,9 @@ def plotFields(par, fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist
     # Plotting conditioned mean
     ax2 = fig.add_subplot(222)
     CS = ax2.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
-                 gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],
-                 levels=trueField.fieldLevels)
+                      gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,
+                      gmrf.nEdge:-gmrf.nEdge],
+                      levels=trueField.fieldLevels)
     for a in CS.collections:
         a.set_edgecolor('face')
     ax2.plot(xHist, yHist, 'black')
@@ -114,8 +119,9 @@ def plotFields(par, fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist
     # Plotting covariance matrix
     ax3 = fig.add_subplot(223)
     CS = ax3.contourf(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge],
-                 gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge],
-                 levels=gmrf.covLevels)
+                      gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,
+                      gmrf.nEdge:-gmrf.nEdge],
+                      levels=gmrf.covLevels)
     for a in CS.collections:
         a.set_edgecolor('face')
     if par.control == 'pi2':
@@ -123,8 +129,8 @@ def plotFields(par, fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist
         for k in range(par.K):
             ax3.plot(controller.xPathRollOut[:, k], controller.yPathRollOut[:, k], 'grey')
     elif par.control == 'cbts':
-        for k in range(CBTS1.xTraj.shape[1]-1):
-            ax3.plot(CBTS1.xTraj[:, k+1], CBTS1.yTraj[:, k+1], 'grey')
+        for k in range(CBTS1.xTraj.shape[1] - 1):
+            ax3.plot(CBTS1.xTraj[:, k + 1], CBTS1.yTraj[:, k + 1], 'grey')
     ax3.plot(xHist, yHist, 'black')
     plt.xlabel("x in m")
     plt.ylabel("y in m")
@@ -138,7 +144,8 @@ def plotFields(par, fig, x, y, trueField, gmrf, controller,CBTS1, timeVec, xHist
     plt.ylabel("Time in s")
     plt.title("Computation Time")
 
-def plotPolicy(par, GP,thetaPredict,mu):
+
+def plotPolicy(par, GP, thetaPredict, mu):
     fig = plt.figure(1)
     plt.clf()
     plt.show()
@@ -156,7 +163,8 @@ def plotPolicy(par, GP,thetaPredict,mu):
         ax.plot(thetaPredict[:, 0], mu[:, 0], "r.")
     fig.canvas.draw()
 
-def plotRewardFunction(par,gmrf):
+
+def plotRewardFunction(par, gmrf):
     fig2 = plt.figure(2)
     plt.clf()
     plt.show()
@@ -165,14 +173,16 @@ def plotRewardFunction(par,gmrf):
     plt.ylabel('y')
     plt.legend()
 
-    X,Y = np.meshgrid(gmrf.x[gmrf.nEdge:-gmrf.nEdge],gmrf.y[gmrf.nEdge:-gmrf.nEdge])
-    r = gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge] \
-        + par.UCBRewardFactor * gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge]
+    X, Y = np.meshgrid(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge])
+    r = gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge] \
+        + par.UCBRewardFactor * gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,
+                                gmrf.nEdge:-gmrf.nEdge]
     ax = fig2.add_subplot(111)
-    ax.contourf(X,Y,r)
+    ax.contourf(X, Y, r)
     fig2.canvas.draw()
 
-def sanityCheck(xVec,yVec,gmrf):
+
+def sanityCheck(xVec, yVec, gmrf):
     for x in xVec:
         if x < gmrf.xMin:
             return False
@@ -186,13 +196,16 @@ def sanityCheck(xVec,yVec,gmrf):
             return False
     return True
 
-def measurePerformance(gmrf,trueField):
-    diffMean = np.sum(abs(trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge],gmrf.y[gmrf.nEdge:-gmrf.nEdge])
-                      -gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,gmrf.nEdge:-gmrf.nEdge]))
-    totalVar = np.sum(abs(gmrf.diagCovCond))
-    return diffMean,totalVar
 
-def plotPerformance(diffMean,totalVar):
+def measurePerformance(gmrf, trueField):
+    diffMean = np.sum(abs(trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge])
+                          - gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,
+                            gmrf.nEdge:-gmrf.nEdge]))
+    totalVar = np.sum(abs(gmrf.diagCovCond))
+    return diffMean, totalVar
+
+
+def plotPerformance(diffMean, totalVar):
     plt.title('Performance Measurement')
     plt.subplot(211)
     plt.plot(diffMean)
@@ -203,24 +216,25 @@ def plotPerformance(diffMean,totalVar):
     plt.xlabel('Iteration Index')
     plt.ylabel('Total Belief Uncertainty')
 
+
 def sampleGMRF(gmrf):
     """The sampled GMRFs without outer grids are used in the belief nodes in order to reduce the computation time"""
     newGMRF = classes.gmrf(gmrf.par, gmrf.par.nGridXSampled, gmrf.par.nGridYSampled, 0)
     if gmrf.nBeta > 0:
         newGMRF.bSeq[-gmrf.nBeta:] = gmrf.bSeq[-gmrf.nBeta:]
-        newGMRF.covCond[-gmrf.nBeta:,-gmrf.nBeta:] = gmrf.covCond[-gmrf.nBeta:,-gmrf.nBeta:]
-        newGMRF.precCondSparse[-gmrf.nBeta:,-gmrf.nBeta:] = gmrf.precCondSparse[-gmrf.nBeta:,-gmrf.nBeta:]
+        newGMRF.covCond[-gmrf.nBeta:, -gmrf.nBeta:] = gmrf.covCond[-gmrf.nBeta:, -gmrf.nBeta:]
+        newGMRF.precCondSparse[-gmrf.nBeta:, -gmrf.nBeta:] = gmrf.precCondSparse[-gmrf.nBeta:, -gmrf.nBeta:]
 
     gmrf.precCondSparseDense = np.array(gmrf.precCondSparse.todense())
     for i in range(newGMRF.nP):
         xIndex = i % newGMRF.nX
-        yIndex = int(i/newGMRF.nX)
-        Phi = mapConDis(gmrf,newGMRF.x[xIndex],newGMRF.y[yIndex])
-        newGMRF.bSeq[i] = np.dot(Phi,gmrf.bSeq)
-        newGMRF.precCondSparse[i,i] = np.dot(Phi,np.dot(gmrf.precCondSparseDense,Phi.T))
-        newGMRF.covCond[i,i] = np.dot(Phi,gmrf.diagCovCond)
-        newGMRF.meanCond[i] = np.dot(Phi,gmrf.meanCond)
-    newGMRF.diagCovCond = newGMRF.covCond.diagonal().reshape(newGMRF.nP+newGMRF.nBeta,1)
+        yIndex = int(i / newGMRF.nX)
+        Phi = mapConDis(gmrf, newGMRF.x[xIndex], newGMRF.y[yIndex])
+        newGMRF.bSeq[i] = np.dot(Phi, gmrf.bSeq)
+        newGMRF.precCondSparse[i, i] = np.dot(Phi, np.dot(gmrf.precCondSparseDense, Phi.T))
+        newGMRF.covCond[i, i] = np.dot(Phi, gmrf.diagCovCond)
+        newGMRF.meanCond[i] = np.dot(Phi, gmrf.meanCond)
+    newGMRF.diagCovCond = newGMRF.covCond.diagonal().reshape(newGMRF.nP + newGMRF.nBeta, 1)
 
     """Check sampling"""
     """

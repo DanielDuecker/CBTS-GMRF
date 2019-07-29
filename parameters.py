@@ -1,8 +1,11 @@
 import math
+
 import numpy as np
 
+
 class par:
-    def __init__(self, belief, control, cbtsNodeBelief, fieldType, temporal, plot, nIter, K=15, H=10, nUpdated=5, lambd=1e-1,
+    def __init__(self, belief, control, cbtsNodeBelief, fieldType, temporal, plot, nIter, K=15, H=10, nUpdated=5,
+                 lambd=1e-1,
                  pi2ControlCost=5, branchingFactor=6, maxDepth=3, kappa=100, kappaChildSelection=1,
                  UCBRewardFactor=0.05, cbtsControlCost=0.2, discountFactor=0.5):
         self.belief = belief
@@ -41,10 +44,10 @@ class par:
         """GMRF class"""
         self.xMin = 0  # GMRF dimensions
         self.xMax = 10
-        self.nGridX = 30
+        self.nGridX = 10
         self.yMin = 0
         self.yMax = 10
-        self.nGridY = 30
+        self.nGridY = 10
         self.nBeta = 1  # regression coefficients
         self.nEdge = 5  # needs to be at least 1
         self.valueT = 1e-3  # Prior precision value for regression vector bet
@@ -65,7 +68,7 @@ class par:
         self.lambd = lambd  # 1e-2 # rescales state costs, affects noise of path roll-outs (positively)
         self.outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative reward
         self.pi2ControlCost = pi2ControlCost  # 5e-1   # affects noise of path roll-outs (negatively)
-        #ctrSamplingTime = 0.1  # time discretization
+        # ctrSamplingTime = 0.1  # time discretization
 
         """CBTS controller"""
         self.constantStepsize = True
@@ -81,8 +84,8 @@ class par:
         self.trajStepSize = 2  # determines number of measurement points along trajectory (depends on maxStepsize)
         self.trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
         self.CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
-        self.nMeasPoints = int(self.trajStepSize / self.maxStepsize) # number of measurement points along trajectory
-        self.nTrajPoints = self.nMeasPoints + 1 # length of trajectories (including starting position)
+        self.nMeasPoints = int(self.trajStepSize / self.maxStepsize)  # number of measurement points along trajectory
+        self.nTrajPoints = self.nMeasPoints + 1  # length of trajectories (including starting position)
 
         self.thetaMin = -1  # determines curvature of generated trajectories
         self.thetaMax = 1  # determines curvature of generated trajectories

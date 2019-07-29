@@ -1,6 +1,7 @@
 import copy
 import gc
 import math
+
 import numpy as np
 
 import functions
@@ -8,7 +9,7 @@ from classes import node
 
 
 class piControl:
-    def __init__(self,par):
+    def __init__(self, par):
         self.lambd = par.lambd  # influences state costs and noise variance
         self.H = par.H  # control horizon steps
         self.g = np.eye(1)
@@ -34,7 +35,7 @@ class piControl:
         self.u[0:-2, 0] = self.u[1:-1, 0]
         self.u[-1, 0] = 0
 
-        #M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T)) / (
+        # M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T)) / (
         #    np.dot(self.g.T, np.dot(np.linalg.inv(self.R), self.g)))
         # If input is one dimensional and noise directly affects input:
         M = 1
@@ -52,7 +53,7 @@ class piControl:
 
             for k in range(self.K):
                 # sample control noise and compute path roll-outs
-                #noise[:, k] = math.sqrt(self.varNoise) * np.random.standard_normal(self.H)
+                # noise[:, k] = math.sqrt(self.varNoise) * np.random.standard_normal(self.H)
                 noise[:, k] = math.pi / 16 * np.random.standard_normal(self.H)
                 (xTrVec, yTrVec, alphaNew) = auv.trajectoryFromControl(self.u[:, 0] + noise[:, k])
                 self.xPathRollOut[:, k] = xTrVec[:, 0]
@@ -61,28 +62,29 @@ class piControl:
                 # compute path costs
                 for h in range(self.H):
                     if not functions.sanityCheck(self.xPathRollOut[h, k] * np.eye(1),
-                                               self.yPathRollOut[h, k] * np.eye(1), gmrf):
-                        stateCost[h,k] = self.outOfGridPenaltyPI2
-                        controlCost[h,k] = 0
+                                                 self.yPathRollOut[h, k] * np.eye(1), gmrf):
+                        stateCost[h, k] = self.outOfGridPenaltyPI2
+                        controlCost[h, k] = 0
                     else:
                         Phi = functions.mapConDis(gmrf, self.xPathRollOut[h, k], self.yPathRollOut[h, k])
-                        stateCost[h,k] = 1 / np.dot(Phi, gmrf.diagCovCond)
+                        stateCost[h, k] = 1 / np.dot(Phi, gmrf.diagCovCond)
                         uHead = self.u[h, 0] + M * noise[h, k]
-                        controlCost[h,k] = 0.5 * np.dot(uHead.T, np.dot(self.R,uHead))
+                        controlCost[h, k] = 0.5 * np.dot(uHead.T, np.dot(self.R, uHead))
 
                 for h in range(self.H):
-                    S[h,k] = np.sum(stateCost[h:,k]) + np.sum(controlCost[h:,k])
+                    S[h, k] = np.sum(stateCost[h:, k]) + np.sum(controlCost[h:, k])
 
                 for h in range(self.H):
-                    expS[h,k] = math.exp(-((S[h,k]-np.amin(S[:,k]))/(np.amax(S[:,k])-np.amin(S[:,k])))/self.lambd)
+                    expS[h, k] = math.exp(
+                        -((S[h, k] - np.amin(S[:, k])) / (np.amax(S[:, k]) - np.amin(S[:, k]))) / self.lambd)
 
-            deltaU = np.zeros((self.H,1))
+            deltaU = np.zeros((self.H, 1))
             for h in range(self.H):
                 for k in range(self.K):
-                    P[h,k] = expS[h,k]/np.sum(expS[h,:])
+                    P[h, k] = expS[h, k] / np.sum(expS[h, :])
 
                 for k in range(self.K):
-                    deltaU[h] += P[h,k] * M * noise[h,k]
+                    deltaU[h] += P[h, k] * M * noise[h, k]
             self.u += deltaU
 
         self.xTraj, self.yTraj, self.alphaTraj = auv.trajectoryFromControl(self.u)
@@ -103,7 +105,7 @@ class piControl:
 
 
 class CBTS:
-    def __init__(self,par):
+    def __init__(self, par):
         self.par = par
         self.nIterations = par.CBTSIterations
         self.nTrajPoints = par.nTrajPoints
@@ -144,15 +146,15 @@ class CBTS:
         gc.collect()
 
         for ix in range(self.nTrajPoints):
-            if bestTraj[0,ix] < gmrf.xMin:
-                bestTraj[0,ix] = gmrf.xMin
-            elif bestTraj[0,ix] > gmrf.xMax:
-                bestTraj[0,ix] = gmrf.xMax
+            if bestTraj[0, ix] < gmrf.xMin:
+                bestTraj[0, ix] = gmrf.xMin
+            elif bestTraj[0, ix] > gmrf.xMax:
+                bestTraj[0, ix] = gmrf.xMax
         for iy in range(self.nTrajPoints):
-            if bestTraj[1,iy] < gmrf.yMin:
-                bestTraj[1,iy] = gmrf.yMin
-            elif bestTraj[1,iy] > gmrf.yMax:
-                bestTraj[1,iy] = gmrf.yMax
+            if bestTraj[1, iy] < gmrf.yMin:
+                bestTraj[1, iy] = gmrf.yMin
+            elif bestTraj[1, iy] > gmrf.yMax:
+                bestTraj[1, iy] = gmrf.yMax
         return bestTraj, derivX, derivY
 
     def treePolicy(self, v):
@@ -171,11 +173,11 @@ class CBTS:
 
                 # Create new node:
                 if self.par.cbtsNodeBelief == 'noUpdates':
-                    vNewGMRF = v.gmrf   # pass reference (since no updates)
+                    vNewGMRF = v.gmrf  # pass reference (since no updates)
                 elif self.par.cbtsNodeBelief == 'sampledGMRF' and v.depth == 0:
                     vNewGMRF = functions.sampleGMRF(v.gmrf)
                 else:
-                    vNewGMRF = copy.deepcopy(v.gmrf) # copy GMRF (since copy will be updated)
+                    vNewGMRF = copy.deepcopy(v.gmrf)  # copy GMRF (since copy will be updated)
 
                 vNew = node(self.par, vNewGMRF, v.auv)
                 vNew.rewardToNode = v.rewardToNode + self.discountFactor ** v.depth * r
@@ -248,7 +250,7 @@ class CBTS:
 
         # plot acquisition function
         if self.par.showAcquisitionFunction:
-            functions.plotRewardFunction(self.par,v0.gmrf)
+            functions.plotRewardFunction(self.par, v0.gmrf)
 
         return bestTraj, derivX, derivY
 
@@ -259,6 +261,8 @@ class CBTS:
         # dx = posX, dy = posY, cx = dC1/du|u=0 = derivX, cy = dC2/du|u=0 = derivY
         ax = 0
         ay = 0
+        bx = 0
+        by = 0
 
         if self.trajOrder == 1:
             if theta[0] < 0:
@@ -283,7 +287,7 @@ class CBTS:
         tau = np.zeros((2, self.nTrajPoints))
         u = 0
         length = 0
-        discretize = 1/1000
+        discretize = 1 / 1000
         for i in range(self.nTrajPoints):
             tau[:, i] = np.dot(beta, np.array([[1], [u], [u ** 2], [u ** 3]]))[:, 0]
 
@@ -291,23 +295,23 @@ class CBTS:
                 # rescaled u in order to generate steps with a fixed length
                 while length < self.par.maxStepsize:
                     u += discretize
-                    length += discretize*math.sqrt((2*by*u + cy)**2 + (2*bx*u + cx)**2)
+                    length += discretize * math.sqrt((2 * by * u + cy) ** 2 + (2 * bx * u + cx) ** 2)
                 length = 0
             else:
-                u = (i+1)/self.nTrajPoints
+                u = (i + 1) / self.nTrajPoints
 
         derivX = 3 * ax + 2 * bx + cx
         derivY = 3 * ay + 2 * by + cy
 
         return tau, derivX, derivY
 
-
     def evaluateTrajectory(self, v, tau, theta):
         r = - self.cbtsControlCost * abs(theta)
         o = []
         for i in range(self.nTrajPoints - 1):
             Phi = functions.mapConDis(v.gmrf, tau[0, i + 1], tau[1, i + 1])
-            r += (np.dot(Phi, v.gmrf.diagCovCond / max(v.gmrf.diagCovCond)) + self.UCBRewardFactor * np.dot(Phi, v.gmrf.meanCond/max(v.gmrf.meanCond)))[0]
+            r += (np.dot(Phi, v.gmrf.diagCovCond / max(v.gmrf.diagCovCond)) + self.UCBRewardFactor * np.dot(Phi,
+                                                                           v.gmrf.meanCond / max(v.gmrf.meanCond)))[0]
             o.append(np.dot(Phi, v.gmrf.meanCond))
             # lower reward if agent is out of bound
             if not functions.sanityCheck(tau[0, i + 1] * np.eye(1), tau[1, i + 1] * np.eye(1), v.gmrf):

@@ -1,19 +1,19 @@
 # classes for main.py
 
 import copy
-
 import math
+
 import numpy as np
 import scipy
+import scipy.sparse as sp
 from scipy import integrate
 from scipy import interpolate
-import scipy.sparse as sp
 
 import functions
 
 
 class agent:
-    def __init__(self,par, x0, y0, alpha0):
+    def __init__(self, par, x0, y0, alpha0):
         self.x = x0
         self.y = y0
         self.alpha = alpha0  # angle of direction of movement
@@ -32,7 +32,7 @@ class agent:
             alphaNext = alphaNext - a_pi * 2 * math.pi
 
         if alphaNext < 0:
-            a_pi = int(- alphaNext / (2 * math.pi))+1
+            a_pi = int(- alphaNext / (2 * math.pi)) + 1
             alphaNext = alphaNext + a_pi * 2 * math.pi
 
         return xNext, yNext, alphaNext
@@ -53,9 +53,9 @@ class trueField:
 
         """random field"""
         maxRandomValue = 5
-        xRand = np.linspace(0,10,11)  # column coordinates
-        yRand = np.linspace(0,10,11)  # row coordinates
-        zRand = np.random.rand(11,11)*maxRandomValue
+        xRand = np.linspace(0, 10, 11)  # column coordinates
+        yRand = np.linspace(0, 10, 11)  # row coordinates
+        zRand = np.random.rand(11, 11) * maxRandomValue
         self.fRand = interpolate.interp2d(xRand, yRand, zRand)
 
         """sine field"""
@@ -77,17 +77,17 @@ class trueField:
         xPreDef = np.array([0, 2, 4, 6, 9])  # column coordinates
         yPreDef = np.array([0, 1, 3, 5, 9])  # row coordinates
         zPreDef = np.array([[1, 2, 2, 1, 1],
-        [2, 4, 2, 1, 1],
-        [1, 2, 3, 3, 2],
-        [1, 1, 2, 3, 3],
-        [1, 1, 2, 3, 3]])
-        #zPreDef = np.array([[2, 4, 6, 7, 8],
+                            [2, 4, 2, 1, 1],
+                            [1, 2, 3, 3, 2],
+                            [1, 1, 2, 3, 3],
+                            [1, 1, 2, 3, 3]])
+        # zPreDef = np.array([[2, 4, 6, 7, 8],
         #              [2.1, 5, 7, 11.25, 9.5],
         #              [3, 5.6, 8.5, 17, 14.5],
         #              [2.5, 5.4, 6.9, 9, 8],
         #              [2, 2.3, 4, 6, 7.5]])
-        self.minValPreDef = np.min((0,np.min(zPreDef)-1))
-        self.maxValPreDef = np.max(zPreDef)+1
+        self.minValPreDef = np.min((0, np.min(zPreDef) - 1))
+        self.maxValPreDef = np.max(zPreDef) + 1
         self.fPreDef = interpolate.interp2d(xPreDef, yPreDef, zPreDef)
 
         if self.fieldType == 'sine':
@@ -100,27 +100,28 @@ class trueField:
             self.fieldMin = -maxRandomValue
             self.fieldMax = maxRandomValue
         else:
-            self.fieldMin = self.minValPreDef-par.ov2
-            self.fieldMax = self.maxValPreDef+par.ov2
+            self.fieldMin = self.minValPreDef - par.ov2
+            self.fieldMax = self.maxValPreDef + par.ov2
 
         self.fieldLevels = np.linspace(self.fieldMin, self.fieldMax, 20)
 
-    def getField(self,x,y):
+    def getField(self, x, y):
         if self.fieldType == 'sine':
-            X,Y = np.meshgrid(x, y)
-            Z = self.cScale*(np.sin(X) + np.sin(Y))
+            X, Y = np.meshgrid(x, y)
+            Z = self.cScale * (np.sin(X) + np.sin(Y))
         elif self.fieldType == 'peak':
-            X,Y = np.meshgrid(x, y)
-            Z = self.peakValue * np.exp(-((X-self.xPeak)/self.peakPar)**2)*np.exp(-((Y-self.yPeak)/self.peakPar)**2)
+            X, Y = np.meshgrid(x, y)
+            Z = self.peakValue * np.exp(-((X - self.xPeak) / self.peakPar) ** 2) * np.exp(
+                -((Y - self.yPeak) / self.peakPar) ** 2)
         elif self.fieldType == 'random':
-            Z = self.fRand(x,y)
+            Z = self.fRand(x, y)
         else:
-            Z = self.fPreDef(x - self.xShift,y + self.yShift)
+            Z = self.fPreDef(x - self.xShift, y + self.yShift)
         return Z
 
     def updateField(self, par, t):
         if t < par.pulseTime:
-            self.cScale = np.cos(10*math.pi * t / par.pulseTime)
+            self.cScale = np.cos(10 * math.pi * t / par.pulseTime)
 
             alpha = math.atan2((self.yPeak - self.yRotationCenter), (self.xPeak - self.xRotationCenter))
             self.xPeak = self.xRotationCenter + self.radius * math.cos(alpha + self.angleChange)
@@ -176,7 +177,7 @@ class GP:
 
 
 class gmrf:
-    def __init__(self,par,nGridX,nGridY,nEdge):
+    def __init__(self, par, nGridX, nGridY, nEdge):
         "GMRF properties"
         self.par = par
 
@@ -190,12 +191,12 @@ class gmrf:
         self.nEdge = nEdge
 
         self.ov2 = par.ov2
-        self.valueT = par.valueT # Precision value for beta regression
+        self.valueT = par.valueT  # Precision value for beta regression
         self.dt = par.dt
 
         "Distance between two vertices in x and y without edges"
-        self.dx = round((self.xMax - self.xMin) / (self.nGridX - 1),5)
-        self.dy = round((self.yMax - self.yMin) / (self.nGridY - 1),5)
+        self.dx = round((self.xMax - self.xMin) / (self.nGridX - 1), 5)
+        self.dy = round((self.yMax - self.yMin) / (self.nGridY - 1), 5)
 
         self.nY = self.nGridY + 2 * self.nEdge  # Total number of vertices in y with edges
         self.nX = self.nGridX + 2 * self.nEdge  # Total number of vertices in x with edges
@@ -232,7 +233,7 @@ class gmrf:
         self.precCondSparse = sp.vstack([precH1, precH2]).tocsr()
 
         "Augmented prior covariance matrix"
-        covPriorUpperLeft = sp.linalg.inv(self.Lambda.tocsc()) + sp.csr_matrix.dot(FSparse,TinvSparse.dot(FTSparse))
+        covPriorUpperLeft = sp.linalg.inv(self.Lambda.tocsc()) + sp.csr_matrix.dot(FSparse, TinvSparse.dot(FTSparse))
         covPriorUpperRight = FSparse.dot(Tinv)
         covPriorLowerLeft = covPriorUpperRight.T
         covPriorLowerRight = TinvSparse
@@ -247,11 +248,10 @@ class gmrf:
         self.meanPrior = np.zeros((self.nP + self.nBeta, 1))
         self.meanCond = np.zeros((self.nP + self.nBeta, 1))
 
-        self.covLevels = np.linspace(-0.2, min(np.amax(self.diagCovCond), 0.9), 20) # TODO Adapt
+        self.covLevels = np.linspace(-0.2, min(np.amax(self.diagCovCond), 0.9), 20)  # TODO Adapt
 
         "Sequential bayesian regression"
         self.bSeq = np.zeros((self.nP + self.nBeta, 1))
-
 
     def bayesianUpdate(self, fMeas, Phi):
         """Update conditioned precision matrix"""
@@ -275,26 +275,28 @@ class gmrf:
         # Also update bSeq and precCond in case seq. belief update is used for planning
         PhiT = Phi.T
         PhiTSparse = sp.csr_matrix(PhiT)
-        self.bSeq = self.bSeq + 1 / self.ov2 * np.dot(PhiT,fMeas)  # sequential update canonical mean
+        self.bSeq = self.bSeq + 1 / self.ov2 * np.dot(PhiT, fMeas)  # sequential update canonical mean
         self.precCondSparse = self.precCondSparse + 1 / self.par.ov2 * PhiTSparse.dot(PhiTSparse.T)
-
 
     def seqBayesianUpdate(self, fMeas, Phi):
         PhiT = Phi.T
         PhiTSparse = sp.csr_matrix(PhiT)
 
         hSeq = sp.linalg.spsolve(self.precCondSparse, PhiTSparse).T
-        self.bSeq = self.bSeq + fMeas[0]/self.ov2 * PhiT  # sequential update canonical mean
-        self.precCondSparse = self.precCondSparse + 1 / self.ov2 * PhiTSparse.dot(PhiTSparse.T)  # sequential update of precision matrix
-        self.meanCond = sp.linalg.spsolve(self.precCondSparse, self.bSeq).reshape(self.nP+self.nBeta,1)
-        self.diagCovCond = np.subtract(self.diagCovCond,np.multiply(hSeq,hSeq).reshape(self.nP+self.nBeta,1) / (self.ov2 + np.dot(Phi, hSeq)[0]))
+        self.bSeq = self.bSeq + fMeas[0] / self.ov2 * PhiT  # sequential update canonical mean
+        self.precCondSparse = self.precCondSparse + 1 / self.ov2 * PhiTSparse.dot(
+            PhiTSparse.T)  # sequential update of precision matrix
+        self.meanCond = sp.linalg.spsolve(self.precCondSparse, self.bSeq).reshape(self.nP + self.nBeta, 1)
+        self.diagCovCond = np.subtract(self.diagCovCond, np.multiply(hSeq, hSeq).reshape(self.nP + self.nBeta, 1) / (
+                    self.ov2 + np.dot(Phi, hSeq)[0]))
         """ Works too:
         self.covCond = np.linalg.inv(self.precCond)
         self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
         """
 
+
 class stkf:
-    def __init__(self,par, gmrf1):
+    def __init__(self, par, gmrf1):
         self.par = par
         self.gmrf = gmrf1
         self.dt = par.dt
@@ -319,8 +321,8 @@ class stkf:
         self.CsDense = np.dot(KsChol, np.kron(np.eye(self.gmrf.nP), H))
         self.Cs = sp.csr_matrix(self.CsDense)
         QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(F, tau)), np.dot(G,
-                                            np.dot(G.T,scipy.linalg.expm(np.dot(F,tau)).T))),0, self.dt)[0]
-        self.Q = sp.csr_matrix( np.kron(np.eye(self.gmrf.nP), QBar))
+                                                    np.dot(G.T, scipy.linalg.expm(np.dot(F,tau)).T))), 0, self.dt)[0]
+        self.Q = sp.csr_matrix(np.kron(np.eye(self.gmrf.nP), QBar))
         self.R = sp.csr_matrix(sigma2 * np.eye(1))
 
         # Initialization
@@ -328,13 +330,12 @@ class stkf:
         self.covkk = sp.csr_matrix(np.kron(np.eye(self.gmrf.nP), sigmaZero))
 
     def kalmanFilter(self, t, xMeas, yMeas, fMeas):
-        import cProfile
+        Phi = functions.mapConDis(self.gmrf, xMeas, yMeas)
         if t % 1 != 0:
             # Open loop prediciton
             self.skk = np.dot(self.A, self.skk)
             self.covkk = np.dot(self.A, np.dot(self.covkk, self.A.T))
         else:
-            Phi = functions.mapConDis(self.gmrf, xMeas, yMeas)
             PhiSparse = sp.csr_matrix(Phi)
             C = PhiSparse.dot(self.Cs)
             CT = sp.csr_matrix(C.T)
@@ -347,15 +348,17 @@ class stkf:
             self.skk = sPred + kalmanGain.dot(sp.csr_matrix(fMeas) - C.dot(sPred))
             self.covkk = (sp.csr_matrix(np.eye(self.gmrf.nP)) - kalmanGain.dot(C)).dot(covPred)
 
-        self.gmrf.meanCond = np.array(np.dot(self.CsDense,self.skk.todense()),ndmin=2)
-        self.gmrf.covCond = np.array(np.dot(self.CsDense,np.dot(self.covkk.todense(),self.CsDense.T)))
-        self.gmrf.diagCovCond = self.gmrf.covCond.diagonal().reshape(self.gmrf.nP+self.gmrf.nBeta,1)
+        self.gmrf.meanCond = np.array(np.dot(self.CsDense, self.skk.todense()), ndmin=2)
+        self.gmrf.covCond = np.array(np.dot(self.CsDense, np.dot(self.covkk.todense(), self.CsDense.T)))
+        self.gmrf.diagCovCond = self.gmrf.covCond.diagonal().reshape(self.gmrf.nP + self.gmrf.nBeta, 1)
 
         # Also update bSeq and precCond in case seq. belief update is used for planning
         PhiT = Phi.T
         PhiTSparse = sp.csr_matrix(PhiT)
         self.gmrf.bSeq = self.gmrf.bSeq + 1 / self.par.ov2 * PhiT * fMeas  # sequential update canonical mean
-        self.gmrf.precCondSparse = self.gmrf.precCondSparse + 1 / self.par.ov2 * PhiTSparse.dot(PhiTSparse.T)  # sequential update of precision matrix
+        self.gmrf.precCondSparse = self.gmrf.precCondSparse + 1 / self.par.ov2 * PhiTSparse.dot(
+            PhiTSparse.T)  # sequential update of precision matrix
+
 
 class node:
     def __init__(self, par, gmrf, auv):
