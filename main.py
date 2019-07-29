@@ -78,7 +78,8 @@ def main(par,printTime):
 
     """Update and plot field belief"""
     for i in range(par.nIter - 1):
-        print("Iteration ", i+1, " of ", par.nIter, ".")
+        if (i+1) % (par.nIter/10) == 0:
+            print("Iteration ", i+1, " of ", par.nIter, ".")
         t = i * par.dt
 
         timeBefore = time.time()

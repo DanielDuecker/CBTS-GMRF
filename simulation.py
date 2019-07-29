@@ -22,7 +22,7 @@ cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 printTime = False
 saveToFile = True
 nSim = 2
-nIter = 500
+nIter = 200
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = False
@@ -156,6 +156,10 @@ for i in range(len(parSettingsList)):
         yHist.append(yHistR)
         diffMean.append(diffMeanR)
         totalVar.append(totalVarR)
+
+        "plot total and average calculation time:"
+        print("Total computation time is", np.sum(timeVecR), "s")
+        print("Average computation time is", np.mean(timeVecR), "s")
 
         # Save gmrf for each simulation (since it can be very large)
         with open('objs_' + str(i) + '_gmrf_' + simCase + '.pkl', 'wb') as f:
