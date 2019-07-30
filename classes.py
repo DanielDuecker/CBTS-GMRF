@@ -242,7 +242,7 @@ class gmrf:
         self.covPrior = np.array(sp.vstack([covH1, covH2]).todense())
         self.covCond = self.covPrior
 
-        self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
+        self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1).copy()
 
         "Prior and conditioned mean"
         self.meanPrior = np.zeros((self.nP + self.nBeta, 1))

@@ -221,6 +221,11 @@ def sampleGMRF(gmrf):
     """The sampled GMRFs without outer grids are used in the belief nodes in order to reduce the computation time"""
     newGMRF = classes.gmrf(gmrf.par, gmrf.par.nGridXSampled, gmrf.par.nGridYSampled, 0)
     gmrf.precCondSparseDense = np.array(gmrf.precCondSparse.todense())
+
+    if gmrf.nBeta > 0:
+        newGMRF.bSeq[-gmrf.nBeta:] = gmrf.bSeq[-gmrf.nBeta:]
+        newGMRF.diagCovCond[-gmrf.nBeta:] = gmrf.diagCovCond[-gmrf.nBeta:]
+        newGMRF.precCondSparse[-gmrf.nBeta:,-gmrf.nBeta:] = gmrf.precCondSparse[-gmrf.nBeta:,-gmrf.nBeta:]
     
     for i in range(newGMRF.nP):
         xIndex = i % newGMRF.nX
