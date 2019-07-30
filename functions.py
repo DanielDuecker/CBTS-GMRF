@@ -220,19 +220,15 @@ def plotPerformance(diffMean, totalVar):
 def sampleGMRF(gmrf):
     """The sampled GMRFs without outer grids are used in the belief nodes in order to reduce the computation time"""
     newGMRF = classes.gmrf(gmrf.par, gmrf.par.nGridXSampled, gmrf.par.nGridYSampled, 0)
-    if gmrf.nBeta > 0:
-        newGMRF.bSeq[-gmrf.nBeta:] = gmrf.bSeq[-gmrf.nBeta:]
-        newGMRF.covCond[-gmrf.nBeta:, -gmrf.nBeta:] = gmrf.covCond[-gmrf.nBeta:, -gmrf.nBeta:]
-        newGMRF.precCondSparse[-gmrf.nBeta:, -gmrf.nBeta:] = gmrf.precCondSparse[-gmrf.nBeta:, -gmrf.nBeta:]
-
     gmrf.precCondSparseDense = np.array(gmrf.precCondSparse.todense())
+    
     for i in range(newGMRF.nP):
         xIndex = i % newGMRF.nX
         yIndex = int(i / newGMRF.nX)
         Phi = mapConDis(gmrf, newGMRF.x[xIndex], newGMRF.y[yIndex])
         newGMRF.bSeq[i] = np.dot(Phi, gmrf.bSeq)
         newGMRF.precCondSparse[i, i] = np.dot(Phi, np.dot(gmrf.precCondSparseDense, Phi.T))
-        newGMRF.covCond[i, i] = np.dot(Phi, gmrf.diagCovCond)
+        newGMRF.diagCovCond[i] = np.dot(Phi, gmrf.diagCovCond)
         newGMRF.meanCond[i] = np.dot(Phi, gmrf.meanCond)
     newGMRF.diagCovCond = newGMRF.covCond.diagonal().reshape(newGMRF.nP + newGMRF.nBeta, 1)
 

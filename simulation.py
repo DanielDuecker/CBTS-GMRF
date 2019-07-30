@@ -16,15 +16,15 @@ from parameters import par
 matplotlib.use('TkAgg')
 
 """Simulation Options"""
-beliefOptions = ['seqBayes','stkf']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['cbts', 'geist','pi2','randomWalk']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
+controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates','fullGMRF','sampledGMRF']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 2
-nIter = 20
+nSim = 20
+nIter = 500
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = False
