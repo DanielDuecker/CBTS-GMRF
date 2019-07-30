@@ -198,9 +198,9 @@ def sanityCheck(xVec, yVec, gmrf):
 
 
 def measurePerformance(gmrf, trueField):
-    diffMean = np.sum(abs(trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge])
-                          - gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge,
-                            gmrf.nEdge:-gmrf.nEdge]))
+    true = trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge])
+    belief = gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge]
+    diffMean = np.sum(abs(true - belief))
     totalVar = np.sum(abs(gmrf.diagCovCond))
     return diffMean, totalVar
 
