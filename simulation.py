@@ -106,6 +106,10 @@ for belief in beliefOptions:
 if saveToFile:
     index = 0
     dirpath = os.getcwd()
+    try:
+        comment = input('Enter a comment for the simulation:')
+    except:
+        comment = ""
     folderName = time.strftime("%Y%m%d") + "_" + str(index)
     path = dirpath + "/sim/" + folderName
     while os.path.exists(path):
