@@ -10,6 +10,7 @@ def main(par, printTime):
     import matplotlib.pyplot as plt
     import numpy as np
     import control
+    import math
     import functions
     from classes import agent
     from classes import gmrf
@@ -125,7 +126,9 @@ def main(par, printTime):
             return "Error! No controller selected"
 
         # Check if stepsize is constant
-        # print(math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2))
+        currentStepsize = math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2)
+        if round(currentStepsize, 5) > par.maxStepsize:
+            print("Warning, stepsize was ",currentStepsize)
 
         xMeas = auv.x
         yMeas = auv.y

@@ -296,6 +296,7 @@ class CBTS:
                 while length < self.par.maxStepsize:
                     u += discretize
                     length += discretize * math.sqrt((2 * by * u + cy) ** 2 + (2 * bx * u + cx) ** 2)
+                u -= discretize
                 length = 0
             else:
                 u = (i + 1) / self.nTrajPoints
