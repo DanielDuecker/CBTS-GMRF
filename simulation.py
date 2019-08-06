@@ -165,7 +165,7 @@ for i in range(len(parSettingsList)):
         totalVar.append(totalVarR)
 
         "plot total and average calculation time:"
-        print("Total computation time is", np.sum(timeVecR), "s")
+        print("\nTotal computation time is", np.sum(timeVecR), "s")
         print("Average computation time is", np.mean(timeVecR), "s")
 
         # Save gmrf for each simulation (since it can be very large)

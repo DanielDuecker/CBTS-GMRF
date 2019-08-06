@@ -77,8 +77,9 @@ def main(par, printTime):
 
     """Update and plot field belief"""
     for i in range(par.nIter - 1):
-        if (i + 1) % (par.nIter / 10) == 0:
-            print("Iteration ", i + 1, " of ", par.nIter, ".")
+        if (i + 1) % (par.nIter / 50) == 0:
+            index = int((i + 1) / (par.nIter / 50))
+            print("Progess: |" + "#" * (index-1) + "*" * (50-index-1) + "|", end="\r")
         t = i * par.dt
 
         timeBefore = time.time()
@@ -128,7 +129,7 @@ def main(par, printTime):
         # Check if stepsize is constant
         currentStepsize = math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2)
         if round(currentStepsize, 5) > par.maxStepsize:
-            print("Warning, stepsize was ",currentStepsize)
+            print("\nWarning, stepsize was ",currentStepsize)
 
         xMeas = auv.x
         yMeas = auv.y
