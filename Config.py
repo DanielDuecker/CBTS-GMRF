@@ -108,44 +108,46 @@ def auv_dynamics(par, x_auv, u_auv, epsilon_a, delta_t, field_limits, set_border
 
     if set_border == True:
         # Prevent AUV from leaving the true field
+        #if x_auv_out[0] < 0:
+        #    x_auv_out[0] = 0
+        #    x_auv_out[2] = x_auv_out[2] + math.pi
+
+        #if x_auv_out[1] < 0:
+        #    x_auv_out[1] = 0
+
+        #if x_auv_out[0] > field_limits[0]:
+        #    x_auv_out[0] = field_limits[0]
+
+        #if x_auv_out[1] > field_limits[1]:
+        #    x_auv_out[1] = field_limits[1]
+
         if x_auv_out[0] < 0:
             x_auv_out[0] = 0
+            if pi / 2 < x_auv_out[2] < pi:
+                x_auv_out[2] = 0.49 * pi
+            if pi < x_auv_out[2] < 1.5 * pi:
+                x_auv_out[2] = 1.51 * pi
 
         if x_auv_out[1] < 0:
             x_auv_out[1] = 0
+            if pi < x_auv_out[2] < 1.49 * pi:
+                x_auv_out[2] = pi
+            if 1.5 * pi < x_auv_out[2] <= 2 * pi:
+                x_auv_out[2] = 0.01
 
         if x_auv_out[0] > field_limits[0]:
             x_auv_out[0] = field_limits[0]
+            if 0 < x_auv_out[2] < pi / 2:
+                x_auv_out[2] = 0.51 * pi
+            if 1.5 * pi < x_auv_out[2] <= 2 * pi:
+                x_auv_out[2] = 1.49 * pi
 
         if x_auv_out[1] > field_limits[1]:
             x_auv_out[1] = field_limits[1]
-        # if x_auv_out[0] < 0:
-        #     x_auv_out[0] = 0
-        #     if pi / 2 < x_auv_out[2] < pi:
-        #         x_auv_out[2] = 0.49 * pi
-        #     if pi < x_auv_out[2] < 1.5 * pi:
-        #         x_auv_out[2] = 1.51 * pi
-        #
-        # if x_auv_out[1] < 0:
-        #     x_auv_out[1] = 0
-        #     if pi < x_auv_out[2] < 1.49 * pi:
-        #         x_auv_out[2] = pi
-        #     if 1.5 * pi < x_auv_out[2] <= 2 * pi:
-        #         x_auv_out[2] = 0.01
-        #
-        # if x_auv_out[0] > field_limits[0]:
-        #     x_auv_out[0] = field_limits[0]
-        #     if 0 < x_auv_out[2] < pi / 2:
-        #         x_auv_out[2] = 0.51 * pi
-        #     if 1.5 * pi < x_auv_out[2] <= 2 * pi:
-        #         x_auv_out[2] = 1.49 * pi
-        #
-        # if x_auv_out[1] > field_limits[1]:
-        #     x_auv_out[1] = field_limits[1]
-        #     if 0 < x_auv_out[2] < pi / 2:
-        #         x_auv_out[2] = 1.99 * pi
-        #     if pi / 2 < x_auv_out[2] < pi:
-        #         x_auv_out[2] = 1.01 * pi
+            if 0 < x_auv_out[2] < pi / 2:
+                x_auv_out[2] = 1.99 * pi
+            if pi / 2 < x_auv_out[2] < pi:
+                x_auv_out[2] = 1.01 * pi
 
     if x_auv_out[2] > 2 * pi:
         a_pi = int(x_auv_out[2] / 2 * pi)

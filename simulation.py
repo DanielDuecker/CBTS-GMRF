@@ -17,8 +17,8 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
-cbtsNodeBelief = ['fullGMRF','noUpdates','sampledGMRF']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
+controlOptions = ['pi2','geist','cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
