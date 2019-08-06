@@ -110,11 +110,11 @@ if saveToFile:
         comment = input('Enter a comment for the simulation:')
     except:
         comment = ""
-    folderName = time.strftime("%Y%m%d") + "_" + str(index)
+    folderName = time.strftime("%Y%m%d") + "_" + str(index) + comment
     path = dirpath + "/sim/" + folderName
     while os.path.exists(path):
         index += 1
-        folderName = time.strftime("%Y%m%d") + "_" + str(index)
+        folderName = time.strftime("%Y%m%d") + "_" + str(index) + comment
         path = dirpath + "/sim/" + folderName
     try:
         os.mkdir(path)
