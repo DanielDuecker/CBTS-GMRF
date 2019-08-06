@@ -130,7 +130,6 @@ class CBTS:
 
     def getNewTraj(self, auv, gmrf):
         # Get gmrf with less grid points
-        print("calculating..")
         v0 = node(self.par, copy.deepcopy(gmrf), auv)  # create node with belief b and total reward 0
         self.xTraj = np.zeros((self.nTrajPoints, 1))
         self.yTraj = np.zeros((self.nTrajPoints, 1))

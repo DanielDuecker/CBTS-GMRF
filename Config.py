@@ -28,7 +28,7 @@ sample_time_gmrf = 100  # Sample/Calculation time in ms of GMRF algorithm
 simulation_end_time = 20000  # Run time of simulation in ms
 
 """Choose GMRF parameters"""
-gmrf_dim = [30, 30, 5, 5]  # lxf, lyf, dvx, dvy
+gmrf_dim = [20, 20, 5, 5]  # lxf, lyf, dvx, dvy
 set_Q_init = True  # Re-Calculate precision matrix at Initialization? False: Load stored precision matrix
 set_Q_check = False  # Plots Q matrix entries inside GMRF algorithm
 set_gmrf_torus = False  # True -w> GMRF uses torus boundary condition, False -> GMRF uses Neumann-BC
