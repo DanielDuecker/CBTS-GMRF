@@ -128,7 +128,7 @@ def main(par, printTime):
 
         # Check if stepsize is constant
         currentStepsize = math.sqrt((auv.x-xMeas)**2+(auv.y-yMeas)**2)
-        if round(currentStepsize, 5) > par.maxStepsize:
+        if round(currentStepsize, 3) > par.maxStepsize:
             print("\nWarning, stepsize was ",currentStepsize)
 
         xMeas = auv.x
