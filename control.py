@@ -318,8 +318,8 @@ class CBTS:
             else:
                 u = (i + 1) / self.nTrajPoints
 
-        derivX = 3 * ax + 2 * bx + cx
-        derivY = 3 * ay + 2 * by + cy
+        derivX = 3 * ax * u**2 + 2 * bx * u + cx
+        derivY = 3 * ay * u**2 + 2 * by * u + cy
 
         return tau, derivX, derivY
 
