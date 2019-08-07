@@ -77,9 +77,9 @@ def main(par, printTime):
 
     """Update and plot field belief"""
     for i in range(par.nIter - 1):
-        if (i + 1) % (par.nIter / 50) == 0:
-            index = int((i + 1) / (par.nIter / 50))
-            print("Progess: |" + "#" * (index-1) + "*" * (50-index-1) + "|", end="\r")
+        index = int(50*i/par.nIter)
+        print("Progess: |" + "#" * (index - 1) + "*" * (50 - index - 1) + "| " + str(round(100 * i / par.nIter,1)) + "%",
+              end="\r")
         t = i * par.dt
 
         timeBefore = time.time()
