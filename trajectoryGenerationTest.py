@@ -10,8 +10,8 @@ import math
 
 matplotlib.use('TkAgg')
 
-N = 10
-depth = 2
+N = 3
+depth = 3
 par = par('seqBayes', 'cbts', 'noUpdates', 'random', False, False, 1000, 0, 0, 0, 0, 0, 6, 3, 50, 50, 0.05, 0.5, 0.9)
 cbts = CBTS(par)
 auv = agent(par, par.x0, par.y0, par.alpha0)
@@ -34,6 +34,7 @@ for i in range(N):
     tau[:,0:par.nTrajPoints], v.auv.derivX, v.auv.derivY = cbts.generateTrajectory(v,theta)
     v.auv.x = tau[0, par.nTrajPoints - 1]
     v.auv.y = tau[1, par.nTrajPoints - 1]
+    print("afterf first traj:",v.auv.x,v.auv.y)
 
     # Check next depth
     for d in range(1,depth):
@@ -53,5 +54,6 @@ for i in range(N):
         yOld = tau[1,i+1]
     plt.plot(tau[0,:],tau[1,:])
     plt.scatter(tau[0,:],tau[1,:])
+    plt.axis('equal')
 print(np.mean(stepSizes))
 plt.show()

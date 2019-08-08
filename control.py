@@ -276,52 +276,22 @@ class CBTS:
         # beta =    [dx cx bx ax]
         #           [dy cy by ay]
         # dx = posX, dy = posY, cx = dC1/du|u=0 = derivX, cy = dC2/du|u=0 = derivY
+
+        # Generate trajectories for starting point at (0,0) and angle of pi/4
         ax = 0
         ay = 0
         bx = 0
         by = 0
-
-        if self.trajOrder == 1:
-            if v.auv.derivX > 0:
-                if v.auv.derivY > 0:
-                    if theta[0] > 0:
-                        bx = 0
-                        by = -theta[0]
-                    elif theta[0] < 0:
-                        bx = theta[0]
-                        by = 0
-                elif v.auv.derivY < 0:
-                    if theta[0] > 0:
-                        bx = -theta[0]
-                        by = 0
-                    elif theta[0] < 0:
-                        bx = 0
-                        by = -theta[0]
-            elif v.auv.derivX < 0:
-                if v.auv.derivY > 0:
-                    if theta[0] > 0:
-                        bx = theta[0]
-                        by = 0
-                    elif theta[0] < 0:
-                        bx = 0
-                        by = theta[0]
-                elif v.auv.derivY < 0:
-                    if theta[0] > 0:
-                        bx = 0
-                        by = theta[0]
-                    elif theta[0] < 0:
-                        bx = -theta[0]
-                        by = 0
-        elif self.trajOrder == 2:
-            bx = theta[0]
-            by = theta[1]
-        else:
+        cx = 1
+        cy = 1
+        dx = 0
+        dy = 0
+        if theta[0] > 0:
             bx = 0
+            by = -theta[0]
+        elif theta[0] < 0:
+            bx = theta[0]
             by = 0
-        cx = v.auv.derivX
-        cy = v.auv.derivY
-        dx = v.auv.x
-        dy = v.auv.y
 
         beta = np.array([[dx, cx, bx, ax], [dy, cy, by, ay]])
 
@@ -342,8 +312,19 @@ class CBTS:
             else:
                 u = (i + 1) / self.nTrajPoints
 
-        derivX = 3 * ax * u**2 + 2 * bx * u + cx
-        derivY = 3 * ay * u**2 + 2 * by * u + cy
+        # rotate and shift trajectory to correct direction and angle
+        angle = math.atan2(v.auv.derivY,v.auv.derivX) - math.pi/4
+        for i in range(self.nTrajPoints):
+            xOld = tau[0, i]
+            yOld = tau[1, i]
+            tau[0, i] = xOld * math.cos(angle) - yOld * math.sin(angle) + v.auv.x
+            tau[1, i] = xOld * math.sin(angle) + yOld * math.cos(angle) + v.auv.y
+
+        derivXOld = 3 * ax * u**2 + 2 * bx * u + cx
+        derivYOld = 3 * ay * u**2 + 2 * by * u + cy
+
+        derivX = derivXOld * math.cos(angle) - derivYOld * math.sin(angle)
+        derivY = derivXOld * math.sin(angle) + derivYOld * math.cos(angle)
 
         return tau, derivX, derivY
 
