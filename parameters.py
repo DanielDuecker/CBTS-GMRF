@@ -33,7 +33,7 @@ class par:
         self.x0 = 0
         self.y0 = 0
         self.alpha0 = math.pi / 4  # initial state
-        self.maxStepsize = 0.2  # maximum change in every state per iteration
+        self.maxStepsize = 0.1  # maximum change in every state per iteration
         self.xVel = self.maxStepsize
         self.yVel = self.maxStepsize
 
