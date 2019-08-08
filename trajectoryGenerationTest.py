@@ -11,7 +11,7 @@ import math
 matplotlib.use('TkAgg')
 
 N = 10
-depth = 1
+depth = 2
 par = par('seqBayes', 'cbts', 'noUpdates', 'random', False, False, 1000, 0, 0, 0, 0, 0, 6, 3, 50, 50, 0.05, 0.5, 0.9)
 cbts = CBTS(par)
 auv = agent(par, par.x0, par.y0, par.alpha0)
@@ -30,6 +30,7 @@ for i in range(N):
     # Get first trajectory
     tau = np.zeros((2,(par.nTrajPoints-1)*depth+1))
     theta = (-1 + 2 * np.random.rand()) * np.eye(1)
+    #theta = [-1]
     tau[:,0:par.nTrajPoints], v.auv.derivX, v.auv.derivY = cbts.generateTrajectory(v,theta)
     v.auv.x = tau[0, par.nTrajPoints - 1]
     v.auv.y = tau[1, par.nTrajPoints - 1]
@@ -37,6 +38,7 @@ for i in range(N):
     # Check next depth
     for d in range(1,depth):
         theta = (-1+2*np.random.rand())*np.eye(1)
+        #theta = [-1]
         tauNext, v.auv.derivX, v.auv.derivY = cbts.generateTrajectory(v,theta)
         v.auv.x = tauNext[0,-1]
         v.auv.y = tauNext[1,-1]

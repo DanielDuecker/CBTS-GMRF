@@ -282,12 +282,36 @@ class CBTS:
         by = 0
 
         if self.trajOrder == 1:
-            if theta[0] < 0:
-                bx = np.sign(v.auv.derivX) * theta[0]
-                by = 0
-            elif theta[0] >= 0:
-                bx = 0
-                by = -np.sign(v.auv.derivY) * theta[0]
+            if v.auv.derivX > 0:
+                if v.auv.derivY > 0:
+                    if theta[0] > 0:
+                        bx = 0
+                        by = -theta[0]
+                    elif theta[0] < 0:
+                        bx = theta[0]
+                        by = 0
+                elif v.auv.derivY < 0:
+                    if theta[0] > 0:
+                        bx = -theta[0]
+                        by = 0
+                    elif theta[0] < 0:
+                        bx = 0
+                        by = -theta[0]
+            elif v.auv.derivX < 0:
+                if v.auv.derivY > 0:
+                    if theta[0] > 0:
+                        bx = theta[0]
+                        by = 0
+                    elif theta[0] < 0:
+                        bx = 0
+                        by = theta[0]
+                elif v.auv.derivY < 0:
+                    if theta[0] > 0:
+                        bx = 0
+                        by = theta[0]
+                    elif theta[0] < 0:
+                        bx = -theta[0]
+                        by = 0
         elif self.trajOrder == 2:
             bx = theta[0]
             by = theta[1]

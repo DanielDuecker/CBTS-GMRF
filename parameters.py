@@ -81,7 +81,7 @@ class par:
         self.cbtsControlCost = cbtsControlCost
         self.discountFactor = discountFactor  # discounts future rewards
 
-        self.trajStepSize = 2  # determines number of measurement points along trajectory (depends on maxStepsize)
+        self.trajStepSize = 1  # determines number of measurement points along trajectory (depends on maxStepsize)
         self.trajScaling = 1  # scales trajectories (cx and cy in case of quadratic trajectories)
         self.CBTSIterations = 20  # determines runtime of algorithm, could also be done with time limit
         self.nMeasPoints = int(self.trajStepSize / self.maxStepsize)  # number of measurement points along trajectory
