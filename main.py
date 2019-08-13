@@ -33,10 +33,6 @@ def main(par, printTime):
     """Time"""
     timeVec = []
 
-    """Performance measurement"""
-    diffMeanVec = []
-    totalVarVec = []
-
     """GMRF representation"""
     gmrf1 = gmrf(par, par.nGridX, par.nGridY, par.nEdge)
 
@@ -49,6 +45,12 @@ def main(par, printTime):
 
     """Ground Truth"""
     trueField = trueField(par, par.fieldType)
+
+    """Performance measurement"""
+    diffMeanVec = []
+    totalVarVec = []
+    diffMean, totalVar = functions.measurePerformance(gmrf1, trueField)
+    diffMeanVec.append(diffMean)
 
     """STKF extension of gmrf"""
     stkf1 = stkf(par, gmrf1)
