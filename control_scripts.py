@@ -47,7 +47,7 @@ def pi_controller(par, x_auv, u_optimal, var_x, pi_parameters, gmrf_params, fiel
                 # Sample roll-out trajectory
                 tau_x[:, kk + 1, jj] = Config.auv_dynamics(par, tau_x[:, kk, jj], u_optimal[kk], epsilon_auv[kk, jj],
                                                            t_cstep,
-                                                           field_limits, set_border=True)
+                                                           field_limits, set_border=False)
 
             """Calculate cost and probability weighting"""
             for kk in range(0, N_horizon):  # Iterate over length of trajectory
