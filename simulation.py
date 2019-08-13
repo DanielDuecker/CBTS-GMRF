@@ -18,14 +18,14 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['geist']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['pi2']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 5
-nIter = 100
+nSim = 3
+nIter = 1000
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = False
@@ -33,8 +33,9 @@ plot = False
 K = [15]
 H = [10]
 nUpdated = [10]
-lambd = [round((math.pi/16)**2 * 10,2)]
-pi2ControlCost = [10]
+pi2ControlCost = [1,10]
+lambd = [round((math.pi/16)**2 * cost,2) for cost in pi2ControlCost]
+
 "CBTS"
 branchingFactor = [6]
 maxDepth = [3]
@@ -219,7 +220,7 @@ for i in range(len(parSettingsList)):
 
 """Plot Performance"""
 fig1 = plt.figure(200, figsize=(19.2, 10.8), dpi=100)
-x = np.linspace(0, nIter - 1, nIter - 1)
+x = np.linspace(0, nIter, nIter)
 plt.title('Performance Measurement')
 plt.subplot(211)
 for sim in simCaseList:
@@ -232,13 +233,14 @@ for sim in simCaseList:
 plt.xlabel('Iteration Index')
 plt.ylabel('Difference Between Ground Truth and Belief')
 plt.subplot(212)
+y = np.linspace(0, nIter-1, nIter-1)
 for sim in simCaseList:
     meanVar = np.mean(totalVarDict[sim], axis=0)
     iqrVar = stats.iqr(totalVarDict[sim], axis=0)
-    plt.plot(x, meanVar, label=sim)
-    plt.plot(x, meanVar - iqrVar, 'gray')
-    plt.plot(x, meanVar + iqrVar, 'gray')
-    plt.fill_between(x, meanVar - iqrVar, meanVar + iqrVar, cmap='twilight', alpha=0.4)
+    plt.plot(y, meanVar, label=sim)
+    plt.plot(y, meanVar - iqrVar, 'gray')
+    plt.plot(y, meanVar + iqrVar, 'gray')
+    plt.fill_between(y, meanVar - iqrVar, meanVar + iqrVar, cmap='twilight', alpha=0.4)
     plt.legend(loc='best')
 plt.xlabel('Iteration Index')
 plt.ylabel('Total Belief Uncertainty')

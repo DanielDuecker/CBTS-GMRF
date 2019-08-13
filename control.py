@@ -104,12 +104,12 @@ class piControl:
             if 0 < alphaNext < 0.5 * math.pi:
                 alphaNext = 0.51 * math.pi
             if 1.5 * math.pi < alphaNext < 2 * math.pi:
-                    alphaNext = 1.49 * math.pi
+                alphaNext = 1.49 * math.pi
 
         if yNext < gmrf.yMin:
             yNext = gmrf.yMin
             if math.pi < alphaNext < 1.49*math.pi:
-                alphaNext = math.pi
+                alphaNext = 0.99 * math.pi
             if 1.5*math.pi < alphaNext < 2*math.pi:
                 alphaNext = 0.01
 
