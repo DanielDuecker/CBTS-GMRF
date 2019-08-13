@@ -33,7 +33,7 @@ plot = False
 K = [15]
 H = [10]
 nUpdated = [10]
-lambd = [(math.pi/16)**2 * 10]
+lambd = [round((math.pi/16)**2 * 10,2)]
 pi2ControlCost = [10]
 "CBTS"
 branchingFactor = [6]
