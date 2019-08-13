@@ -55,8 +55,6 @@ class par:
         self.nGridXSampled = 10
         self.nGridYSampled = 10
 
-        self.usePrecMatrixGeist = False
-
         """STKF class"""
         self.sigmaT = 1e3  # 1e3    # determines exponential decay of time kernel
         self.lambdSTKF = 1  # influences time kernel value
@@ -68,7 +66,7 @@ class par:
         self.H = H  # control horizon steps
         self.nUpdated = nUpdated  # number of iterations
         self.lambd = lambd  # 1e-2 # rescales state costs, affects noise of path roll-outs (positively)
-        self.outOfGridPenaltyPI2 = 10  # each observation outside of grid adds a negative reward
+        self.outOfGridPenaltyPI2 = 20  # each observation outside of grid adds a negative reward
         self.pi2ControlCost = pi2ControlCost  # 5e-1   # affects noise of path roll-outs (negatively)
         # ctrSamplingTime = 0.1  # time discretization
 

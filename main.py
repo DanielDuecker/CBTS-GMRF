@@ -95,6 +95,11 @@ def main(par, printTime):
         else:
             return "Error! No update method selected"
 
+        """Also update gmrfGeist"""
+        y_t = fMeas[i]
+        x_auv = [auv.x, auv.y, auv.alpha]
+        mue_x, var_x, pi_theta = gmrfGeist.gmrf_bayese_update(x_auv, y_t)
+
         """Controller"""
         if par.control == 'pi2':
             # Get next state according to PI Controller
@@ -189,8 +194,6 @@ def main(par, printTime):
 # TODO use stkf in controller update
 # TODO Learning circular field
 # TODO Try Car(2) precision matrix
-# TODO use of sparse commands
-# TODO -> Change implementation of belief update at each node
 # TODO Check reason for vertices in PI2
 # TODO Use generic gmrf implementation (also for action reward mapping)
 # TODO maybe use cubic splines or kernel trajs
@@ -215,3 +218,5 @@ def main(par, printTime):
 # TODO Use current belief mean in reward function -> more exploitation
 # TODO Check mean field for peak Value -> due to noise
 # TODO Show plot of acquisiton function
+# TODO use of sparse commands
+# TODO -> Change implementation of belief update at each node

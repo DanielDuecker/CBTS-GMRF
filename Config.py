@@ -16,8 +16,8 @@ from scipy import sin, cos, sqrt, pi
 
 """Configure the simulation parameters"""
 # AUV starting state
-x_auv = np.array([0, 0, math.pi / 4]).T  # Initial AUV state
-v_auv = 0.5  # AUV velocity in meter/second (constant)
+#x_auv = np.array([0, 0, math.pi / 4]).T  # Initial AUV state
+#v_auv = 0.5  # AUV velocity in meter/second (constant)
 
 # Field dimensions
 field_dim = [0, 10, 0, 10]  # x_min , x_max, y_min, y_max
@@ -86,13 +86,13 @@ elif set_GMRF_cartype == True:
 set_sanity_check = True  # Calculates cost for the optimal path and plots the optimal path
 n_updates = 10  # Control loop updates
 n_k = 15  # Number of virtual roll-out pathes
-n_horizon = 20  # Control horizon length in s
-N_horizon = 20  # Number of discrete rollout points
+n_horizon = 10  # Control horizon length in s
+N_horizon = 10  # Number of discrete rollout points
 horizonGeist = N_horizon
 t_cstep = n_horizon / N_horizon  # Control horizon step size in s
 sigma_epsilon = scipy.pi / 16  # Exploration noise in radians, 90 grad = 1,57
 R_cost = 5 * np.ones(shape=(1, 1))  # Immediate control cost
-border_variance_penalty = 20
+border_variance_penalty = 10
 pi_parameters = (n_updates, n_k, n_horizon, N_horizon, t_cstep, sigma_epsilon, R_cost)
 
 #################################################################################################

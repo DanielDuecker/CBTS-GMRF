@@ -212,10 +212,7 @@ class gmrf:
         self.y = np.linspace(self.yMinEdge, self.yMaxEdge, self.nY)  # Vector of y grid values
 
         "Precision matrix for z values (without regression variable beta)"
-        if par.usePrecMatrixGeist:
-            self.Lambda = gp_scripts.calculate_precision_matrix(self.nX, self.nY, 1.0, 0.001, True)
-        else:
-            self.Lambda = functions.getPrecisionMatrix(self)
+        self.Lambda = functions.getPrecisionMatrix(self)
 
         "Mean augmented bayesian regression"
         self.nBeta = par.nBeta
