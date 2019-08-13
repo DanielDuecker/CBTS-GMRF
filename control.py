@@ -54,8 +54,6 @@ class piControl:
             for k in range(self.K):
                 # sample control noise and compute path roll-outs
                 noise[:, k] = math.sqrt(self.varNoise) * np.random.standard_normal(self.H)
-                if (math.sqrt(self.varNoise)-math.pi / 16) > 0.01:
-                    print("Warning, PI2 noise is different from Geist now!")
                 (xTrVec, yTrVec, alphaNew) = auv.trajectoryFromControl(self.u[:, 0] + noise[:, k])
                 self.xPathRollOut[:, k] = xTrVec[:, 0]
                 self.yPathRollOut[:, k] = yTrVec[:, 0]
