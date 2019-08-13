@@ -92,7 +92,7 @@ horizonGeist = N_horizon
 t_cstep = n_horizon / N_horizon  # Control horizon step size in s
 sigma_epsilon = scipy.pi / 16  # Exploration noise in radians, 90 grad = 1,57
 R_cost = 5 * np.ones(shape=(1, 1))  # Immediate control cost
-border_variance_penalty = 50
+border_variance_penalty = 20
 pi_parameters = (n_updates, n_k, n_horizon, N_horizon, t_cstep, sigma_epsilon, R_cost)
 
 #################################################################################################
