@@ -55,6 +55,8 @@ class par:
         self.nGridXSampled = 10
         self.nGridYSampled = 10
 
+        self.usePrecMatrixGeist = False
+
         """STKF class"""
         self.sigmaT = 1e3  # 1e3    # determines exponential decay of time kernel
         self.lambdSTKF = 1  # influences time kernel value

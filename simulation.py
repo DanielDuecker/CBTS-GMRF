@@ -18,7 +18,7 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['pi2']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['geist','pi2','cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
@@ -33,8 +33,8 @@ plot = False
 K = [15]
 H = [10]
 nUpdated = [10]
-lambd = [0.01]
-pi2ControlCost = [10]
+lambd = [0.1]
+pi2ControlCost = [5]
 
 "CBTS"
 branchingFactor = [6]
@@ -43,7 +43,7 @@ kappa = [50]
 kappaChildSelection = [1]
 UCBRewardFactor = [0.05]
 cbtsControlCost = [1]
-discountFactor = [0.5]
+discountFactor = [0.8]
 
 "Initialize lists and dicts"
 simCaseList = []
