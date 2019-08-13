@@ -25,7 +25,7 @@ cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 printTime = False
 saveToFile = True
 nSim = 5
-nIter = 1000
+nIter = 100
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = False
@@ -147,7 +147,7 @@ for i in range(len(parSettingsList)):
     totalVar = []
 
     for j in range(nSim):
-        print("Simulation ", j, " of ", nSim, " with ", simCase)
+        print("Simulation ", j+1, " of ", nSim, " with ", simCase)
         xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, diffMeanR, totalVarR = \
             main.main(par, printTime)
 
