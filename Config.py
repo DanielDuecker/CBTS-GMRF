@@ -28,7 +28,7 @@ sample_time_gmrf = 100  # Sample/Calculation time in ms of GMRF algorithm
 simulation_end_time = 20000  # Run time of simulation in ms
 
 """Choose GMRF parameters"""
-gmrf_dim = [20, 20, 5, 5]  # lxf, lyf, dvx, dvy
+gmrf_dim = [30, 30, 5, 5]  # lxf, lyf, dvx, dvy
 set_Q_init = True  # Re-Calculate precision matrix at Initialization? False: Load stored precision matrix
 set_Q_check = False  # Plots Q matrix entries inside GMRF algorithm
 set_gmrf_torus = False  # True -w> GMRF uses torus boundary condition, False -> GMRF uses Neumann-BC
@@ -86,8 +86,8 @@ elif set_GMRF_cartype == True:
 set_sanity_check = True  # Calculates cost for the optimal path and plots the optimal path
 n_updates = 10  # Control loop updates
 n_k = 15  # Number of virtual roll-out pathes
-n_horizon = 10  # Control horizon length in s
-N_horizon = 10  # Number of discrete rollout points
+n_horizon = 20  # Control horizon length in s
+N_horizon = 20  # Number of discrete rollout points
 horizonGeist = N_horizon
 t_cstep = n_horizon / N_horizon  # Control horizon step size in s
 sigma_epsilon = scipy.pi / 16  # Exploration noise in radians, 90 grad = 1,57
