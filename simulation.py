@@ -28,7 +28,7 @@ nSim = 1
 nIter = 1000
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
-plot = False
+plot = True
 "PI2"
 K = [15]
 H = [10]

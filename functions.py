@@ -53,20 +53,35 @@ def mapConDis(gmrf, xMeas, yMeas):
 
 
 def getPrecisionMatrix(gmrf):
-    diagonalValue = 4  # needs to be high enough in order to create a strictly diagonal dominant matrix
-    Lambda = diagonalValue * np.eye(gmrf.nP) - np.eye(gmrf.nP, k=gmrf.nX) - np.eye(gmrf.nP, k=-gmrf.nX)
+    kappa = 0.1  # needs to be high enough in order to create a strictly diagonal dominant matrix
+    Lambda = (4 + kappa**2) * np.eye(gmrf.nP) - np.eye(gmrf.nP, k=gmrf.nX) - np.eye(gmrf.nP, k=-gmrf.nX)
     Lambda -= np.eye(gmrf.nP, k=1) + np.eye(gmrf.nP, k=-1)
 
-    # set precision entry to zero if left or right border is reached
-    # (since there is no connection between the two edge vertices)
     for i in range(gmrf.nP):
+
+        # set precision value on diagonal to 3 if index at lower and upper border
+        if i < gmrf.nX:
+            Lambda[i, i] = 3 + kappa**2
+        elif i >= (gmrf.nP - gmrf.nX):
+            Lambda[i, i] = 3 + kappa**2
+
+        # if index switched from left to right border, set precision value on side diagonal to zero since ther
+        # is no physical connection. Also set precision value at diagonal to 3 if a left or right border is reached
         if (i % gmrf.nX) == 0:  # left border
             if i >= gmrf.nX:
                 Lambda[i, i - 1] = 0
-                Lambda[i, i - 1] = 0
+                Lambda[i, i] = 3 + kappa**2
         if (i % gmrf.nX) == (gmrf.nX - 1):  # right border
             if i <= (gmrf.nP - gmrf.nX):
                 Lambda[i, i + 1] = 0
+                Lambda[i, i] = 3 + kappa**2
+
+        # Set diagonal corner precision value to 2
+        Lambda[0, 0] = 2 + kappa**2
+        Lambda[-1, -1] = 2 + kappa**2
+        Lambda[gmrf.nX - 1, gmrf.nX - 1] = 2 + kappa**2
+        Lambda[-gmrf.nX, -gmrf.nX] = 2 + kappa**2
+
     return sp.csr_matrix(Lambda)
 
 
