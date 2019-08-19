@@ -164,13 +164,25 @@ class CBTS:
         for ix in range(self.nTrajPoints):
             if bestTraj[0, ix] < gmrf.xMin:
                 bestTraj[0, ix] = gmrf.xMin
+                angle = np.sign(derivY) * 0.99 * math.pi/2
+                derivX = math.cos(angle)
+                derivY = math.sin(angle)
             elif bestTraj[0, ix] > gmrf.xMax:
                 bestTraj[0, ix] = gmrf.xMax
+                angle = np.sign(derivY) * 1.01 * math.pi/2
+                derivX = math.cos(angle)
+                derivY = math.sin(angle)
         for iy in range(self.nTrajPoints):
             if bestTraj[1, iy] < gmrf.yMin:
                 bestTraj[1, iy] = gmrf.yMin
+                angle = math.pi/2 - np.sign(derivX) * 0.99 * math.pi/2
+                derivX = math.cos(angle)
+                derivY = math.sin(angle)
             elif bestTraj[1, iy] > gmrf.yMax:
                 bestTraj[1, iy] = gmrf.yMax
+                angle = math.pi/2 - np.sign(derivX) * 1.01 * math.pi/2
+                derivX = math.cos(angle)
+                derivY = math.sin(angle)
         return bestTraj, derivX, derivY
 
     def treePolicy(self, v):
