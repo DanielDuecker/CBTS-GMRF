@@ -25,7 +25,7 @@ cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 printTime = False
 saveToFile = True
 nSim = 5
-nIter = 1000
+nIter = 500
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = False
@@ -43,7 +43,7 @@ kappa = [50]
 kappaChildSelection = [1]
 UCBRewardFactor = [0.05]
 cbtsControlCost = [0.1]
-discountFactor = [0.2]
+discountFactor = [0.8]
 
 "Initialize lists and dicts"
 simCaseList = []

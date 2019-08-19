@@ -34,6 +34,7 @@ class piControl:
     def getNewState(self, auv, gmrf):
         self.u[0:-2, 0] = self.u[1:-1, 0]
         self.u[-1, 0] = 0
+        uOld = copy.deepcopy(self.u)
 
         # M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T)) / (
         #    np.dot(self.g.T, np.dot(np.linalg.inv(self.R), self.g)))
@@ -77,14 +78,31 @@ class piControl:
                     expS[h, k] = math.exp(
                         -((S[h, k] - np.amin(S[:, k])) / (np.amax(S[:, k]) - np.amin(S[:, k]))) / self.lambd)
 
-            deltaU = np.zeros((self.H, 1))
+            deltaU = []
+            deltaUOld = np.zeros((self.H, 1))
             for h in range(self.H):
                 for k in range(self.K):
                     P[h, k] = expS[h, k] / np.sum(expS[h, :])
 
+                deltaU.append(np.zeros((self.H-h,1)))
                 for k in range(self.K):
-                    deltaU[h] += P[h, k] * M * noise[h, k]
-            self.u += deltaU
+                    deltaUOld[h] += P[h, k] * M * noise[h, k]
+                    deltaU[h] += P[h, k] * M * noise[h:, k].reshape(deltaU[h].shape)
+
+            # averaging
+            uCorrection = np.zeros((self.H,1))
+            for i in range(self.H):
+                print("i:",i)
+                sumWeights = sum(np.arange(1,i+2,1))
+                print("sum:",sumWeights)
+                for j in range(i+1):
+                    print("j:",j)
+                    print("weighting:",(j+1) / sumWeights)
+                    uCorrection[i] += deltaU[j][i] * (j+1) / sumWeights
+
+            self.u += uCorrection
+            uOld += deltaUOld
+            print(self.u-uOld)
 
         self.xTraj, self.yTraj, self.alphaTraj = auv.trajectoryFromControl(self.u)
 
@@ -344,8 +362,7 @@ class CBTS:
         o = []
         for i in range(self.nTrajPoints - 1):
             Phi = functions.mapConDis(v.gmrf, tau[0, i + 1], tau[1, i + 1])
-            r += (np.dot(Phi, v.gmrf.diagCovCond / max(v.gmrf.diagCovCond)) + self.UCBRewardFactor * np.dot(Phi,
-                                                                           v.gmrf.meanCond / max(v.gmrf.meanCond)))[0]
+            r += (np.dot(Phi, v.gmrf.diagCovCond) + self.UCBRewardFactor * np.dot(Phi,v.gmrf.meanCond))[0]
             o.append(np.dot(Phi, v.gmrf.meanCond))
             # lower reward if agent is out of bound
             if not functions.sanityCheck(tau[0, i + 1] * np.eye(1), tau[1, i + 1] * np.eye(1), v.gmrf):

@@ -77,7 +77,7 @@ class par:
         self.kappa = kappa  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
         self.kappaChildSelection = kappaChildSelection  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
         self.UCBRewardFactor = UCBRewardFactor  # reward = variance + UCBRewardFactor*mean
-        self.outOfGridPenaltyCBTS = 2
+        self.outOfGridPenaltyCBTS = 0.1
         self.cbtsControlCost = cbtsControlCost
         self.discountFactor = discountFactor  # discounts future rewards
 
