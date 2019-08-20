@@ -34,7 +34,6 @@ class piControl:
     def getNewState(self, auv, gmrf):
         self.u[0:-2, 0] = self.u[1:-1, 0]
         self.u[-1, 0] = 0
-        uOld = copy.deepcopy(self.u)
 
         # M = np.dot(np.linalg.inv(self.R), np.dot(self.g, self.g.T)) / (
         #    np.dot(self.g.T, np.dot(np.linalg.inv(self.R), self.g)))
@@ -96,7 +95,7 @@ class piControl:
                 for j in range(i+1):
                     uCorrection[i] += deltaU[j][i-j] * (self.H - j) / sumWeights
 
-            self.u += deltaUOld
+            self.u += uCorrection
 
         self.xTraj, self.yTraj, self.alphaTraj = auv.trajectoryFromControl(self.u)
 
