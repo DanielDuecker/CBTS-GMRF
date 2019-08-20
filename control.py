@@ -92,17 +92,11 @@ class piControl:
             # averaging
             uCorrection = np.zeros((self.H,1))
             for i in range(self.H):
-                print("i:",i)
-                sumWeights = sum(np.arange(1,i+2,1))
-                print("sum:",sumWeights)
+                sumWeights = sum(np.arange(self.H-i,self.H+1,1))
                 for j in range(i+1):
-                    print("j:",j)
-                    print("weighting:",(j+1) / sumWeights)
-                    uCorrection[i] += deltaU[j][i] * (j+1) / sumWeights
+                    uCorrection[i] += deltaU[j][i-j] * (self.H - j) / sumWeights
 
-            self.u += uCorrection
-            uOld += deltaUOld
-            print(self.u-uOld)
+            self.u += deltaUOld
 
         self.xTraj, self.yTraj, self.alphaTraj = auv.trajectoryFromControl(self.u)
 
