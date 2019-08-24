@@ -33,7 +33,7 @@ plot = False
 K = [15]
 H = [10]
 nUpdated = [10]
-lambd = [0.1]
+lambd = [0.05]
 pi2ControlCost = [10]
 
 "CBTS"

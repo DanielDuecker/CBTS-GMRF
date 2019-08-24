@@ -282,9 +282,9 @@ class CBTS:
         maxR = -math.inf
         bestTheta = np.zeros(2)
         for child in v0.children:
-            if child.accReward > maxR:
+            if child.accReward/child.visits > maxR:
                 bestTheta = child.actionToNode
-                maxR = child.accReward
+                maxR = child.accReward/child.visits
         bestTraj, derivX, derivY = self.generateTrajectory(v0, bestTheta)
 
         # plot acquisition function
