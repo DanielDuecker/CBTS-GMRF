@@ -44,7 +44,7 @@ class par:
         """GMRF class"""
         self.xMin = 0  # GMRF dimensions
         self.xMax = 10
-        self.nGridX = 30
+        self.nGridX = 20
         self.yMin = 0
         self.yMax = 10
         self.nGridY = 30

@@ -47,10 +47,13 @@ def main(par, printTime):
     trueField = trueField(par, par.fieldType)
 
     """Performance measurement"""
-    diffMeanVec = []
+    wrmseMeanVec = []
+    rmseMeanVec = []
+    wTotalVarVec = []
     totalVarVec = []
-    diffMean, totalVar = functions.measurePerformance(gmrf1, trueField)
-    diffMeanVec.append(diffMean)
+    wrmseMean, rmseMean, wTotalVar, totalVar = functions.measurePerformance(gmrf1, trueField)
+    wrmseMeanVec.append(wrmseMean)
+    rmseMeanVec.append(rmseMean)
 
     """STKF extension of gmrf"""
     stkf1 = stkf(par, gmrf1)
@@ -159,15 +162,24 @@ def main(par, printTime):
         timeVec.append(timeAfter - timeBefore)
 
         """Measure performance"""
-        diffMean, totalVar = functions.measurePerformance(gmrf1, trueField)
-        diffMeanVec.append(diffMean)
+        wrmseMean, rmseMean, wTotalVar, totalVar = functions.measurePerformance(gmrf1, trueField)
+        wrmseMeanVec.append(wrmseMean)
+        rmseMeanVec.append(rmseMean)
+        wTotalVarVec.append(wTotalVar)
         totalVarVec.append(totalVar)
+
         if par.showPerformance:
             fig3 = plt.figure(3)
             plt.clf()
             plt.show()
-            functions.plotPerformance(diffMeanVec, totalVarVec)
+            functions.plotWeightedPerformance(wrmseMean, wTotalVar)
             fig3.canvas.draw()
+
+            fig4 = plt.figure(4)
+            plt.clf()
+            plt.show()
+            functions.plotPerformance(rmseMean, totalVar)
+            fig4.canvas.draw()
 
         """Plotting"""
         if par.plot:
@@ -187,7 +199,7 @@ def main(par, printTime):
     if par.plot:
         plt.show(block=True)
 
-    return x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist, diffMeanVec, totalVarVec
+    return x, y, trueField, gmrf1, controller, CBTS1, timeVec, xHist, yHist, wrmseMeanVec, rmseMeanVec, wTotalVarVec, totalVarVec
     # functions.plotFields(fig, x, y, trueField, gmrf1, controller, CBTS1, iterVec, timeVec, xHist, yHist)
     # plt.show(block=True)
 

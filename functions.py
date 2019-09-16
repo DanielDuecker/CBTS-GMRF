@@ -212,24 +212,37 @@ def sanityCheck(xVec, yVec, gmrf):
     return True
 
 
-def measurePerformance(gmrf, trueField):
+def measurePerformance(gmrf,trueField):
     true = trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge])
     belief = gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge]
-    num = np.sum(abs(true - belief))
-    den = np.sum(abs(true))
-    diffMean = num/den
-    totalVar = np.sum(abs(gmrf.diagCovCond))
-    return diffMean, totalVar
 
+    weights = (true-np.min(true)*np.ones(true.shape))/(np.max(true)-np.min(true))
+    wrmseMean = math.sqrt(np.sum(np.multiply((belief-true)**2, weights))/len(true))
+    wTotalVar = np.sum(abs(np.multiply(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge], weights)))
 
-def plotPerformance(diffMean, totalVar):
+    rmseMean = math.sqrt(np.sum((belief-true)**2/len(true)))
+    totalVar = np.sum(abs(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge]))
+    return wrmseMean, rmseMean, wTotalVar, totalVar
+
+def plotPerformance(rmseMean,totalVar):
     plt.title('Performance Measurement')
     plt.subplot(211)
-    plt.plot(diffMean)
+    plt.plot(rmseMean)
     plt.xlabel('Iteration Index')
-    plt.ylabel('Difference Between Ground Truth and Belief')
+    plt.ylabel('Root Mean Squared Error Between Ground Truth and Belief')
     plt.subplot(212)
     plt.plot(totalVar)
+    plt.xlabel('Iteration Index')
+    plt.ylabel('Total Belief Uncertainty')
+
+def plotWeightedPerformance(wrmseMean,wtotalVar):
+    plt.title('Weighted Performance Measurement')
+    plt.subplot(211)
+    plt.plot(wrmseMean)
+    plt.xlabel('Iteration Index')
+    plt.ylabel('Weighted Root Mean Squared Error Between Ground Truth and Belief')
+    plt.subplot(212)
+    plt.plot(wtotalVar)
     plt.xlabel('Iteration Index')
     plt.ylabel('Total Belief Uncertainty')
 
