@@ -215,13 +215,12 @@ def sanityCheck(xVec, yVec, gmrf):
 def measurePerformance(gmrf,trueField):
     true = trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge])
     belief = gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge]
-    numberPoints = true.shape[0]*true.shape[1]
 
     weights = (true-np.min(true)*np.ones(true.shape))/(np.max(true)-np.min(true))
-    wrmseMean = math.sqrt(np.sum(np.multiply((belief-true)**2, weights))/numberPoints)
+    wrmseMean = math.sqrt(np.mean(np.multiply((belief-true)**2, weights)))
     wTotalVar = np.sum(abs(np.multiply(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge], weights)))
 
-    rmseMean = math.sqrt(np.sum((belief-true)**2/numberPoints))
+    rmseMean = math.sqrt(np.mean((belief-true)**2))
     totalVar = np.sum(abs(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge]))
     return wrmseMean, rmseMean, wTotalVar, totalVar
 
