@@ -24,7 +24,7 @@ cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 10
+nSim = 2
 nIter = 500
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
@@ -140,7 +140,7 @@ for i in range(len(parSettingsList)):
     trueField = []
     gmrf = []
     gmrfMean = []
-    gmrfCov = []
+    gmrfDiagCov = []
     controller = []
     CBTS = []
     timeVec = []
@@ -161,7 +161,7 @@ for i in range(len(parSettingsList)):
         trueField.append(trueFieldR)
         gmrf.append(gmrfR)
         gmrfMean.append(gmrfR.meanCond)
-        gmrfCov.append(gmrfR.covCond)
+        gmrfDiagCov.append(gmrfR.diagCovCond)
         controller.append(controllerR)
         CBTS.append(CBTSR)
         timeVec.append(timeVecR)
@@ -210,7 +210,7 @@ for i in range(len(parSettingsList)):
                 writer.writerow(wTotalVar[k])
                 writer.writerow(totalVar[k])
                 writer.writerow(gmrfMean[k])
-                writer.writerow(gmrfCov[k])
+                writer.writerow(gmrfDiagCov[k])
                 writer.writerow(["-"])
             dataFile.close()
 
