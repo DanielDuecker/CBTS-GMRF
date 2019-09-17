@@ -18,14 +18,14 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['pi2','cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 2
-nIter = 500
+nSim = 5
+nIter = 10
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 plot = False
@@ -48,8 +48,8 @@ discountFactor = [0.8]
 "Initialize lists and dicts"
 simCaseList = []
 parSettingsList = []
-wrmseMeanDict = {}
-rmseMeanDict = {}
+wrmseDict = {}
+rmseDict = {}
 wTotalVarDict = {}
 totalVarDict = {}
 
@@ -146,14 +146,14 @@ for i in range(len(parSettingsList)):
     timeVec = []
     xHist = []
     yHist = []
-    wrmseMean = []
-    rmseMean = []
+    wrmse = []
+    rmse = []
     wTotalVar = []
     totalVar = []
 
     for j in range(nSim):
         print("Simulation ", j+1, " of ", nSim, " with ", simCase)
-        xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, wrmseMeanR, rmseMeanR, wTotalVarR, totalVarR = \
+        xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, wrmseR, rmseR, wTotalVarR, totalVarR = \
             main.main(par, printTime)
 
         x.append(xR)
@@ -167,8 +167,8 @@ for i in range(len(parSettingsList)):
         timeVec.append(timeVecR)
         xHist.append(xHistR)
         yHist.append(yHistR)
-        wrmseMean.append(wrmseMeanR)
-        rmseMean.append(rmseMeanR)
+        wrmse.append(wrmseR)
+        rmse.append(rmseR)
         wTotalVar.append(wTotalVarR)
         totalVar.append(totalVarR)
 
@@ -180,8 +180,8 @@ for i in range(len(parSettingsList)):
         with open('objs_' + str(j) + '_gmrf_' + simCase + '.pkl', 'wb') as f:
             pickle.dump(gmrfR, f)
 
-    wrmseMeanDict[simCase] = wrmseMean
-    rmseMeanDict[simCase] = rmseMean
+    wrmseDict[simCase] = wrmse
+    rmseDict[simCase] = rmse
     wTotalVarDict[simCase] = wTotalVar
     totalVarDict[simCase] = totalVar
 
@@ -189,11 +189,11 @@ for i in range(len(parSettingsList)):
         """Save objects"""
         # Save objects
         with open('objs_other_' + simCase + '.pkl', 'wb') as f:
-            pickle.dump([x, y, trueField, controller, CBTS, timeVec, xHist, yHist,  wrmseMeanR, rmseMeanR, wTotalVarR, totalVarR], f)
+            pickle.dump([x, y, trueField, controller, CBTS, timeVec, xHist, yHist,  wrmseR, rmseR, wTotalVarR, totalVarR], f)
 
         # Getting back the objects:
         # with open('objs.pkl','rb') as f:
-        #   x, y, trueField, controller, CBTS, timeVec, xHist, yHist,  wrmseMeanR, rmseMeanR, wTotalVarR, totalVarR, simCase = pickle.load(f)
+        #   x, y, trueField, controller, CBTS, timeVec, xHist, yHist,  wrmseR, rmseR, wTotalVarR, totalVarR, simCase = pickle.load(f)
 
         # Save data as csv
         with open(folderName + '_' + simCase + '_data.csv', 'w') as dataFile:
@@ -205,8 +205,8 @@ for i in range(len(parSettingsList)):
                 writer.writerow(timeVec[k])
                 writer.writerow(xHist[k])
                 writer.writerow(yHist[k])
-                writer.writerow(wrmseMean[k])
-                writer.writerow(rmseMean[k])
+                writer.writerow(wrmse[k])
+                writer.writerow(rmse[k])
                 writer.writerow(wTotalVar[k])
                 writer.writerow(totalVar[k])
                 writer.writerow(gmrfMean[k])
@@ -228,66 +228,36 @@ for i in range(len(parSettingsList)):
         plt.clf()
     plt.close(fig0)
 
-"""Plot Performance"""
-"""Plot Weighted Performance"""
-fig1 = plt.figure(200, figsize=(19.2, 10.8), dpi=100)
-x = np.linspace(0, nIter, nIter)
-plt.title('Weighted Root Mean Squared Error Between Ground Truth and Belief')
-plt.subplot(211)
-for sim in simCaseList:
-    meanRmse = np.mean(wrmseMeanDict[sim], axis=0)
-    iqrDiff = stats.iqr(wrmseMeanDict[sim], axis=0)
-    plt.plot(x, meanRmse, label=sim)
-    test = wrmseMeanDict[sim]
-    plt.plot(x, meanRmse - iqrDiff, 'gray')
-    plt.plot(x, meanRmse + iqrDiff, 'gray')
-    plt.fill_between(x, meanRmse - iqrDiff, meanRmse + iqrDiff, cmap='twilight', alpha=0.4)
-plt.xlabel('Iteration Index')
-plt.ylabel('Weighted RMSE')
-plt.subplot(212)
-y = np.linspace(0, nIter-1, nIter-1)
-for sim in simCaseList:
-    meanVar = np.mean(wTotalVarDict[sim], axis=0)
-    iqrVar = stats.iqr(wTotalVarDict[sim], axis=0)
-    plt.plot(y, meanVar, label=sim)
-    plt.plot(y, meanVar - iqrVar, 'gray')
-    plt.plot(y, meanVar + iqrVar, 'gray')
-    plt.fill_between(y, meanVar - iqrVar, meanVar + iqrVar, cmap='twilight', alpha=0.4)
-    plt.legend(loc='best')
-plt.xlabel('Iteration Index')
-plt.ylabel('Total Belief Uncertainty')
+"""Plot Weighted Median and IQR"""
+fig1 = plt.figure(201, figsize=(19.2, 10.8), dpi=100)
+plt.title("Weighted Median and IQR")
+functions.plotOverallPerformance(nIter, simCaseList, wrmseDict, wTotalVarDict, True, 'median')
 if saveToFile:
-    fig1.savefig(folderName + '_weightedPerformance.svg', format='svg')
+    fig1.savefig(folderName + '_weightedMedianIQR.svg', format='svg')
 plt.show()
 
-"""Plot Performance"""
-fig2 = plt.figure(300, figsize=(19.2, 10.8), dpi=100)
-x = np.linspace(0, nIter, nIter)
-plt.title('Root Mean Squared Error Between Ground Truth and Belief')
-plt.subplot(211)
-for sim in simCaseList:
-    meanRmse = np.mean(rmseMeanDict[sim], axis=0)
-    iqrDiff = stats.iqr(rmseMeanDict[sim], axis=0)
-    plt.plot(x, meanRmse, label=sim)
-    plt.plot(x, meanRmse - iqrDiff, 'gray')
-    plt.plot(x, meanRmse + iqrDiff, 'gray')
-    plt.fill_between(x, meanRmse - iqrDiff, meanRmse + iqrDiff, cmap='twilight', alpha=0.4)
-plt.xlabel('Iteration Index')
-plt.ylabel('RMSE')
-plt.subplot(212)
-y = np.linspace(0, nIter-1, nIter-1)
-for sim in simCaseList:
-    meanVar = np.mean(totalVarDict[sim], axis=0)
-    iqrVar = stats.iqr(totalVarDict[sim], axis=0)
-    plt.plot(y, meanVar, label=sim)
-    plt.plot(y, meanVar - iqrVar, 'gray')
-    plt.plot(y, meanVar + iqrVar, 'gray')
-    plt.fill_between(y, meanVar - iqrVar, meanVar + iqrVar, cmap='twilight', alpha=0.4)
-    plt.legend(loc='best')
-plt.xlabel('Iteration Index')
-plt.ylabel('Total Belief Uncertainty')
+"""Plot Weighted Mean and standard deviation"""
+fig2 = plt.figure(202, figsize=(19.2, 10.8), dpi=100)
+plt.title("Weighted Mean and Standard Deviation")
+functions.plotOverallPerformance(nIter, simCaseList, wrmseDict, wTotalVarDict, True, 'mean')
 if saveToFile:
-    fig2.savefig(folderName + '_Performance.svg', format='svg')
+    fig2.savefig(folderName + '_weightedMeanStandardDeviation.svg', format='svg')
+plt.show()
+
+"""Plot Median and IQR"""
+fig3 = plt.figure(203, figsize=(19.2, 10.8), dpi=100)
+plt.title("Median and IQR")
+functions.plotOverallPerformance(nIter, simCaseList, rmseDict, totalVarDict, False, 'median')
+if saveToFile:
+    fig3.savefig(folderName + '_MedianIQR.svg', format='svg')
+plt.show()
+
+"""Plot Mean and standard deviation"""
+fig4 = plt.figure(204, figsize=(19.2, 10.8), dpi=100)
+plt.title("Mean and Standard Deviation")
+functions.plotOverallPerformance(nIter, simCaseList, rmseDict, totalVarDict, False, 'mean')
+if saveToFile:
+    fig4.savefig(folderName + '_MeanStandardDeviation.svg', format='svg')
 plt.show()
 
 # TODO Enable loading of pickled data instead of simulating

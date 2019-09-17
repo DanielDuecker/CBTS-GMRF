@@ -3,6 +3,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.sparse as sp
+from scipy import stats
 
 import classes
 
@@ -245,6 +246,53 @@ def plotWeightedPerformance(wrmseMean,wtotalVar):
     plt.plot(wtotalVar)
     plt.xlabel('Iteration Index')
     plt.ylabel('Total Belief Uncertainty')
+
+def plotOverallPerformance(nIter, simCaseList, rmseDict, totalVarDict, weighted, type):
+    x = np.linspace(0, nIter, nIter)
+    plt.subplot(211)
+    for sim in simCaseList:
+        if type == 'median':
+            rmse = np.median(rmseDict[sim], axis=0)
+            lower = stats.iqr(rmseDict[sim], axis=0, rng=(25, 50))
+            upper = stats.iqr(rmseDict[sim], axis=0, rng=(50, 75))
+        elif type == 'mean':
+            rmse = np.mean(rmseDict[sim], axis=0)
+            lower = np.std(rmseDict[sim], axis=0)
+            upper = lower
+        plt.plot(x, rmse, label=sim)
+        plt.plot(x, rmse - lower, 'gray')
+        plt.plot(x, rmse + upper, 'gray')
+        for i in range(len(rmseDict[sim])):
+            plt.plot(x,rmseDict[sim][i])
+        plt.fill_between(x,  rmse - lower, rmse + upper, cmap='twilight', alpha=0.4)
+    plt.xlabel('Iteration Index')
+    if weighted:
+        plt.ylabel('Weighted RMSE')
+    else:
+        plt.ylabel('Weighted RMSE')
+    plt.legend()
+
+    y = np.linspace(0, nIter - 1, nIter - 1)
+    plt.subplot(212)
+    for sim in simCaseList:
+        if type == 'median':
+            var = np.median(totalVarDict[sim], axis=0)
+            lower = stats.iqr(totalVarDict[sim], axis=0, rng=(25, 50))
+            upper = stats.iqr(totalVarDict[sim], axis=0, rng=(50, 75))
+        elif type == 'mean':
+            var = np.mean(totalVarDict[sim], axis=0)
+            lower = np.std(totalVarDict[sim], axis=0)
+            upper = lower
+        plt.plot(y, var, label=sim)
+        plt.plot(y, var - lower, 'gray')
+        plt.plot(y, var + upper, 'gray')
+        plt.fill_between(y,  var - lower, var + upper, cmap='twilight', alpha=0.4)
+    plt.xlabel('Iteration Index')
+    if weighted:
+        plt.ylabel('Weighted Predictive Variance')
+    else:
+        plt.ylabel('Predictive Variance')
+    plt.legend()
 
 
 def sampleGMRF(gmrf):
