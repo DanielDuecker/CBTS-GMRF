@@ -262,8 +262,6 @@ def plotOverallPerformance(nIter, simCaseList, rmseDict, totalVarDict, weighted,
         plt.plot(x, rmse, label=sim)
         plt.plot(x, rmse - lower, 'gray')
         plt.plot(x, rmse + upper, 'gray')
-        for i in range(len(rmseDict[sim])):
-            plt.plot(x,rmseDict[sim][i])
         plt.fill_between(x,  rmse - lower, rmse + upper, cmap='twilight', alpha=0.4)
     plt.xlabel('Iteration Index')
     if weighted:
