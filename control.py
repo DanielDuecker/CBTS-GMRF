@@ -170,7 +170,6 @@ class CBTS:
             vl.accReward = vl.rewardToNode + futureReward
             self.backUp(v0, vl, vl.accReward)
         bestTraj, derivX, derivY = self.getBestTheta(v0)
-        gc.collect()
 
         for ix in range(self.nTrajPoints):
             if bestTraj[0, ix] < gmrf.xMin:
@@ -236,6 +235,7 @@ class CBTS:
                         vNew.gmrf.seqBayesianUpdate(o[i], Phi)
                 vNew.auv.derivX = derivX
                 vNew.auv.derivY = derivY
+                gc.collect()
                 return vNew
             else:
                 v = self.bestChild(v)
