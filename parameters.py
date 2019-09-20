@@ -13,6 +13,11 @@ class par:
         self.cbtsNodeBelief = cbtsNodeBelief
         self.fieldType = fieldType
         self.temporal = temporal
+        self.obstacle = True
+        self.xGateLeft = 4
+        self.xGateRight = 5
+        self.yGateLower = 4
+        self.yGateUpper = 5
         self.plot = plot
         self.nIter = nIter  # number of iterations
 

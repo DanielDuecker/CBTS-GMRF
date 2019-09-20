@@ -212,6 +212,13 @@ def sanityCheck(xVec, yVec, gmrf):
             return False
     return True
 
+def updateUncertainty(par, gmrf):
+    for ix in gmrf.x:
+        for iy in gmrf.y:
+            if par.xGateLeft <= ix <= par.xGateRight:
+                if iy <= par.yGateLower or iy >= par.yGateUpper:
+                    pos = np.argmax(mapConDis(gmrf,ix,iy))
+                    gmrf.diagCovCond[pos] = 0.001
 
 def measurePerformance(gmrf,trueField):
     true = trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge])

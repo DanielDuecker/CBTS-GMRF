@@ -192,6 +192,10 @@ def main(par, printTime):
         if par.temporal:
             trueField.updateField(par, i)
 
+        """Update uncertainty"""
+        if par.obstacle:
+            functions.updateUncertainty(par, gmrf1)
+
     if printTime:
         pr.disable()
         pr.print_stats(sort='cumtime')
