@@ -1,6 +1,7 @@
 Q_t_0.npz
 .idea
 sim/
+venv/
 simSaved/
 classes.pyc
 control.pyc
