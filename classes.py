@@ -362,9 +362,9 @@ class stkf:
         self.Q = sp.csr_matrix(QBar)
         self.R = sp.csr_matrix(sigma2 * np.eye(1))
 
-    def kalmanFilter(self, t, zMeas, fMeas):
+    def kalmanFilter(self, t, xMeas, yMeas, fMeas):
         import cProfile
-        Phi = functions.mapConDis(self.gmrf, zMeas)
+        Phi = functions.mapConDis(self.gmrf, xMeas, yMeas)
         if t % 1 != 0:
             # Open loop prediciton
             self.skk = np.dot(self.A, self.skk)

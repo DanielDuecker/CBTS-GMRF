@@ -18,7 +18,7 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['stkf']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['randomWalk']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
@@ -103,12 +103,14 @@ for belief in beliefOptions:
                                             + '_' + 'cbtsControlCost' + str(cbtsControlCost_i).replace('.', 'p')
                                             + '_' + 'discountFactor' + str(discountFactor_i).replace('.', 'p'))
         if control == 'randomWalk':
-            parObject = par(belief, control, 0, fieldType, temporal, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            parObject = par(belief, control, 0, fieldType, temporal, varTimeKernel, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0)
             parSettingsList.append(parObject)
             simCaseList.append(belief + '_' + control)
 
         if control == 'geist':
-            parObject = par(belief, control, 0, fieldType, temporal, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            parObject = par(belief, control, 0, fieldType, temporal, varTimeKernel, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0,
+                            0, 0, 0, 0)
             parSettingsList.append(parObject)
             simCaseList.append(belief + '_' + control)
 
