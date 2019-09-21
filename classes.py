@@ -297,41 +297,74 @@ class gmrf:
 
 
 class stkf:
-    def __init__(self, par, gmrf1):
+    def __init__(self,par, gmrf1):
         self.par = par
         self.gmrf = gmrf1
         self.dt = par.dt
-        self.sigmaT = par.sigmaT
+        self.sigmaTMin = par.sigmaTMin
+        self.sigmaTMax = par.sigmaTMax
         self.lambdSTKF = par.lambdSTKF
+        self.A = None
+        self.AT = None
+        self.CsDense = None
+        self.Cs = None
+        self.Q = None
+        self.R = None
+        self.sigmaZero = None
+        self.skk = None
+        self.covkk = None
 
+        self.updateSTKF()
+
+        # Initialization
+        self.skk = sp.csr_matrix(np.zeros((self.gmrf.nP, 1)))
+        self.covkk = sp.csr_matrix(self.sigmaZero)
+
+    def updateSTKF(self):
         # State representation of Sr
-        F = -1 / self.sigmaT * np.eye(1)
-        H = math.sqrt(2 * self.lambdSTKF / self.sigmaT) * np.eye(1)
-        G = np.eye(1)
-        sigma2 = par.sigma2
+        F = np.eye(self.gmrf.nP)
+        H = np.eye(self.gmrf.nP)
+        G = np.eye(self.gmrf.nP)
+        QBar = np.eye(self.gmrf.nP)
+        self.sigmaZero = np.eye(self.gmrf.nP)
+        for xi in self.gmrf.x:
+            for yi in self.gmrf.y:
+                index = np.argmax(functions.mapConDis(self.gmrf,xi,yi,False))
+                if self.par.varTimeKernel:
+                    if self.par.varTimeKernelXLoc[0] <= xi <= self.par.varTimeKernelXLoc[1]:
+                        if self.par.varTimeKernelYLoc[0] <= yi <= self.par.varTimeKernelYLoc[1]:
+                            rescaling = 1
+                        else:
+                            rescaling = 0
+                    else:
+                        rescaling = 0
+                else:
+                    rescaling = 0
+                sigmaT = self.par.sigmaTMax - (self.sigmaTMax-self.sigmaTMin) * rescaling
+                F[index, index] = -1 / sigmaT
+                H[index, index] = math.sqrt(2 * self.lambdSTKF / sigmaT)
+                QBar[index, index] = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(F[index, index]*np.eye(1), tau)),
+                                                    np.dot(G[index, index]*np.eye(1), np.dot(G[index, index]*np.eye(1).T,
+                                                    scipy.linalg.expm(np.dot(F[index, index]*np.eye(1), tau)).T))), 0, self.dt)[0]
+                self.sigmaZero[index, index] = scipy.linalg.solve_continuous_lyapunov(F[index, index], -G[index, index] * G[index, index].T)
+
+        sigma2 = self.par.sigma2
 
         # Kernels
         Ks = np.linalg.inv(np.array(functions.getPrecisionMatrix(self.gmrf).todense()))
         KsChol = np.linalg.cholesky(Ks)
         # h = lambda tau: lambdSTKF * math.exp(-abs(tau) / sigmaT) # used time kernel
 
-        sigmaZero = scipy.linalg.solve_continuous_lyapunov(F, -G * G.T)
-
-        self.A = sp.csr_matrix(sp.linalg.expm(np.kron(np.eye(self.gmrf.nP), F) * self.dt))
+        self.A = sp.csr_matrix(sp.linalg.expm(F * self.dt))
         self.AT = sp.csr_matrix(self.A.T)
-        self.CsDense = np.dot(KsChol, np.kron(np.eye(self.gmrf.nP), H))
+        self.CsDense = np.dot(KsChol, H)
         self.Cs = sp.csr_matrix(self.CsDense)
-        QBar = scipy.integrate.quad(lambda tau: np.dot(scipy.linalg.expm(np.dot(F, tau)), np.dot(G,
-                                                    np.dot(G.T, scipy.linalg.expm(np.dot(F,tau)).T))), 0, self.dt)[0]
-        self.Q = sp.csr_matrix(np.kron(np.eye(self.gmrf.nP), QBar))
+        self.Q = sp.csr_matrix(QBar)
         self.R = sp.csr_matrix(sigma2 * np.eye(1))
 
-        # Initialization
-        self.skk = sp.csr_matrix(np.zeros((self.gmrf.nP, 1)))
-        self.covkk = sp.csr_matrix(np.kron(np.eye(self.gmrf.nP), sigmaZero))
-
-    def kalmanFilter(self, t, xMeas, yMeas, fMeas):
-        Phi = functions.mapConDis(self.gmrf, xMeas, yMeas)
+    def kalmanFilter(self, t, zMeas, fMeas):
+        import cProfile
+        Phi = functions.mapConDis(self.gmrf, zMeas)
         if t % 1 != 0:
             # Open loop prediciton
             self.skk = np.dot(self.A, self.skk)
@@ -346,19 +379,20 @@ class stkf:
             covPred = self.A.dot(self.covkk.dot(self.AT)) + self.Q
             denum = sp.csr_matrix(sp.linalg.inv(C.dot(covPred.dot(CT)) + self.R))
             kalmanGain = covPred.dot(CT.dot(denum))
+
             self.skk = sPred + kalmanGain.dot(sp.csr_matrix(fMeas) - C.dot(sPred))
             self.covkk = (sp.csr_matrix(np.eye(self.gmrf.nP)) - kalmanGain.dot(C)).dot(covPred)
 
         self.gmrf.meanCond = np.array(np.dot(self.CsDense, self.skk.todense()), ndmin=2)
         self.gmrf.covCond = np.array(np.dot(self.CsDense, np.dot(self.covkk.todense(), self.CsDense.T)))
-        self.gmrf.diagCovCond = self.gmrf.covCond.diagonal().reshape(self.gmrf.nP + self.gmrf.nBeta, 1)
+        self.gmrf.diagCovCond = self.gmrf.covCond.diagonal().reshape(self.gmrf.nP+self.gmrf.nBeta,1)
 
         # Also update bSeq and precCond in case seq. belief update is used for planning
         PhiT = Phi.T
         PhiTSparse = sp.csr_matrix(PhiT)
         self.gmrf.bSeq = self.gmrf.bSeq + 1 / self.par.ov2 * PhiT * fMeas  # sequential update canonical mean
-        self.gmrf.precCondSparse = self.gmrf.precCondSparse + 1 / self.par.ov2 * PhiTSparse.dot(
-            PhiTSparse.T)  # sequential update of precision matrix
+        self.gmrf.precCondSparse = self.gmrf.precCondSparse + 1 / self.par.ov2 * PhiTSparse.dot(PhiTSparse.T)  # sequential update of precision matrix
+
 
 
 class node:

@@ -4,7 +4,7 @@ import numpy as np
 
 
 class par:
-    def __init__(self, belief, control, cbtsNodeBelief, fieldType, temporal, plot, nIter, K=15, H=10, nUpdated=5,
+    def __init__(self, belief, control, cbtsNodeBelief, fieldType, temporal, varTimeKernel, plot, nIter, K=15, H=10, nUpdated=5,
                  lambd=1e-1,
                  pi2ControlCost=5, branchingFactor=6, maxDepth=3, kappa=100, kappaChildSelection=1,
                  UCBRewardFactor=0.05, cbtsControlCost=0.2, discountFactor=0.5):
@@ -13,7 +13,7 @@ class par:
         self.cbtsNodeBelief = cbtsNodeBelief
         self.fieldType = fieldType
         self.temporal = temporal
-        self.obstacle = True
+        self.obstacle = False
         self.xGateLeft = 4
         self.xGateRight = 5
         self.yGateLower = 4
@@ -61,9 +61,13 @@ class par:
         self.nGridYSampled = 10
 
         """STKF class"""
-        self.sigmaT = 1e3  # 1e3    # determines exponential decay of time kernel
+        self.sigmaTMin = 1e2
+        self.sigmaTMax = 1e3  # 1e3    # determines exponential decay of time kernel
         self.lambdSTKF = 1  # influences time kernel value
         self.sigma2 = 0.01
+        self.varTimeKernel = varTimeKernel
+        self.varTimeKernelXLoc = [5, 10]
+        self.varTimeKernelYLoc = [0, 5]
 
         """PI2 controller"""
         "Rollout Tuning"

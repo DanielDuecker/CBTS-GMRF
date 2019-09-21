@@ -13,19 +13,20 @@ def getMeasurement(xMeas, yMeas, trueField, noiseVariance):
     return trueField.getField(xMeas, yMeas) + noise
 
 
-def mapConDis(gmrf, xMeas, yMeas):
+def mapConDis(gmrf, xMeas, yMeas, borderEnforcement = True):
     # Initialize j-th row of mapping matrix Phi
     Phi = np.zeros((1, gmrf.nP))
     Phi = np.hstack((Phi, np.zeros((1, gmrf.nBeta))))  # TODO Change this
 
-    if xMeas < gmrf.xMin:
-        return Phi
-    elif xMeas > gmrf.xMax:
-        return Phi
-    if yMeas < gmrf.yMin:
-        return Phi
-    elif yMeas > gmrf.yMax:
-        return Phi
+    if borderEnforcement:
+        if xMeas < gmrf.xMin:
+            return Phi
+        elif xMeas > gmrf.xMax:
+            return Phi
+        if yMeas < gmrf.yMin:
+            return Phi
+        elif yMeas > gmrf.yMax:
+            return Phi
 
     # Get grid position relative to surrounding vertices
     xRel = (xMeas - gmrf.xMinEdge) % gmrf.dx - gmrf.dx / 2
@@ -217,8 +218,8 @@ def updateUncertainty(par, gmrf):
         for iy in gmrf.y:
             if par.xGateLeft <= ix <= par.xGateRight:
                 if iy <= par.yGateLower or iy >= par.yGateUpper:
-                    pos = np.argmax(mapConDis(gmrf,ix,iy))
-                    gmrf.diagCovCond[pos] = 0.001
+                    pos = np.argmax(mapConDis(gmrf, ix, iy, False))
+                    gmrf.diagCovCond[pos] = 0.1
 
 def measurePerformance(gmrf,trueField):
     true = trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge])

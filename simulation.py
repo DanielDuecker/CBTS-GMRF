@@ -17,18 +17,19 @@ from parameters import par
 matplotlib.use('TkAgg')
 
 """Simulation Options"""
-beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['pi2', 'randomWalk', 'geist']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+beliefOptions = ['stkf']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
+controlOptions = ['cbts', 'pi2', 'randomWalk', 'geist']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 5
+nSim = 20
 nIter = 500
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
-plot = True
+varTimeKernel = True
+plot = False
 "PI2"
 K = [15]
 H = [10]
@@ -64,16 +65,19 @@ for belief in beliefOptions:
                     for nUpdated_i in nUpdated:
                         for lambd_i in lambd:
                             for pi2ControlCost_i in pi2ControlCost:
-                                parObject = par(belief, control, 0, fieldType, temporal, plot, nIter, K_i, H_i,
+                                parObject = par(belief, control, 0, fieldType, temporal, varTimeKernel, plot, nIter,
+                                                K_i, H_i,
                                                 nUpdated_i,
                                                 lambd_i, pi2ControlCost_i, 0, 0, 0, 0, 0, 0, 0)
                                 parSettingsList.append(parObject)
-                                simCaseList.append(belief + '_' + control + '_' + 'K' + str(K_i).replace('.', 'p')
+                                simCaseList.append(belief + '_' + control + '_' + 'temporal' + str(temporal)
+                                                   + '_' + 'varTimeKernel' + str(varTimeKernel)
+                                                   + '_' + 'K' + str(K_i).replace('.', 'p')
                                                    + '_' + 'H' + str(H_i).replace('.', 'p')
                                                    + '_' + 'nUpdated' + str(nUpdated_i).replace('.', 'p')
                                                    + '_' + 'lambd' + str(lambd_i).replace('.', 'p')
                                                    + '_' + 'pi2ControlCost' + str(pi2ControlCost_i).replace('.', 'p'))
-        if control == 'cbts':
+        elif control == 'cbts':
             for cbtsNodeBelief_i in cbtsNodeBelief:
                 for branchingFactor_i in branchingFactor:
                     for maxDepth_i in maxDepth:
@@ -83,11 +87,13 @@ for belief in beliefOptions:
                                     for cbtsControlCost_i in cbtsControlCost:
                                         for discountFactor_i in discountFactor:
                                             parObject = par(belief, control, cbtsNodeBelief_i, fieldType, temporal,
-                                                            plot, nIter, 0, 0, 0, 0, 0, branchingFactor_i, maxDepth_i,
-                                                            kappa_i,kappaChildSelection_i, UCBRewardFactor_i,
-                                                            cbtsControlCost_i, discountFactor_i)
+                                                            varTimeKernel, plot, nIter, 0, 0, 0, 0, 0,
+                                                            branchingFactor_i, maxDepth_i, kappa_i,
+                                                            kappaChildSelection_i, UCBRewardFactor_i, cbtsControlCost_i,
+                                                            discountFactor_i)
                                             parSettingsList.append(parObject)
-                                            simCaseList.append(belief + '_' + control
+                                            simCaseList.append(belief + '_' + control + '_' + 'temporal' + str(temporal)
+                                            + '_' + 'varTimeKernel' + str(varTimeKernel)
                                             + '_' + 'cbtsNodeBelief' + str(cbtsNodeBelief_i).replace('.', 'p')
                                             + '_' + 'branchingFactor' + str(branchingFactor_i).replace('.', 'p')
                                             + '_' + 'maxDepth' + str(maxDepth_i).replace('.', 'p')
