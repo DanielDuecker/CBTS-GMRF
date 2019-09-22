@@ -329,7 +329,9 @@ class stkf:
         self.sigmaZero = np.eye(self.gmrf.nP)
         for xi in self.gmrf.x:
             for yi in self.gmrf.y:
-                index = np.argmax(functions.mapConDis(self.gmrf,xi,yi,False))
+
+                PhiTest = functions.mapConDis(self.gmrf,self.gmrf.xMinEdge,self.gmrf.yMaxEdge,False)
+                index = min(self.gmrf.nP - 1 , np.argmax(functions.mapConDis(self.gmrf,xi,yi,False)))
                 if self.par.varTimeKernel:
                     if self.par.varTimeKernelXLoc[0] <= xi <= self.par.varTimeKernelXLoc[1]:
                         if self.par.varTimeKernelYLoc[0] <= yi <= self.par.varTimeKernelYLoc[1]:
