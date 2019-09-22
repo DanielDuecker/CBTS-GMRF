@@ -219,7 +219,7 @@ def updateUncertainty(par, gmrf):
             if par.xGateLeft <= ix <= par.xGateRight:
                 if iy <= par.yGateLower or iy >= par.yGateUpper:
                     pos = np.argmax(mapConDis(gmrf, ix, iy, False))
-                    gmrf.diagCovCond[pos] = 0.1
+                    gmrf.diagCovCond[pos] = 0.01
 
 def measurePerformance(gmrf,trueField):
     true = trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge])

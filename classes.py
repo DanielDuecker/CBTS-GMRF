@@ -243,7 +243,7 @@ class gmrf:
         self.covPrior = np.array(sp.vstack([covH1, covH2]).todense())
         self.covCond = self.covPrior
 
-        self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1).copy()
+        self.diagCovCond = copy.copy(self.covCond.diagonal().reshape(self.nP + self.nBeta, 1).copy())
 
         "Prior and conditioned mean"
         self.meanPrior = np.zeros((self.nP + self.nBeta, 1))
@@ -385,7 +385,7 @@ class stkf:
 
         self.gmrf.meanCond = np.array(np.dot(self.CsDense, self.skk.todense()), ndmin=2)
         self.gmrf.covCond = np.array(np.dot(self.CsDense, np.dot(self.covkk.todense(), self.CsDense.T)))
-        self.gmrf.diagCovCond = self.gmrf.covCond.diagonal().reshape(self.gmrf.nP+self.gmrf.nBeta,1)
+        self.gmrf.diagCovCond = copy.copy(self.gmrf.covCond.diagonal().reshape(self.gmrf.nP+self.gmrf.nBeta,1))
 
         # Also update bSeq and precCond in case seq. belief update is used for planning
         PhiT = Phi.T

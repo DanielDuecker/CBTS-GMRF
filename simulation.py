@@ -17,18 +17,19 @@ from parameters import par
 matplotlib.use('TkAgg')
 
 """Simulation Options"""
-beliefOptions = ['stkf']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['randomWalk']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
+controlOptions = ['cbts', 'pi2', 'randomWalk', 'geist']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 1
+nSim = 10
 nIter = 500
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
-varTimeKernel = True
+varTimeKernel = False
+obstacle = True
 plot = False
 "PI2"
 K = [15]
@@ -65,10 +66,8 @@ for belief in beliefOptions:
                     for nUpdated_i in nUpdated:
                         for lambd_i in lambd:
                             for pi2ControlCost_i in pi2ControlCost:
-                                parObject = par(belief, control, 0, fieldType, temporal, varTimeKernel, plot, nIter,
-                                                K_i, H_i,
-                                                nUpdated_i,
-                                                lambd_i, pi2ControlCost_i, 0, 0, 0, 0, 0, 0, 0)
+                                parObject = par(belief, control, 0, fieldType, temporal, varTimeKernel, obstacle,
+                                plot, nIter, K_i, H_i, nUpdated_i, lambd_i, pi2ControlCost_i, 0, 0, 0, 0, 0, 0, 0)
                                 parSettingsList.append(parObject)
                                 simCaseList.append(belief + '_' + control + '_' + 'temporal' + str(temporal)
                                                    + '_' + 'varTimeKernel' + str(varTimeKernel)
@@ -87,7 +86,7 @@ for belief in beliefOptions:
                                     for cbtsControlCost_i in cbtsControlCost:
                                         for discountFactor_i in discountFactor:
                                             parObject = par(belief, control, cbtsNodeBelief_i, fieldType, temporal,
-                                                            varTimeKernel, plot, nIter, 0, 0, 0, 0, 0,
+                                                            varTimeKernel, obstacle, plot, nIter, 0, 0, 0, 0, 0,
                                                             branchingFactor_i, maxDepth_i, kappa_i,
                                                             kappaChildSelection_i, UCBRewardFactor_i, cbtsControlCost_i,
                                                             discountFactor_i)
@@ -103,14 +102,14 @@ for belief in beliefOptions:
                                             + '_' + 'cbtsControlCost' + str(cbtsControlCost_i).replace('.', 'p')
                                             + '_' + 'discountFactor' + str(discountFactor_i).replace('.', 'p'))
         if control == 'randomWalk':
-            parObject = par(belief, control, 0, fieldType, temporal, varTimeKernel, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0)
+            parObject = par(belief, control, 0, fieldType, temporal, varTimeKernel, obstacle, plot, nIter, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0)
             parSettingsList.append(parObject)
             simCaseList.append(belief + '_' + control)
 
         if control == 'geist':
-            parObject = par(belief, control, 0, fieldType, temporal, varTimeKernel, plot, nIter, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 0, 0)
+            parObject = par(belief, control, 0, fieldType, temporal, varTimeKernel, obstacle, plot, nIter, 0, 0, 0, 0,
+                            0, 0, 0, 0, 0, 0, 0, 0)
             parSettingsList.append(parObject)
             simCaseList.append(belief + '_' + control)
 

@@ -4,7 +4,8 @@ import numpy as np
 
 
 class par:
-    def __init__(self, belief, control, cbtsNodeBelief, fieldType, temporal, varTimeKernel, plot, nIter, K=15, H=10, nUpdated=5,
+    def __init__(self, belief, control, cbtsNodeBelief, fieldType, temporal, varTimeKernel, obstacle, plot, nIter, K=15,
+                 H=10, nUpdated=5,
                  lambd=1e-1,
                  pi2ControlCost=5, branchingFactor=6, maxDepth=3, kappa=100, kappaChildSelection=1,
                  UCBRewardFactor=0.05, cbtsControlCost=0.2, discountFactor=0.5):
@@ -13,9 +14,9 @@ class par:
         self.cbtsNodeBelief = cbtsNodeBelief
         self.fieldType = fieldType
         self.temporal = temporal
-        self.obstacle = False
-        self.xGateLeft = 4
-        self.xGateRight = 5
+        self.obstacle = obstacle
+        self.xGateLeft = 3
+        self.xGateRight = 6
         self.yGateLower = 4
         self.yGateUpper = 5
         self.plot = plot
