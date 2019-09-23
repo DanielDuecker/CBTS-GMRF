@@ -103,6 +103,10 @@ def main(par, printTime):
         x_auv = [auv.x, auv.y, auv.alpha]
         mue_x, var_x, pi_theta = gmrfGeist.gmrf_bayese_update(x_auv, y_t)
 
+        """Manipulate uncertainty if obstacles are present"""
+        if par.obstacle:
+            functions.updateUncertainty(par, gmrf1)
+
         """Controller"""
         if par.control == 'pi2':
             # Get next state according to PI Controller
@@ -191,10 +195,6 @@ def main(par, printTime):
         """Update ground truth:"""
         if par.temporal:
             trueField.updateField(par, i)
-
-        """Update uncertainty"""
-        if par.obstacle:
-            functions.updateUncertainty(par, gmrf1)
 
     if printTime:
         pr.disable()

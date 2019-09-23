@@ -264,7 +264,7 @@ class gmrf:
 
         self.covCond = self.covPrior - np.dot(self.covPrior, temp3)
         # self.covCond = np.linalg.inv((np.linalg.inv(self.covPrior)+1/self.ov2*np.dot(Phi.T,Phi))) # alternative way
-        self.diagCovCond = self.covCond.diagonal().reshape(self.nP + self.nBeta, 1)
+        self.diagCovCond = copy.copy(self.covCond.diagonal().reshape(self.nP + self.nBeta, 1))
 
         "Update mean"
         if self.par.belief == 'regBayesTrunc':
