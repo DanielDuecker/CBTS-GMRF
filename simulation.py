@@ -18,18 +18,18 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['pi2']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
 saveToFile = True
 nSim = 1
-nIter = 500
+nIter = 10
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 varTimeKernel = False
-obstacle = True
+obstacle = False
 plot = False
 "PI2"
 K = [15]
@@ -241,7 +241,8 @@ plt.title("Weighted Median and IQR")
 functions.plotOverallPerformance(nIter, simCaseList, wrmseDict, wTotalVarDict, True, 'median')
 if saveToFile:
     fig1.savefig(folderName + '_weightedMedianIQR.svg', format='svg')
-plt.show()
+else:
+    plt.show()
 
 """Plot Weighted Mean and standard deviation"""
 fig2 = plt.figure(202, figsize=(19.2, 10.8), dpi=100)
@@ -249,7 +250,8 @@ plt.title("Weighted Mean and Standard Deviation")
 functions.plotOverallPerformance(nIter, simCaseList, wrmseDict, wTotalVarDict, True, 'mean')
 if saveToFile:
     fig2.savefig(folderName + '_weightedMeanStandardDeviation.svg', format='svg')
-plt.show()
+else:
+    plt.show()
 
 """Plot Median and IQR"""
 fig3 = plt.figure(203, figsize=(19.2, 10.8), dpi=100)
@@ -257,7 +259,8 @@ plt.title("Median and IQR")
 functions.plotOverallPerformance(nIter, simCaseList, rmseDict, totalVarDict, False, 'median')
 if saveToFile:
     fig3.savefig(folderName + '_MedianIQR.svg', format='svg')
-plt.show()
+else:
+    plt.show()
 
 """Plot Mean and standard deviation"""
 fig4 = plt.figure(204, figsize=(19.2, 10.8), dpi=100)
@@ -265,7 +268,8 @@ plt.title("Mean and Standard Deviation")
 functions.plotOverallPerformance(nIter, simCaseList, rmseDict, totalVarDict, False, 'mean')
 if saveToFile:
     fig4.savefig(folderName + '_MeanStandardDeviation.svg', format='svg')
-plt.show()
+else:
+    plt.show()
 
 # TODO Enable loading of pickled data instead of simulating
 
