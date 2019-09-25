@@ -51,6 +51,8 @@ def mapConDis(gmrf, xMeas, yMeas, borderEnforcement = True):
 
     except:
         print("Error! Agent is out of bound with state (", xMeas, ",", yMeas, ")")
+        Phi = np.zeros((1, gmrf.nP))
+        Phi = np.hstack((Phi, np.zeros((1, gmrf.nBeta))))
     return Phi
 
 
