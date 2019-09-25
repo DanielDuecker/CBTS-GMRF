@@ -275,7 +275,7 @@ def plotOverallPerformance(nIter, simCaseList, rmseDict, totalVarDict, weighted,
     if weighted:
         plt.ylabel('Weighted RMSE')
     else:
-        plt.ylabel('Weighted RMSE')
+        plt.ylabel('RMSE')
     plt.legend()
 
     y = np.linspace(0, nIter - 1, nIter - 1)
