@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
 from mpl_toolkits.mplot3d import Axes3D
+matplotlib.use('TkAgg')
 
 class GP:
     def __init__(self,kernelPar,varMeas):
@@ -63,6 +65,9 @@ xTrain = np.random.uniform(-5,5,(1,2))
 xTrainHist = np.zeros((1000,2))
 fTrainHist = np.zeros((1000,1))
 
+fig = plt.figure()
+plt.ion()
+plt.show()
 for i in range(100):
     print(i)
     # next measurement:
@@ -80,18 +85,15 @@ for i in range(100):
     H = mu.reshape(nSample,1) + kappa*var.diagonal().reshape(nSample,1)
     index = np.argmax(H)
     xTrain = xSample[index,:].reshape(1,2)
-    print(H)
-    print(index)
 
     if i%10 == 0:
-        fig = plt.figure()
         ax = fig.add_subplot(111,projection='3d')
         ax.plot_wireframe(xGT0, xGT1, fGT)
         ax.plot(xTrainHist[:,0],xTrainHist[:,1],fTrainHist[:,0],"g.")
         ax.plot(xSample[:,0],xSample[:,1],mu[:,0],"r.")
         plt.title("True field")
         print("difference:",np.mean(mu-f(xSample[:,0],xSample[:,1])))
-        plt.show()
+        fig.canvas.draw()
 
 plt.show(block=True)
 
