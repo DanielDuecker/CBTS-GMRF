@@ -1,6 +1,6 @@
 # First 2D-GMRF Implementation
 
-def main(par, printTime):
+def main(par, printTime, saveBeliefHistory, simCase):
     if printTime:
         import cProfile
         pr = cProfile.Profile()
@@ -20,6 +20,9 @@ def main(par, printTime):
     import Config
     import gp_scripts
     import control_scripts
+
+    import pickle
+    import os
 
     """Agent"""
     auv = agent(par, par.x0, par.y0, par.alpha0)
@@ -86,6 +89,16 @@ def main(par, printTime):
         print("Progess: |" + "#" * (index - 1) + "*" * (50 - index - 1) + "| " + str(round(100 * i / par.nIter,1)) + "%",
               end="\r")
         t = i * par.dt
+
+        """Save belief history"""
+        if saveBeliefHistory:
+            if i % par.nTrajPoints == 0:
+                dirpath = os.getcwd()
+                path = dirpath + '/history/' + simCase +'/'
+                os.makedirs(path,exist_ok=True)
+                with open(path + '/beliefHistory_' + str(i) + '.pkl', 'wb') as f:
+                    pickle.dump([gmrf1.meanCond, gmrf1.diagCovCond, xHist, yHist, CBTS1.xTraj, CBTS1.yTraj,
+                                 controller.xPathRollOut, controller.yPathRollOut], f)
 
         timeBefore = time.time()
         """Update belief"""

@@ -25,12 +25,14 @@ cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 printTime = False
 saveToFile = True
 nSim = 1
-nIter = 1000
+nIter = 200
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 varTimeKernel = False
-obstacle = True
-plot = True
+obstacle = False
+plot = False
+
+saveBeliefHistory = True
 
 "PI2"
 K = [15]
@@ -162,7 +164,7 @@ for i in range(len(parSettingsList)):
     for j in range(nSim):
         print("Simulation ", j+1, " of ", nSim, " with ", simCase)
         xR, yR, trueFieldR, gmrfR, controllerR, CBTSR, timeVecR, xHistR, yHistR, wrmseR, rmseR, wTotalVarR, totalVarR = \
-            main.main(par, printTime)
+            main.main(par, printTime, saveBeliefHistory, simCase)
 
         x.append(xR)
         y.append(yR)
