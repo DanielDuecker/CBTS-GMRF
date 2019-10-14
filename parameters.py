@@ -62,13 +62,15 @@ class par:
         self.nGridYSampled = 10
 
         """STKF class"""
-        self.sigmaTMin = 1e2
-        self.sigmaTMax = 1e3  # 1e3    # determines exponential decay of time kernel
+        self.sigmaTMin = 1e3
+        self.sigmaTMax = 1e5  # 1e3    # determines exponential decay of time kernel
         self.lambdSTKF = 1  # influences time kernel value
         self.sigma2 = 0.01
         self.varTimeKernel = varTimeKernel
-        self.varTimeKernelXLoc = [5, 10]
-        self.varTimeKernelYLoc = [0, 5]
+        self.varTimeKernel1XLoc = [4, 6]
+        self.varTimeKernel1YLoc = [5.5, 10]
+        self.varTimeKernel2XLoc = [4, 6]
+        self.varTimeKernel2YLoc = [0, 4.5]
 
         """PI2 controller"""
         "Rollout Tuning"

@@ -333,15 +333,20 @@ class stkf:
                 PhiTest = functions.mapConDis(self.gmrf,self.gmrf.xMinEdge,self.gmrf.yMaxEdge,False)
                 index = min(self.gmrf.nP - 1 , np.argmax(functions.mapConDis(self.gmrf,xi,yi,False)))
                 if self.par.varTimeKernel:
-                    if self.par.varTimeKernelXLoc[0] <= xi <= self.par.varTimeKernelXLoc[1]:
-                        if self.par.varTimeKernelYLoc[0] <= yi <= self.par.varTimeKernelYLoc[1]:
-                            rescaling = 1
-                        else:
-                            rescaling = 0
-                    else:
+                    inArea = False
+                    if self.par.varTimeKernel1XLoc[0] <= xi <= self.par.varTimeKernel1XLoc[1]:
+                        if self.par.varTimeKernel1YLoc[0] <= yi <= self.par.varTimeKernel1YLoc[1]:
+                            inArea = True
+                    if self.par.varTimeKernel2XLoc[0] <= xi <= self.par.varTimeKernel2XLoc[1]:
+                        if self.par.varTimeKernel2YLoc[0] <= yi <= self.par.varTimeKernel2YLoc[1]:
+                            inArea = True
+
+                    if inArea:
                         rescaling = 0
+                    else:
+                        rescaling = 1
                 else:
-                    rescaling = 0
+                    rescaling = 1
                 sigmaT = self.par.sigmaTMax - (self.sigmaTMax-self.sigmaTMin) * rescaling
                 F[index, index] = -1 / sigmaT
                 H[index, index] = math.sqrt(2 * self.lambdSTKF / sigmaT)
