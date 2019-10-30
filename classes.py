@@ -140,7 +140,7 @@ class GP:
         self.trainOutput = None
 
     def kernel(self, z1, z2):
-        squaredDistance = np.linalg.norm(z1 - z2, 2)
+        squaredDistance = np.linalg.norm(z1 - z2, 2)**2
         return np.exp(-.5 * 1 / self.kernelPar * squaredDistance)
 
     def getKernelMatrix(self, vec1, vec2):

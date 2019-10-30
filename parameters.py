@@ -23,7 +23,7 @@ class par:
         self.nIter = nIter  # number of iterations
 
         self.showExploredPaths = False
-        self.showActionRewardMapping = False
+        self.showActionRewardMapping = True
         self.showAcquisitionFunction = False
         self.showPerformance = False
 
