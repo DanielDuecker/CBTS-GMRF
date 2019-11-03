@@ -164,7 +164,7 @@ class GP:
     def predict(self, inputData):
         # according to https://www.cs.ubc.ca/~nando/540-2013/lectures/l6.pdf
         K = self.getKernelMatrix(self.trainInput, self.trainInput)
-        L = np.linalg.cholesky(K)
+        L = np.linalg.cholesky(K+0.0001*np.eye(len(self.trainInput)))
 
         # Compute mean
         Lk = np.linalg.solve(L, self.getKernelMatrix(self.trainInput, inputData))

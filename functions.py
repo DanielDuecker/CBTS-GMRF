@@ -270,8 +270,8 @@ def plotOverallPerformance(nIter, simCaseList, rmseDict, totalVarDict, weighted,
             lower = np.std(rmseDict[sim], axis=0)
             upper = lower
         plt.plot(x, rmse, label=sim)
-        plt.plot(x, rmse - lower, 'gray')
-        plt.plot(x, rmse + upper, 'gray')
+        #plt.plot(x, rmse - lower, 'gray')
+        #plt.plot(x, rmse + upper, 'gray')
         plt.fill_between(x,  rmse - lower, rmse + upper, cmap='twilight', alpha=0.4)
     plt.xlabel('Iteration Index')
     if weighted:
@@ -292,8 +292,8 @@ def plotOverallPerformance(nIter, simCaseList, rmseDict, totalVarDict, weighted,
             lower = np.std(totalVarDict[sim], axis=0)
             upper = lower
         plt.plot(y, var, label=sim)
-        plt.plot(y, var - lower, 'gray')
-        plt.plot(y, var + upper, 'gray')
+        #plt.plot(y, var - lower, 'gray')
+        #plt.plot(y, var + upper, 'gray')
         plt.fill_between(y,  var - lower, var + upper, cmap='twilight', alpha=0.4)
     plt.xlabel('Iteration Index')
     if weighted:
