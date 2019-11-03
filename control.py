@@ -253,7 +253,7 @@ class CBTS:
 
             # plot estimated reward over actions
             if self.par.showActionRewardMapping and len(v.D) == (self.branchingFactor - 1):
-                functions.plotPolicy(self.par, v.GP, thetaPredict, mu)
+                functions.plotPolicy(self.par, v.GP, thetaPredict, mu, var)
 
         return bestTheta
 

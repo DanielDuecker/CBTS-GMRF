@@ -164,7 +164,7 @@ def plotFields(par, fig, x, y, trueField, gmrf, controller, CBTS1, timeVec, xHis
     plt.title("Computation Time")
 
 
-def plotPolicy(par, GP, thetaPredict, mu):
+def plotPolicy(par, GP, thetaPredict, mu, var):
     fig = plt.figure(1)
     plt.clf()
     plt.show()
@@ -180,6 +180,8 @@ def plotPolicy(par, GP, thetaPredict, mu):
         ax = fig.add_subplot(111)
         ax.plot(GP.trainInput[:, 0], GP.trainOutput[:, 0], "g.")
         ax.plot(thetaPredict[:, 0], mu[:, 0], "r.")
+        h = mu[:, 0] + par.kappa * var.diagonal().reshape(par.nThetaSamples)
+        ax.plot(thetaPredict[:, 0], h, "b.")
     fig.canvas.draw()
 
 
