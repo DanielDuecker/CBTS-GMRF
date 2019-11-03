@@ -23,7 +23,7 @@ class par:
         self.nIter = nIter  # number of iterations
 
         self.showExploredPaths = False
-        self.showActionRewardMapping = True
+        self.showActionRewardMapping = False
         self.showAcquisitionFunction = False
         self.showPerformance = False
 
@@ -107,7 +107,7 @@ class par:
         self.initialTheta = np.zeros(self.trajOrder)  # leads to first trajectory being straight
 
         # Gaussian Process for action reward mapping
-        self.kernelPar = 10  # used in exponential kernel to determine variance between to inputs
+        self.kernelPar = 1  # used in exponential kernel to determine variance between to inputs
         self.nThetaSamples = 50  # number of samples thetas which are candidates for next theta
 
         """Random Walk"""

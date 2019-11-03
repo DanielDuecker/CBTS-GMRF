@@ -252,9 +252,9 @@ class CBTS:
             bestTheta = thetaPredict[index, :]
 
             # plot estimated reward over actions
-            if self.par.showActionRewardMapping and len(v.D) == (self.branchingFactor - 1):
+            #if self.par.showActionRewardMapping and len(v.D) == (self.branchingFactor - 1):
+            if self.par.showActionRewardMapping:
                 functions.plotPolicy(self.par, v.GP, thetaPredict, mu, var)
-
         return bestTheta
 
     def exploreNode(self, vl):

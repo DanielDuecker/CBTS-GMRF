@@ -29,7 +29,7 @@ nIter = 500
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 varTimeKernel = False
-obstacle = True
+obstacle = False
 plot = True
 saveBeliefHistory = False
 
@@ -43,7 +43,7 @@ pi2ControlCost = [10]
 "CBTS"
 branchingFactor = [6]
 maxDepth = [2]
-kappa = [1]
+kappa = [20]
 kappaChildSelection = [1]
 UCBRewardFactor = [0]
 cbtsControlCost = [0.1]
