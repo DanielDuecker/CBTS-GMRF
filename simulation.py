@@ -24,14 +24,14 @@ cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 1
-nIter = 1000
+nSim = 5
+nIter = 200
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 varTimeKernel = False
-obstacle = True
-plot = False
-saveBeliefHistory = True
+obstacle = False
+plot = True
+saveBeliefHistory = False
 
 "PI2"
 K = [15]

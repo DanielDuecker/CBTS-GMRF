@@ -57,7 +57,7 @@ def mapConDis(gmrf, xMeas, yMeas, borderEnforcement = True):
 
 
 def getPrecisionMatrix(gmrf):
-    kappa = 0.1  # needs to be high enough in order to create a strictly diagonal dominant matrix
+    kappa = 1e-4#0.1  # needs to be high enough in order to create a strictly diagonal dominant matrix
     Lambda = (4 + kappa**2) * np.eye(gmrf.nP) - np.eye(gmrf.nP, k=gmrf.nX) - np.eye(gmrf.nP, k=-gmrf.nX)
     Lambda -= np.eye(gmrf.nP, k=1) + np.eye(gmrf.nP, k=-1)
 

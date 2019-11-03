@@ -249,7 +249,7 @@ class gmrf:
         self.meanPrior = np.zeros((self.nP + self.nBeta, 1))
         self.meanCond = np.zeros((self.nP + self.nBeta, 1))
 
-        self.covLevels = np.linspace(-0.2, min(np.amax(self.diagCovCond), 0.9), 20)  # TODO Adapt
+        self.covLevels = np.linspace(0,2.3, 20)  # TODO Adapt
 
         "Sequential bayesian regression"
         self.bSeq = np.zeros((self.nP + self.nBeta, 1))
