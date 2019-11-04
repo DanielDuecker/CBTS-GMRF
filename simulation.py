@@ -24,13 +24,13 @@ cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 20
+nSim = 5
 nIter = 500
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 varTimeKernel = False
 obstacle = False
-plot = True
+plot = False
 saveBeliefHistory = False
 
 "PI2"
@@ -198,7 +198,7 @@ for i in range(len(parSettingsList)):
         """Save objects"""
         # Save objects
         with open('objs_other_' + simCase + '.pkl', 'wb') as f:
-            pickle.dump([x, y, trueField, controller, CBTS, timeVec, xHist, yHist,  wrmseR, rmseR, wTotalVarR, totalVarR], f)
+            pickle.dump([x, y, trueField, controller, CBTS, timeVec, xHist, yHist,  wrmse, rmse, wTotalVar, totalVar], f)
 
         # Getting back the objects:
         # with open('objs.pkl','rb') as f:
@@ -236,6 +236,10 @@ for i in range(len(parSettingsList)):
             plt.show()
         plt.clf()
     plt.close(fig0)
+
+# Save performance
+with open('performance.pkl', 'wb') as f:
+    pickle.dump([simCaseList,wrmseDict,rmseDict,wTotalVarDict,totalVarDict], f)
 
 """Plot Weighted Median and IQR"""
 fig1 = plt.figure(201, figsize=(19.2, 10.8), dpi=100)
