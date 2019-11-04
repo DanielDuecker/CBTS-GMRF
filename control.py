@@ -3,6 +3,8 @@ import gc
 import math
 
 import numpy as np
+import pickle
+import os
 
 import functions
 from classes import node
@@ -133,8 +135,9 @@ class piControl:
 
 
 class CBTS:
-    def __init__(self, par):
+    def __init__(self, par,simCase):
         self.par = par
+        self.simCase = simCase
         self.nIterations = par.CBTSIterations
         self.nTrajPoints = par.nTrajPoints
         self.trajOrder = par.trajOrder
@@ -156,13 +159,13 @@ class CBTS:
         self.xTraj = np.zeros((self.nTrajPoints, 1))
         self.yTraj = np.zeros((self.nTrajPoints, 1))
 
-    def getNewTraj(self, auv, gmrf):
+    def getNewTraj(self, auv, gmrf, iter):
         # Get gmrf with less grid points
         v0 = node(self.par, copy.deepcopy(gmrf), auv)  # create node with belief b and total reward 0
         self.xTraj = np.zeros((self.nTrajPoints, 1))
         self.yTraj = np.zeros((self.nTrajPoints, 1))
         for i in range(self.nIterations):
-            vl = self.treePolicy(v0)  # get next node
+            vl = self.treePolicy(v0,iter)  # get next node
             if vl is None:
                 continue  # max depth and branching reached
             # rollout
@@ -195,10 +198,10 @@ class CBTS:
                 derivY = math.sin(angle)
         return bestTraj, derivX, derivY
 
-    def treePolicy(self, v):
+    def treePolicy(self, v, iter):
         while v.depth < self.maxDepth:
             if len(v.D) < self.branchingFactor:
-                theta = self.getNextTheta(v)
+                theta = self.getNextTheta(v,iter)
                 traj, derivX, derivY = self.generateTrajectory(v, theta)
                 self.xTraj = np.hstack((self.xTraj, traj[0, :].reshape(self.nTrajPoints, 1)))
                 self.yTraj = np.hstack((self.yTraj, traj[1, :].reshape(self.nTrajPoints, 1)))
@@ -240,7 +243,7 @@ class CBTS:
             else:
                 v = self.bestChild(v)
 
-    def getNextTheta(self, v):
+    def getNextTheta(self, v,iter):
         if v.GP.emptyData:
             bestTheta = self.initialTheta
             # bestTheta = np.random.uniform(self.thetaMin,self.thetaMax,self.trajOrder)
@@ -255,6 +258,12 @@ class CBTS:
             #if self.par.showActionRewardMapping and len(v.D) == (self.branchingFactor - 1):
             if self.par.showActionRewardMapping:
                 functions.plotPolicy(self.par, v.GP, thetaPredict, mu, var)
+            if self.par.saveActionRewardMapping and v.depth==0:
+                dirpath = os.getcwd()
+                path = dirpath + '/actionRewardMapping/' + self.simCase + '/' + str(iter) + '/'
+                os.makedirs(path, exist_ok=True)
+                with open(path + '/actionReward_' + str(len(v.GP.trainInput)) + '.pkl', 'wb') as f:
+                    pickle.dump([self.par, v.GP, thetaPredict, mu, var], f)
         return bestTheta
 
     def exploreNode(self, vl):
@@ -290,7 +299,7 @@ class CBTS:
         # plot acquisition function
         if self.par.showAcquisitionFunction:
             functions.plotRewardFunction(self.par, v0.gmrf)
-
+        print(bestTheta)
         return bestTraj, derivX, derivY
 
     def generateTrajectory(self, v, theta):

@@ -24,14 +24,14 @@ cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 5
-nIter = 500
+nSim = 1
+nIter = 100
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 varTimeKernel = False
 obstacle = False
 plot = False
-saveBeliefHistory = False
+saveBeliefHistory = False # Warning: Enabling this increases needed memory!
 
 "PI2"
 K = [15]
@@ -43,10 +43,10 @@ pi2ControlCost = [10]
 "CBTS"
 branchingFactor = [6]
 maxDepth = [2]
-kappa = [20]
+kappa = [20,100]
 kappaChildSelection = [1]
 UCBRewardFactor = [0]
-cbtsControlCost = [0.1]
+cbtsControlCost = [0.1,10]
 discountFactor = [0.8]
 
 "Initialize lists and dicts"

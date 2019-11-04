@@ -178,10 +178,13 @@ def plotPolicy(par, GP, thetaPredict, mu, var):
         ax.set_zlabel("Reward")
     elif par.trajOrder == 1:
         ax = fig.add_subplot(111)
-        ax.plot(GP.trainInput[:, 0], GP.trainOutput[:, 0], "g.")
-        ax.plot(thetaPredict[:, 0], mu[:, 0], "r.")
+        plt.scatter(GP.trainInput[:, 0], GP.trainOutput[:, 0], color='black', s=10, marker='x', zorder=3,
+                    label='Training Input')
+        plt.scatter(thetaPredict[:, 0], mu[:, 0], color='red', s=10, label='Test Input')
         h = mu[:, 0] + par.kappa * var.diagonal().reshape(par.nThetaSamples)
-        ax.plot(thetaPredict[:, 0], h, "b.")
+        plt.scatter(thetaPredict[:, 0], h, color='blue', s=10, label='Acquisition Function Samples')
+        plt.xlabel('Selected Action')
+        plt.ylabel('Reward')
     fig.canvas.draw()
 
 

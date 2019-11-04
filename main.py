@@ -62,7 +62,7 @@ def main(par, printTime, saveBeliefHistory, simCase):
     stkf1 = stkf(par, gmrf1)
 
     """"Continuous Belief Tree Search"""
-    CBTS1 = control.CBTS(par, )
+    CBTS1 = control.CBTS(par,simCase)
     bestTraj = np.zeros((2, 1))
 
     """Initialize plot"""
@@ -139,7 +139,7 @@ def main(par, printTime, saveBeliefHistory, simCase):
             auv.alpha = tau_optimal[2, 1]
         elif par.control == 'cbts':
             if i % par.nMeasPoints == 0:
-                bestTraj, auv.derivX, auv.derivY = CBTS1.getNewTraj(auv, gmrf1)
+                bestTraj, auv.derivX, auv.derivY = CBTS1.getNewTraj(auv, gmrf1, i)
                 trajIndex = 1
             auv.x = bestTraj[0, trajIndex]
             auv.y = bestTraj[1, trajIndex]
