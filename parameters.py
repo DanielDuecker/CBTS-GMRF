@@ -27,7 +27,7 @@ class par:
         self.showAcquisitionFunction = False
         self.showPerformance = False
 
-        self.saveActionRewardMapping = False # Warning: Enabling this increases needed memory!
+        self.saveActionRewardMapping = True # Warning: Enabling this increases needed memory!
 
         self.exploitingRate = 0
 

@@ -299,7 +299,6 @@ class CBTS:
         # plot acquisition function
         if self.par.showAcquisitionFunction:
             functions.plotRewardFunction(self.par, v0.gmrf)
-        print(bestTheta)
         return bestTraj, derivX, derivY
 
     def generateTrajectory(self, v, theta):

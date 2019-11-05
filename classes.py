@@ -53,7 +53,7 @@ class trueField:
         self.fieldType = fieldType
 
         """random field"""
-        maxRandomValue = 5
+        maxRandomValue = 1
         xRand = np.linspace(0, 10, 11)  # column coordinates
         yRand = np.linspace(0, 10, 11)  # row coordinates
         zRand = np.random.rand(11, 11) * maxRandomValue
@@ -77,18 +77,18 @@ class trueField:
         self.yShift = 0
         xPreDef = np.array([0, 2, 4, 6, 9])  # column coordinates
         yPreDef = np.array([0, 1, 3, 5, 9])  # row coordinates
-        zPreDef = np.array([[1, 2, 2, 1, 1],
-                            [2, 4, 2, 1, 1],
-                            [1, 2, 3, 3, 2],
-                            [1, 1, 2, 3, 3],
-                            [1, 1, 2, 3, 3]])
+        zPreDef = np.array([[0.1, 0.3, 0.2, 0.1, 0.1],
+                            [0.3, 0.9, 0.3, 0.2, 0.1],
+                            [0.1, 0.4, 0.6, 0.3, 0.4],
+                            [0.1, 0.1, 0.2, 0.6, 0.6],
+                            [0.1, 0.1, 0.2, 0.6, 0.6]])
         # zPreDef = np.array([[2, 4, 6, 7, 8],
         #              [2.1, 5, 7, 11.25, 9.5],
         #              [3, 5.6, 8.5, 17, 14.5],
         #              [2.5, 5.4, 6.9, 9, 8],
         #              [2, 2.3, 4, 6, 7.5]])
-        self.minValPreDef = np.min((0, np.min(zPreDef) - 1))
-        self.maxValPreDef = np.max(zPreDef) + 1
+        self.minValPreDef = np.min((0, np.min(zPreDef) - 0.1))
+        self.maxValPreDef = np.max(zPreDef) + 0.1
         self.fPreDef = interpolate.interp2d(xPreDef, yPreDef, zPreDef)
 
         if self.fieldType == 'sine':
@@ -101,8 +101,8 @@ class trueField:
             self.fieldMin = -maxRandomValue
             self.fieldMax = maxRandomValue
         else:
-            self.fieldMin = self.minValPreDef - par.ov2
-            self.fieldMax = self.maxValPreDef + par.ov2
+            self.fieldMin = self.minValPreDef
+            self.fieldMax = self.maxValPreDef
 
         self.fieldLevels = np.linspace(self.fieldMin, self.fieldMax, 20)
 
