@@ -41,12 +41,12 @@ lambd = [0.1]
 pi2ControlCost = [10]
 
 "CBTS"
-branchingFactor = [3,6,12]
-maxDepth = [1,2,3]
+branchingFactor = [6]
+maxDepth = [2]
 kappa = [10]
 kappaChildSelection = [1]
 UCBRewardFactor = [0]
-cbtsControlCost = [0.1]
+cbtsControlCost = [0.1,1,10]
 discountFactor = [0.8]
 
 "Initialize lists and dicts"

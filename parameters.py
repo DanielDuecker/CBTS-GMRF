@@ -33,7 +33,7 @@ class par:
 
         self.dt = 1  # timesteps per iteration
         self.nMeas = 10  # number of measurements for bayesian inference (nMeas = nIter for inference without truncation)
-        self.ov2 = 0.2**2  # measurement variance
+        self.ov2 = 0.01**2  # measurement variance
         self.ov2Real = self.ov2
         self.dX = 0.01
         self.dY = 0.01  # discretizaton in x and y for Plotting
