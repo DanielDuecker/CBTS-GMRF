@@ -57,7 +57,7 @@ class trueField:
         xRand = np.linspace(0, 10, 11)  # column coordinates
         yRand = np.linspace(0, 10, 11)  # row coordinates
         zRand = np.random.rand(11, 11) * maxRandomValue
-        self.fRand = interpolate.interp2d(xRand, yRand, zRand)
+        self.fRand = interpolate.interp2d(xRand, yRand, zRand,'cubic')
 
         """sine field"""
         self.cScale = 1
@@ -72,24 +72,21 @@ class trueField:
         self.peakValue = 10
         self.peakPar = 0.8
 
-        """predefined field"""
         self.xShift = 0
         self.yShift = 0
-        xPreDef = np.array([0, 2, 4, 6, 9])  # column coordinates
-        yPreDef = np.array([0, 1, 3, 5, 9])  # row coordinates
-        zPreDef = np.array([[0.1, 0.3, 0.2, 0.1, 0.1],
-                            [0.3, 0.9, 0.3, 0.2, 0.1],
-                            [0.1, 0.4, 0.6, 0.3, 0.4],
-                            [0.1, 0.1, 0.2, 0.6, 0.6],
-                            [0.1, 0.1, 0.2, 0.6, 0.6]])
+        xPreDef = np.array([0, 2, 4, 6, 10])  # column coordinates
+        yPreDef = np.array([0, 2, 4, 6, 10])  # row coordinates
+        zPreDef = np.array([[1.0, 1.0625, 1.25, 1.5625, 2.0],
+                        [.5625,.625, .8125, 1.125, 1.5625],
+                       [.3, .3125, .4, 1.2, 1.25],
+                       [.5, .2, .3125, 1.0, 1.0625],
+                       [.5, .8, 1.1, 1.2, 1.5]])
         # zPreDef = np.array([[2, 4, 6, 7, 8],
         #              [2.1, 5, 7, 11.25, 9.5],
         #              [3, 5.6, 8.5, 17, 14.5],
         #              [2.5, 5.4, 6.9, 9, 8],
         #              [2, 2.3, 4, 6, 7.5]])
-        self.minValPreDef = np.min((0, np.min(zPreDef) - 0.1))
-        self.maxValPreDef = np.max(zPreDef) + 0.1
-        self.fPreDef = interpolate.interp2d(xPreDef, yPreDef, zPreDef)
+        self.fPreDef = interpolate.interp2d(xPreDef, yPreDef, zPreDef,kind='cubic')
 
         if self.fieldType == 'sine':
             self.fieldMin = -2.5
@@ -98,13 +95,13 @@ class trueField:
             self.fieldMin = -1
             self.fieldMax = self.peakValue + 0.1
         elif self.fieldType == 'random':
-            self.fieldMin = -maxRandomValue
-            self.fieldMax = maxRandomValue
+            self.fieldMin = -0.2
+            self.fieldMax = maxRandomValue + 0.2
         else:
-            self.fieldMin = self.minValPreDef
-            self.fieldMax = self.maxValPreDef
+            self.fieldMin = -0.2
+            self.fieldMax = 1.2
 
-        self.fieldLevels = np.linspace(self.fieldMin, self.fieldMax, 20)
+        self.fieldLevels = np.linspace(np.amin(zPreDef) - 0.1, np.amax(zPreDef) + 0.1, 20)
 
     def getField(self, x, y):
         if self.fieldType == 'sine':
