@@ -92,7 +92,7 @@ def main(par, printTime, saveBeliefHistory, simCase):
 
         """Save belief history"""
         if saveBeliefHistory:
-            if i % par.nTrajPoints == 0:
+            if i % par.nMeasPoints == 0:
                 dirpath = os.getcwd()
                 path = dirpath + '/history/' + simCase +'/'
                 os.makedirs(path,exist_ok=True)
