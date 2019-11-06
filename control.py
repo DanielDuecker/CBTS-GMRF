@@ -291,6 +291,7 @@ class CBTS:
         maxR = -math.inf
         bestTheta = np.zeros(2)
         for child in v0.children:
+            #print("theta:", child.actionToNode,"Reward:",child.accReward/child.visits,"visits:",child.visits)
             if child.accReward/child.visits > maxR:
                 bestTheta = child.actionToNode
                 maxR = child.accReward/child.visits

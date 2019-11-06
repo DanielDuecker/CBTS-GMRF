@@ -53,7 +53,7 @@ class trueField:
         self.fieldType = fieldType
 
         """random field"""
-        maxRandomValue = 1
+        maxRandomValue = 10
         xRand = np.linspace(0, 10, 11)  # column coordinates
         yRand = np.linspace(0, 10, 11)  # row coordinates
         zRand = np.random.rand(11, 11) * maxRandomValue
@@ -74,13 +74,12 @@ class trueField:
 
         self.xShift = 0
         self.yShift = 0
-        xPreDef = np.array([0, 2, 4, 6, 10])  # column coordinates
-        yPreDef = np.array([0, 2, 4, 6, 10])  # row coordinates
-        zPreDef = np.array([[1.0, 1.0625, 1.25, 1.5625, 2.0],
-                        [.5625,.625, .8125, 1.125, 1.5625],
-                       [.3, .3125, .4, 1.2, 1.25],
-                       [.5, .2, .3125, 1.0, 1.0625],
-                       [.5, .8, 1.1, 1.2, 1.5]])
+        xPreDef = np.array([0, 2, 6, 10])  # column coordinates
+        yPreDef = np.array([0, 2, 6, 10])  # row coordinates
+        zPreDef = np.array([[3,1,4,6],
+                        [5,6,4,1],
+                       [1,8,5,2],
+                       [2,4,6,5]])
         # zPreDef = np.array([[2, 4, 6, 7, 8],
         #              [2.1, 5, 7, 11.25, 9.5],
         #              [3, 5.6, 8.5, 17, 14.5],
@@ -94,14 +93,11 @@ class trueField:
         elif self.fieldType == 'peak':
             self.fieldMin = -1
             self.fieldMax = self.peakValue + 0.1
-        elif self.fieldType == 'random':
-            self.fieldMin = -0.2
-            self.fieldMax = maxRandomValue + 0.2
         else:
-            self.fieldMin = -0.2
-            self.fieldMax = 1.2
+            self.fieldMin = 0
+            self.fieldMax = 10
 
-        self.fieldLevels = np.linspace(np.amin(zPreDef) - 0.1, np.amax(zPreDef) + 0.1, 20)
+        self.fieldLevels = np.linspace(self.fieldMin,self.fieldMax, 20)
 
     def getField(self, x, y):
         if self.fieldType == 'sine':
