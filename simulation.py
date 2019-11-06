@@ -37,8 +37,8 @@ saveBeliefHistory = False # Warning: Enabling this increases needed memory!
 K = [15]
 H = [10]
 nUpdated = [10]
-lambd = [0.1,0.4,0.01,0.04]
-pi2ControlCost = [10,1]
+lambd = [0.01]
+pi2ControlCost = [1]
 
 "CBTS"
 branchingFactor = [6]
