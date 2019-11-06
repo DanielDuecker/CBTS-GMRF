@@ -27,7 +27,7 @@ class par:
         self.showAcquisitionFunction = False
         self.showPerformance = False
 
-        self.saveActionRewardMapping = True # Warning: Enabling this increases needed memory!
+        self.saveActionRewardMapping = False # Warning: Enabling this increases needed memory!
 
         self.exploitingRate = 0
 
@@ -40,7 +40,7 @@ class par:
 
         self.x0 = 0
         self.y0 = 0
-        self.alpha0 = math.pi/4  # initial state
+        self.alpha0 = math.pi/5  # initial state
         self.maxStepsize = 0.2  # maximum change in every state per iteration
         self.xVel = self.maxStepsize
         self.yVel = self.maxStepsize
@@ -91,7 +91,7 @@ class par:
         self.kappa = kappa  # large: evaluate more untried actions; small: concentrate on actions which already lead to high rewards
         self.kappaChildSelection = kappaChildSelection  # high value: expand nodes with less visits, low: expand nodes with high accumulated reward
         self.UCBRewardFactor = UCBRewardFactor  # reward = variance + UCBRewardFactor*mean
-        self.outOfGridPenaltyCBTS = 0.5
+        self.outOfGridPenaltyCBTS = 1
         self.cbtsControlCost = cbtsControlCost
         self.discountFactor = discountFactor  # discounts future rewards
 

@@ -56,7 +56,7 @@ class trueField:
         maxRandomValue = 6
         xRand = np.linspace(0, 10, 11)  # column coordinates
         yRand = np.linspace(0, 10, 11)  # row coordinates
-        zRand = np.random.rand(11, 11) * (2+maxRandomValue)
+        zRand = np.random.rand(11, 11) * maxRandomValue + 2
         self.fRand = interpolate.interp2d(xRand, yRand, zRand,'cubic')
 
         """sine field"""
@@ -86,10 +86,6 @@ class trueField:
         #              [2.5, 5.4, 6.9, 9, 8],
         #              [2, 2.3, 4, 6, 7.5]])
         self.fPreDef = interpolate.interp2d(xPreDef, yPreDef, zPreDef,kind='cubic')
-
-        xTest=np.linspace(0,10,1000)
-        yTest=np.linspace(0,10,1000)
-        fTest = self.fPreDef(xTest,yTest)
 
 
         if self.fieldType == 'sine':

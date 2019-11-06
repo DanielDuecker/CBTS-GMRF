@@ -18,7 +18,7 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['cbts']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['cbts','pi2', 'randomWalk', 'geist']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
@@ -26,28 +26,28 @@ printTime = False
 saveToFile = True
 nSim = 1
 nIter = 500
-fieldType = 'predefined'  # 'peak','sine', 'random' or 'predefined'
+fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 varTimeKernel = False
 obstacle = False
 plot = False
-saveBeliefHistory = True # Warning: Enabling this increases needed memory!
+saveBeliefHistory = False # Warning: Enabling this increases needed memory!
 
 "PI2"
 K = [15]
 H = [10]
 nUpdated = [10]
-lambd = [0.1]
-pi2ControlCost = [10]
+lambd = [0.1,0.4,0.01,0.04]
+pi2ControlCost = [10,1]
 
 "CBTS"
 branchingFactor = [6]
 maxDepth = [2]
-kappa = [1,10,100]
+kappa = [10]
 kappaChildSelection = [1]
 UCBRewardFactor = [0]
 cbtsControlCost = [0.1]
-discountFactor = [0.8]
+discountFactor = [0.9]
 
 "Initialize lists and dicts"
 simCaseList = []
