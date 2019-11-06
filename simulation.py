@@ -31,7 +31,7 @@ temporal = False  # True: time varying field
 varTimeKernel = False
 obstacle = False
 plot = False
-saveBeliefHistory = False # Warning: Enabling this increases needed memory!
+saveBeliefHistory = True # Warning: Enabling this increases needed memory!
 
 "PI2"
 K = [15]
@@ -46,8 +46,8 @@ maxDepth = [2]
 kappa = [10]
 kappaChildSelection = [1]
 UCBRewardFactor = [0]
-cbtsControlCost = [0.1,1,10]
-discountFactor = [0.9]
+cbtsControlCost = [0.1]
+discountFactor = [0.8]
 
 "Initialize lists and dicts"
 simCaseList = []
