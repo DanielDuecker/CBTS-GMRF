@@ -158,6 +158,10 @@ def main(par, printTime, saveBeliefHistory, simCase):
         if round(currentStepsize, 3) > par.maxStepsize:
             print("\nWarning, stepsize was ",currentStepsize)
 
+        """Time measurement"""
+        timeAfter = time.time()
+        timeVec.append(timeAfter - timeBefore)
+
         xMeas = auv.x
         yMeas = auv.y
 
@@ -173,10 +177,6 @@ def main(par, printTime, saveBeliefHistory, simCase):
             if (i + 1) % par.nMeas == 0:
                 gmrf1.covPrior = gmrf1.covCond
                 gmrf1.meanPrior = gmrf1.meanCond
-
-        """Time measurement"""
-        timeAfter = time.time()
-        timeVec.append(timeAfter - timeBefore)
 
         """Measure performance"""
         wrmseMean, rmseMean, wTotalVar, totalVar = functions.measurePerformance(gmrf1, trueField)
