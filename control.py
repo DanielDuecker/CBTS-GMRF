@@ -12,6 +12,7 @@ from classes import node
 
 class piControl:
     def __init__(self, par):
+        self.par = par
         self.lambd = par.lambd  # influences state costs and noise variance
         self.H = par.H  # control horizon steps
         self.g = np.eye(1)
