@@ -15,10 +15,11 @@ class par:
         self.fieldType = fieldType
         self.temporal = temporal
         self.obstacle = obstacle
-        self.xGateLeft = 3
+        self.obstaclePenalty = 1
+        self.xGateLeft = 4
         self.xGateRight = 6
-        self.yGateLower = 4
-        self.yGateUpper = 5
+        self.yGateLower = 4.5
+        self.yGateUpper = 5.5
         self.plot = plot
         self.nIter = nIter  # number of iterations
 

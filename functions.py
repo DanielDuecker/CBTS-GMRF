@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.sparse as sp
 from scipy import stats
+import copy
 
 import classes
 
@@ -220,24 +221,37 @@ def sanityCheck(xVec, yVec, gmrf):
             return False
     return True
 
-def updateUncertainty(par, gmrf):
-    for ix in gmrf.x:
-        for iy in gmrf.y:
-            if par.xGateLeft <= ix <= par.xGateRight:
-                if iy <= par.yGateLower or iy >= par.yGateUpper:
-                    pos = np.argmax(mapConDis(gmrf, ix, iy, False))
-                    gmrf.diagCovCond[pos] = 0.01
+
+def obstacleCheck(xVec, yVec, gmrf):
+    if gmrf.par.obstacle:
+        for x in xVec:
+            for y in yVec:
+                if gmrf.par.xGateLeft <= x <= gmrf.par.xGateRight:
+                    if y <= gmrf.par.yGateLower or y >= gmrf.par.yGateUpper:
+                        return True
+    return False
 
 def measurePerformance(gmrf,trueField):
-    true = trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge])
-    belief = gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge]
-
+    copyDiagCovCond = copy.copy(gmrf.diagCovCond[0:gmrf.nP])
+    true = copy.copy(trueField.getField(gmrf.x[gmrf.nEdge:-gmrf.nEdge], gmrf.y[gmrf.nEdge:-gmrf.nEdge]))
+    belief = copy.copy(gmrf.meanCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge])
     weights = (true-np.min(true)*np.ones(true.shape))/(np.max(true)-np.min(true))
+
+    # set predictive variance to zero which belongs to restricted area
+    if gmrf.par.obstacle:
+        for ix in range(len(gmrf.x[gmrf.nEdge:-gmrf.nEdge])):
+            for iy in range(len(gmrf.y[gmrf.nEdge:-gmrf.nEdge])):
+                x = gmrf.x[gmrf.nEdge:-gmrf.nEdge][ix]
+                y = gmrf.y[gmrf.nEdge:-gmrf.nEdge][iy]
+                if obstacleCheck([x],[y],gmrf):
+                    index = np.argmax(mapConDis(gmrf,x,y,False))
+                    copyDiagCovCond[index] = 0
+
     wrmseMean = math.sqrt(np.mean(np.multiply((belief-true)**2, weights)))
-    wTotalVar = np.sum(abs(np.multiply(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge], weights)))
+    wTotalVar = np.sum(abs(np.multiply(copyDiagCovCond.reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge], weights)))
 
     rmseMean = math.sqrt(np.mean((belief-true)**2))
-    totalVar = np.sum(abs(gmrf.diagCovCond[0:gmrf.nP].reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge]))
+    totalVar = np.sum(abs(copyDiagCovCond.reshape(gmrf.nY, gmrf.nX)[gmrf.nEdge:-gmrf.nEdge, gmrf.nEdge:-gmrf.nEdge]))
     return wrmseMean, rmseMean, wTotalVar, totalVar
 
 def plotPerformance(rmseMean,totalVar):

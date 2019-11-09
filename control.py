@@ -66,6 +66,10 @@ class piControl:
                                                  self.yPathRollOut[h, k] * np.eye(1), gmrf):
                         stateCost[h, k] = self.outOfGridPenaltyPI2
                         controlCost[h, k] = 0
+                    elif functions.obstacleCheck(self.xPathRollOut[h, k] * np.eye(1),
+                                                 self.yPathRollOut[h, k] * np.eye(1), gmrf):
+                        stateCost[h, k] = self.par.obstaclePenalty
+                        controlCost[h, k] = 0.5 * np.dot(uHead.T, np.dot(self.R, uHead))
                     else:
                         Phi = functions.mapConDis(gmrf, self.xPathRollOut[h, k], self.yPathRollOut[h, k])
                         stateCost[h, k] = 1 / np.dot(Phi, gmrf.diagCovCond)
@@ -369,6 +373,8 @@ class CBTS:
             # lower reward if agent is out of bound
             if not functions.sanityCheck(tau[0, i + 1] * np.eye(1), tau[1, i + 1] * np.eye(1), v.gmrf):
                 r -= self.outOfGridPenaltyCBTS
+            if functions.obstacleCheck(tau[0, i + 1] * np.eye(1), tau[1, i + 1] * np.eye(1), v.gmrf):
+                r -= self.par.obstaclePenalty
         return r, o
 
     def backUp(self, v0, v, reward):

@@ -29,9 +29,9 @@ nIter = 500
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 varTimeKernel = False
-obstacle = False
+obstacle = True
 plot = False
-saveBeliefHistory = False # Warning: Enabling this increases needed memory!
+saveBeliefHistory = False  # Warning: Enabling this increases needed memory!
 
 "PI2"
 K = [15]
