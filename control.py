@@ -70,6 +70,7 @@ class piControl:
                     elif functions.obstacleCheck(self.xPathRollOut[h, k] * np.eye(1),
                                                  self.yPathRollOut[h, k] * np.eye(1), gmrf):
                         stateCost[h, k] = self.par.obstaclePenalty
+                        uHead = self.u[h, 0] + M * noise[h, k]
                         controlCost[h, k] = 0.5 * np.dot(uHead.T, np.dot(self.R, uHead))
                     else:
                         Phi = functions.mapConDis(gmrf, self.xPathRollOut[h, k], self.yPathRollOut[h, k])
