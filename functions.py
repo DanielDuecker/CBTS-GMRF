@@ -221,7 +221,6 @@ def sanityCheck(xVec, yVec, gmrf):
             return False
     return True
 
-
 def obstacleCheck(xVec, yVec, gmrf):
     if gmrf.par.obstacle:
         for x in xVec:

@@ -18,7 +18,7 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['cbts','pi2', 'randomWalk']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['pi2','cbts','geist','randomWalk']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
@@ -36,7 +36,7 @@ saveBeliefHistory = False  # Warning: Enabling this increases needed memory!
 "PI2"
 K = [15]
 H = [10]
-nUpdated = [10]
+nUpdated = [15]
 lambd = [0.01]
 pi2ControlCost = [1]
 
