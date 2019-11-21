@@ -256,7 +256,7 @@ class CBTS:
         else:
             thetaPredict = np.random.uniform(self.thetaMin, self.thetaMax, (self.nThetaSamples, self.trajOrder))
             mu, var = v.GP.predict(thetaPredict)
-            h = mu + self.kappa * var.diagonal().reshape(self.nThetaSamples, 1)
+            h = mu + self.kappa * np.sqrt(var.diagonal().reshape(self.nThetaSamples, 1))
             index = np.argmax(h)
             bestTheta = thetaPredict[index, :]
 

@@ -18,18 +18,18 @@ matplotlib.use('TkAgg')
 
 """Simulation Options"""
 beliefOptions = ['seqBayes']  # 'stkf' 'seqBayes', 'regBayes', 'regBayesTrunc'
-controlOptions = ['pi2','cbts','geist','randomWalk']  # 'cbts', 'pi2', 'randomWalk', 'geist'
+controlOptions = ['cbts','pi2','geist']  # 'cbts', 'pi2', 'randomWalk', 'geist'
 cbtsNodeBelief = ['noUpdates']  # 'fullGMRF', 'sampledGMRF', 'noUpdates'
 
 """Simulation Options"""
 printTime = False
 saveToFile = True
-nSim = 1
+nSim = 10
 nIter = 500
 fieldType = 'random'  # 'peak','sine', 'random' or 'predefined'
 temporal = False  # True: time varying field
 varTimeKernel = False
-obstacle = True
+obstacle = False
 plot = False
 saveBeliefHistory = False  # Warning: Enabling this increases needed memory!
 
