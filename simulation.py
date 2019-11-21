@@ -43,7 +43,7 @@ pi2ControlCost = [1]
 "CBTS"
 branchingFactor = [6]
 maxDepth = [2]
-kappa = [10]
+kappa = [1]
 kappaChildSelection = [1]
 UCBRewardFactor = [0]
 cbtsControlCost = [0.1]

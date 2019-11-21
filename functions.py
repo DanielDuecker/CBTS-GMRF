@@ -182,7 +182,7 @@ def plotPolicy(par, GP, thetaPredict, mu, var):
         plt.scatter(GP.trainInput[:, 0], GP.trainOutput[:, 0], color='black', s=10, marker='x', zorder=3,
                     label='Training Input')
         plt.scatter(thetaPredict[:, 0], mu[:, 0], color='red', s=10, label='Test Input')
-        h = mu[:, 0] + par.kappa * var.diagonal().reshape(par.nThetaSamples)
+        h = mu[:, 0] + par.kappa * np.sqrt(var.diagonal().reshape(par.nThetaSamples))
         plt.scatter(thetaPredict[:, 0], h, color='blue', s=10, label='Acquisition Function Samples')
         plt.xlabel('Selected Action')
         plt.ylabel('Reward')
