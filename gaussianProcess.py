@@ -82,7 +82,7 @@ for i in range(100):
     fTrainHist[i] = fTrain
 
     # acquisition function
-    H = mu.reshape(nSample,1) + kappa*var.diagonal().reshape(nSample,1)
+    H = mu.reshape(nSample,1) + kappa*np.sqrt(var.diagonal()).reshape(nSample,1)
     index = np.argmax(H)
     xTrain = xSample[index,:].reshape(1,2)
 
